@@ -1,6 +1,5 @@
-package pl.bodolsog.GreenWaveFX;/**
- * Created by bodolsog on 07.11.15.
- */
+package pl.bodolsog.GreenWaveFX;
+
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -21,8 +20,6 @@ public class MainApp extends Application {
 
         final FXMLLoader loader = new FXMLLoader(getClass().getResource("view/MapView.fxml"));
         final Parent root = (Parent) loader.load();
-
-        //TODO: Load controller
 
         Scene scene = new Scene(root, 1000, 600);
         primaryStage.setScene(scene);

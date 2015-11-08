@@ -1,8 +1,5 @@
 package pl.bodolsog.GreenWaveFX.view;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.concurrent.Worker.State;
 import javafx.fxml.FXML;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -21,7 +18,7 @@ public class MapViewController
         engine.load(getClass().getResource("googlemap.html").toString());
 
         JSObject window = (JSObject) engine.executeScript("window");
-        window.setMember("prop", new PropertiesManager());
+        window.setMember("properties", new PropertiesManager());
     }
 }
 
