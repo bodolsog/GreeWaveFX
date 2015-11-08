@@ -18,7 +18,12 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("view/MapView.fxml"));
+
+        final FXMLLoader loader = new FXMLLoader(getClass().getResource("view/MapView.fxml"));
+        final Parent root = (Parent) loader.load();
+
+        //TODO: Load controller
+
         Scene scene = new Scene(root, 1000, 600);
         primaryStage.setScene(scene);
         primaryStage.show();
