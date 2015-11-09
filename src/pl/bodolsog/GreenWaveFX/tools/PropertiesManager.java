@@ -1,4 +1,4 @@
-package pl.bodolsog.GreenWaveFX;
+package pl.bodolsog.GreenWaveFX.tools;
 
 import java.io.FileInputStream;
 import java.io.IOException;
