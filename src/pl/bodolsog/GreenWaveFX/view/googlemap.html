@@ -24,14 +24,14 @@
             var bounds = new google.maps.LatLngBounds;
             var markersArray = [];
 
-            var origin1 = {lat: 52.03, lng: 23.14};
+/*            var origin1 = {lat: 52.03, lng: 23.14};
             var origin2 = {lat: 52.05, lng: 23.24};
             var destinationA = {lat: 53.03, lng: 23.84};
-            var destinationB = {lat: 53.15, lng: 23.14};
+            var destinationB = {lat: 53.15, lng: 23.14};*/
 
             var latlng = new google.maps.LatLng(52.03, 23.14);
             var myOptions = {
-                zoom: 12,
+                zoom: 15,
                 center: latlng,
                 mapTypeId: google.maps.MapTypeId.ROADMAP,
                 mapTypeControl: false,
@@ -52,15 +52,26 @@
                     map: document.map
                 });
                 var infowindow = new google.maps.InfoWindow({
-                    content: marker.getPosition().toString()
+                    content: marker.getCursor()
                 });
                 marker.addListener('click', function () {
                     infowindow.setOptions({content: marker.getPosition().toString()});
                     infowindow.open(marker.get('map'), marker);
                 });
+                marker.addListener('drag', function () {
+                    infowindow.setOptions({content: marker.getPosition().lat().toString()});
+                });
+                var JXmarker = markers;
+                JXmarker.setLatLng(marker.getPosition().lat(), marker.getPosition().lng());
+
+                markersArray.push([marker, JXmarker]);
+
+                document.getElementById('output').innerHTML = markersArray[markersArray.length-1][1].getLatLng();
+
             });
 
-            document.goToLocation = function goToLocation(searchString) {
+            //TODO: review
+            /*document.goToLocation = function goToLocation(searchString) {
                 document.geocoder.geocode({'address': searchString}, function (results, status) {
                     if (status == google.maps.GeocoderStatus.OK) {
                         document.map.setCenter(results[0].geometry.location);
@@ -68,7 +79,7 @@
                         alert("Geocode was not successful for the following reason: " + status);
                     }
                 });
-            }
+            }*/
         }
     </script>
 

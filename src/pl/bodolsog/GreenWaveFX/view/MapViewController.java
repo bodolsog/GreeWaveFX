@@ -4,7 +4,8 @@ import javafx.fxml.FXML;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
-import pl.bodolsog.GreenWaveFX.PropertiesManager;
+import pl.bodolsog.GreenWaveFX.tools.Markers;
+import pl.bodolsog.GreenWaveFX.tools.PropertiesManager;
 
 public class MapViewController
 {
@@ -19,6 +20,7 @@ public class MapViewController
 
         JSObject window = (JSObject) engine.executeScript("window");
         window.setMember("properties", new PropertiesManager());
+        window.setMember("markers", new Markers());
     }
 }
 
