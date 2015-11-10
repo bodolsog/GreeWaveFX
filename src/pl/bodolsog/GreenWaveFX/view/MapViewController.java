@@ -4,7 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
-import pl.bodolsog.GreenWaveFX.tools.Markers;
+import pl.bodolsog.GreenWaveFX.model.Markers;
 import pl.bodolsog.GreenWaveFX.tools.PropertiesManager;
 
 public class MapViewController
