@@ -1,4 +1,4 @@
-package pl.bodolsog.GreenWaveFX.tools;
+package pl.bodolsog.GreenWaveFX.model;
 
 
 import java.util.HashMap;
