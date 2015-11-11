@@ -10,11 +10,11 @@ import pl.bodolsog.GreenWaveFX.tools.PropertiesManager;
 
 public class MapViewController
 {
-    @FXML
-    private WebView webView;
-
     // Reference to main app.
     private MainApp mainApp;
+
+    @FXML
+    private WebView webView;
 
     @FXML
     private void initialize(){
