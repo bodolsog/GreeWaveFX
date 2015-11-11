@@ -46,11 +46,18 @@
             document.map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
 
             google.maps.event.addListener(document.map, 'click', function (event) {
+                // Create marker.
                 var marker = new google.maps.Marker({
                     position: event.latLng,
                     draggable: true,
                     map: document.map
                 });
+
+                // Add marker to lists.
+                markerList.addMarker(marker.getPosition().lat(), marker.getPosition().lng());
+                markersArray.push(marker);
+
+                /*
                 var infowindow = new google.maps.InfoWindow({
                     content: marker.getCursor()
                 });
@@ -61,13 +68,13 @@
                 marker.addListener('drag', function () {
                     infowindow.setOptions({content: marker.getPosition().lat().toString()});
                 });
-                var JXmarker = markers;
-                JXmarker.setLatLng(marker.getPosition().lat(), marker.getPosition().lng());
+                */
 
-                markersArray.push([marker, JXmarker]);
-
-                document.getElementById('output').innerHTML = markersArray[markersArray.length-1][1].getLatLng();
-
+                //var JXmarker = markers;
+                //JXmarker.setLatLng(marker.getPosition().lat(), marker.getPosition().lng());
+                //document.getElementById('output').innerHTML = markersArray[markersArray.length-1][1].getLatLng();
+                //document.getElementById('output').innerHTML = mm.test1();
+                //document.getElementById('output').innerHTML = "xxxxxx";
             });
 
             //TODO: review
@@ -85,7 +92,6 @@
 
 </head>
 <body onload="initialize();">
-<div id="output">x</div>
 <div id="map_canvas" style="width:100%; height:100%"></div>
 
 </body>

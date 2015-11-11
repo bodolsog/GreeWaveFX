@@ -3,6 +3,7 @@ package pl.bodolsog.GreenWaveFX.markersview;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 
+
 public class Marker {
     private DoubleProperty lat;
     private DoubleProperty lng;
@@ -31,13 +32,5 @@ public class Marker {
      */
     public DoubleProperty lngProperty(){
         return lng;
-    }
-
-    /**
-     * Test function
-     * @return String "lat: {lat}, lng: {lng}"
-     */
-    public String getLatLng(){
-        return "lat: "+String.valueOf(lat.get())+", lng: "+String.valueOf(lng.get());
     }
 }

@@ -5,10 +5,9 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * This class handle properties from config.properties file.
+ * Handle properties from config.properties file.
  *
  * @author Paweł B.B. Drozd
- *
  */
 public class PropertiesManager {
 
