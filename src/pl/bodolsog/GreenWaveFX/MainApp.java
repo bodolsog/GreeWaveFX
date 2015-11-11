@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Accordion;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
@@ -19,7 +20,7 @@ public class MainApp extends Application {
 
     private Stage primaryStage;
     private BorderPane rootLayout;
-    private ObservableList<Markers> markersList = FXCollections.observableArrayList();
+    private ObservableList<Markers> markers = FXCollections.observableArrayList();
 
 
     public static void main(String[] args) {
@@ -33,6 +34,7 @@ public class MainApp extends Application {
 
         initRootLayout();
         showMapView();
+        showMarkersList();
     }
 
     /**
@@ -69,9 +71,28 @@ public class MainApp extends Application {
         }
     }
 
+    /**
+     * Show markers list in root layout.
+     */
+    public void showMarkersList(){
+        try {
+            // Load accordion from fxml file.
+            final FXMLLoader loader = new FXMLLoader(getClass().getResource("view/MarkersList.fxml"));
+            Accordion markersList = (Accordion) loader.load();
 
-    public ObservableList<Markers> getMarkersList() {
-        return markersList;
+            // Show the scene containing the root layout.
+            rootLayout.setRight(markersList);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Return data as observable list of Markers.
+     * @return
+     */
+    public ObservableList<Markers> getMarkers() {
+        return markers;
     }
 
 }
