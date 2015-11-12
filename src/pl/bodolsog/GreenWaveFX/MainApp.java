@@ -5,6 +5,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
@@ -77,7 +78,7 @@ public class MainApp extends Application {
         try {
             // Load accordion from fxml file.
             final FXMLLoader loader = new FXMLLoader(getClass().getResource("markersview/MarkersView.fxml"));
-            Accordion markersList = (Accordion) loader.load();
+            ScrollPane markersList = (ScrollPane) loader.load();
 
             // Show the scene containing the root layout.
             rootLayout.setRight(markersList);

@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.web.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<Accordion fx:id="markersPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.bodolsog.GreenWaveFX.markersview.MarkersViewController">
-  <panes>
-  </panes>
-</Accordion>
+<ScrollPane hbarPolicy="NEVER" minWidth="200.0" BorderPane.alignment="CENTER" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.bodolsog.GreenWaveFX.markersview.MarkersViewController">
+   <content>
+      <Accordion fx:id="markersPane" minWidth="200.0" prefHeight="-Infinity">
+        <panes>
+        </panes>
+      </Accordion>
+   </content>
+</ScrollPane>
