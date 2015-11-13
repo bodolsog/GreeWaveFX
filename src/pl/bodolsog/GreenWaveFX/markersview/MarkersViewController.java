@@ -1,6 +1,7 @@
 package pl.bodolsog.GreenWaveFX.markersview;
 
 import javafx.collections.ListChangeListener;
+import javafx.collections.MapChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Label;
@@ -23,14 +24,12 @@ public class MarkersViewController {
     @FXML
     private void initialize(){
 
-        MarkersList.markers.addListener(new ListChangeListener<Marker>() {
+        MarkersList.markers.addListener(new MapChangeListener<String,Marker>() {
 
             @Override
-            public void onChanged(ListChangeListener.Change change) {
-                while (change.next()) {
-                    if(change.wasAdded()){
-                        addMarkerToPane(MarkersList.markers.get(change.getFrom()));
-                    }
+            public void onChanged(MapChangeListener.Change change) {
+                if(change.wasAdded()){
+                    addMarkerToPane(MarkersList.markers.get(change.getKey()));
                 }
             }
         });
@@ -47,7 +46,11 @@ public class MarkersViewController {
 
     private void addMarkerToPane(Marker marker){
         TitledPane tp = new TitledPane();
-        tp.setText("#");
+        try{
+            tp.setText(marker.nameProperty().getValue());
+        } catch (NullPointerException e){
+            tp.setText(marker.idProperty().getValue());
+        }
         VBox hb = new VBox();
         hb.getChildren().addAll(
                 new Label("Lat: "+marker.latProperty().getValue()),

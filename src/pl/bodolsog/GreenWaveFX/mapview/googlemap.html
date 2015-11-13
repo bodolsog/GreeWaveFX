@@ -22,7 +22,7 @@
     <script type="text/javascript">
         function initialize() {
             var bounds = new google.maps.LatLngBounds;
-            var markersArray = [];
+            var markersMap = {};
 
 /*            var origin1 = {lat: 52.03, lng: 23.14};
             var origin2 = {lat: 52.05, lng: 23.24};
@@ -42,20 +42,29 @@
                 scaleControl: true
             };
 
-            document.geocoder = new google.maps.Geocoder();
             document.map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+            document.geocoder = new google.maps.Geocoder();
+            markersId = 0;
+
+            var crossRoadsNames = [];
+            var crossRoadsNamesCount = [];
 
             google.maps.event.addListener(document.map, 'click', function (event) {
-                // Create marker.
+
+                // Create marker
                 var marker = new google.maps.Marker({
                     position: event.latLng,
                     draggable: true,
                     map: document.map
                 });
-
+                markersId++;
+                var markerName = "#"+markersId;
                 // Add marker to lists.
-                markerList.addMarker(marker.getPosition().lat(), marker.getPosition().lng());
-                markersArray.push(marker);
+                markerList.addMarker(markerName, marker.getPosition().lat(), marker.getPosition().lng());
+                markersMap[markerName] = marker;
+
+                getCrossName(markerName, event.latLng.lat(), event.latLng.lng());
+
 
                 /*
                 var infowindow = new google.maps.InfoWindow({
@@ -77,16 +86,63 @@
                 //document.getElementById('output').innerHTML = "xxxxxx";
             });
 
-            //TODO: review
-            /*document.goToLocation = function goToLocation(searchString) {
-                document.geocoder.geocode({'address': searchString}, function (results, status) {
-                    if (status == google.maps.GeocoderStatus.OK) {
-                        document.map.setCenter(results[0].geometry.location);
-                    } else {
-                        alert("Geocode was not successful for the following reason: " + status);
+
+            // Get cross streets names from map.
+            function getCrossName(id, lat, lng){
+                // Get table witch square's latLng points and search two names by geolocation.
+                latLngSquare = getLatLngSquare(lat, lng);
+                // Store road names.
+                crossRoadsNames[id] = [];
+                // Count latLng to check.
+                crossRoadsNamesCount[id] = latLngSquare.length;
+
+                wait = false;
+
+                while(latLngSquare.length > 0){
+                    // First latLng from array.
+                    current = latLngSquare.shift();
+
+                    // Asynchronic reverse geocoding.
+                    document.geocoder.geocode({'location': current}, function(results, status) {
+                        if(status === google.maps.GeocoderStatus.OVER_QUERY_LIMIT){
+                            // When is over free API quota limit: add this latLng back to array as first element and
+                            // set wait variable for true (that give 1 sec wait before send next query).
+                            latLngSquare.unshift(current);
+                            wait = true;
+                        } else if(status === google.maps.GeocoderStatus.OK) {
+                            if (results[0]) {
+                                // When status is ok, become results and road name is not in array crossRoadsNames for
+                                // this id - add new road name to this array.
+                                if (crossRoadsNames[id].indexOf(results[0].address_components[1].short_name) == -1) {
+                                    crossRoadsNames[id].push(results[0].address_components[1].short_name);
+                                }
+                                // Also decrement (status: ok, become results) crossRoadsNamesCount and, if after
+                                // decrementation is equal to 0, send name to marker.
+                                crossRoadsNamesCount[id] -= 1;
+                                if(crossRoadsNamesCount[id] == 0){
+                                    markerList.setName(id, crossRoadsNames[id].join("/"));
+                                }
+                            }
+                        }
+                    });
+                    if(wait){
+                        // If wait is true (setted by status: over_query_limit) - pause script for one second and set
+                        // wait variable to false.
+                        setTimeout(function(){ wait = false }, 1000);
                     }
-                });
-            }*/
+                }
+            }
+
+            // Return array of lat-lng maps in square range around point.
+            function getLatLngSquare(lat, lng){
+                mod = 0.00015;
+                return [
+                    {lat: lat+mod, lng: lng},
+                    {lat: lat,     lng: lng-mod},
+                    {lat: lat-mod, lng: lng},
+                    {lat: lat,     lng: lng+mod}
+                ];
+            }
         }
     </script>
 

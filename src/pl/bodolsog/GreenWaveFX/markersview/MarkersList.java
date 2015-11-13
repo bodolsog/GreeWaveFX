@@ -2,6 +2,7 @@ package pl.bodolsog.GreenWaveFX.markersview;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 
 /**
  * Manages global observable list of Markers.
@@ -11,23 +12,24 @@ public class MarkersList {
     /**
      * Global variable.
      */
-    public static ObservableList<Marker> markers = FXCollections.observableArrayList();
+    public static ObservableMap<String,Marker> markers = FXCollections.observableHashMap();
 
     /**
      * Add marker to observable list.
+     * @param id  marker's name
      * @param lat   latitude from Google Maps
      * @param lng   longitude from Google Maps
      */
-    public void addMarker(double lat, double lng){
-        markers.add(new Marker(lat, lng));
+    public void addMarker(String id, double lat, double lng){
+        markers.put(id, new Marker(id, lat, lng));
     }
 
     /**
-     * Add existing marker to observable list.
-     * @param marker    Markers Object instance.
+     * Set name for Marker.
+     * @param id    hash
+     * @param name  name (cross streets)
      */
-    /*private void addMarker(Marker marker){
-        markers.add(marker);
-    }*/
-
+    public void setName(String id, String name){
+        markers.get(id).setName(name);
+    }
 }
