@@ -8,7 +8,7 @@ import javafx.beans.property.StringProperty;
 
 public class Marker {
     private StringProperty id;
-    private StringProperty name;
+    private StringProperty name = new SimpleStringProperty("");
     private DoubleProperty lat;
     private DoubleProperty lng;
 
@@ -26,11 +26,9 @@ public class Marker {
 
     /**
      * Sets marker name (cross streets)
-     * @param name  cross streets
+     * @param newName  cross streets
      */
-    public void setName(String name){
-        this.name = new SimpleStringProperty(name);
-    }
+    public void setName(String newName){ name.setValue(newName); }
 
     /**
      * Returns name as StringProperty
@@ -46,7 +44,7 @@ public class Marker {
      * @return
      */
     public StringProperty nameProperty(){
-        return name;
+        return this.name;
     }
 
 
