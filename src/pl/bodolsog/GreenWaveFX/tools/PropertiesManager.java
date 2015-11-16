@@ -33,4 +33,7 @@ public class PropertiesManager {
         return properties.getProperty("googleAPIKey");
     }
 
+    public void p(String t){
+        System.out.println(t);
+    }
 }

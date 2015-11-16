@@ -4,6 +4,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 
+
+
 /**
  * Manages global observable list of Markers.
  */
@@ -31,5 +33,19 @@ public class MarkersList {
      */
     public void setName(String id, String name){
         markers.get(id).setName(name);
+    }
+
+    public String setCrossName(String id, ObservableList<? extends String> streetsNames){
+        String crossName = "";
+        for(String street : streetsNames){
+            if(!street.equals(""))
+                if(!crossName.equals(""))
+                    crossName += "/"+street;
+                else
+                    crossName += street;
+        }
+        markers.get(id).setName(crossName);
+        return crossName;
+
     }
 }

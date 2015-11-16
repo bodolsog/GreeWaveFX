@@ -1,25 +1,19 @@
 package pl.bodolsog.GreenWaveFX.markersview;
 
-import javafx.beans.Observable;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import pl.bodolsog.GreenWaveFX.MainApp;
 
-import java.beans.PropertyChangeListener;
 
 /**
- * Created by bodolsog on 11.11.15.
+ * Controller for markers displayed in right pane.
+ *
  */
 public class MarkersViewController {
 
@@ -33,7 +27,6 @@ public class MarkersViewController {
 
     @FXML
     private void initialize(){
-
         MarkersList.markers.addListener(new MapChangeListener<String,Marker>() {
 
             @Override

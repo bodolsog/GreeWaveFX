@@ -2,6 +2,7 @@ package pl.bodolsog.GreenWaveFX;
 
 
 import javafx.application.Application;
+import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
@@ -11,6 +12,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
 
 public class MainApp extends Application {
 
@@ -29,7 +31,6 @@ public class MainApp extends Application {
         initRootLayout();
         showMapView();
         showMarkersList();
-
     }
 
     /**
