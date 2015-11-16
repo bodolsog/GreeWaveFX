@@ -9,14 +9,13 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 import pl.bodolsog.GreenWaveFX.MainApp;
-import pl.bodolsog.GreenWaveFX.markersview.MarkersList;
+import pl.bodolsog.GreenWaveFX.markersview.MarkersViewController;
 import pl.bodolsog.GreenWaveFX.tools.PropertiesManager;
 
 import java.util.*;
 
-import static java.lang.Thread.sleep;
-
 public class MapViewController {
+
     // Reference to main app.
     private MainApp mainApp;
 
@@ -36,7 +35,7 @@ public class MapViewController {
         // Register classes for JS window
         JSObject window = (JSObject) webEngine.executeScript("window");
         window.setMember("properties", new PropertiesManager());
-        window.setMember("markerList", new MarkersList());
+        window.setMember("markerList", this);
         window.setMember("backThread", new BackThread(webEngine));
     }
 
@@ -47,6 +46,10 @@ public class MapViewController {
      */
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
+    }
+
+    public void addMarker(String id, double lat, double lng){
+        mainApp.getMarkersViewController().addMarker(id, lat, lng);
     }
 
     public void setMarkerCrossName(String id, String newName){
@@ -61,13 +64,15 @@ public class MapViewController {
         public WebEngine webEngine;
         private Map<String,ObservableList<String>> ol = new HashMap<String,ObservableList<String>>();
 
+        public BackThread(WebEngine webEngine){ this.webEngine = webEngine; }
+
         public void putToMap(String id, String street){
             if(!ol.containsKey(id)){
                 ol.put(id, FXCollections.observableArrayList());
                 ol.get(id).addListener((ListChangeListener<String>) change -> { while(change.next()){
                     if(change.getList().size() >= 4){
                         //TODO uprościć, nowy obiekt?
-                        String crossName = new MarkersList().setCrossName(id, change.getList());
+                        String crossName = mainApp.getMarkersViewController().setCrossName(id, change.getList());
                         webEngine.executeScript("setCrossName('"+id+"', '"+crossName+"')");
                     }
                 }});
@@ -80,8 +85,6 @@ public class MapViewController {
         public void error(String e){
             System.out.println(e);
         }
-
-        public BackThread(WebEngine webEngine){ this.webEngine = webEngine; }
 
         public double[][] getLatLngSquare(double lat, double lng){
             double mod = 0.00015;

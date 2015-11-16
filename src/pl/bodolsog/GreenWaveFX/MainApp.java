@@ -2,14 +2,21 @@ package pl.bodolsog.GreenWaveFX;
 
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.MapChangeListener;
+import javafx.collections.ObservableMap;
 import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
+import pl.bodolsog.GreenWaveFX.mapview.MapViewController;
+import pl.bodolsog.GreenWaveFX.markersview.Marker;
+import pl.bodolsog.GreenWaveFX.markersview.MarkersViewController;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
@@ -19,6 +26,9 @@ public class MainApp extends Application {
     private Stage primaryStage;
     private BorderPane rootLayout;
 
+    private MarkersViewController markersViewController;
+
+    // Starts app
     public static void main(String[] args) {
         launch(args);
     }
@@ -28,15 +38,17 @@ public class MainApp extends Application {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("GreenWaveFX");
 
+        // Init layout
         initRootLayout();
         showMapView();
-        showMarkersList();
+        showMarkersView();
     }
+
 
     /**
      * Initializes root layout.
      */
-    public void initRootLayout(){
+    private void initRootLayout(){
         try {
             // Load root layout from fxml file.
             final FXMLLoader loader = new FXMLLoader(getClass().getResource("MainAppView.fxml"));
@@ -54,15 +66,15 @@ public class MainApp extends Application {
     /**
      * Show map in root layout.
      */
-    public void showMapView(){
+    private void showMapView(){
         try {
             // Load map from fxml file.
             final FXMLLoader loader = new FXMLLoader(getClass().getResource("mapview/MapView.fxml"));
             WebView mapView = (WebView) loader.load();
 
             // Give the controller access to the main app.
-            //MapViewController controller = loader.getController();
-            //controller.setMainApp(this);
+            MapViewController mapViewController = loader.getController();
+            mapViewController.setMainApp(this);
 
             // Show the scene containing the root layout.
             rootLayout.setCenter(mapView);
@@ -75,19 +87,25 @@ public class MainApp extends Application {
     /**
      * Show markers list in root layout.
      */
-    public void showMarkersList(){
+    private void showMarkersView(){
         try {
             // Load accordion from fxml file.
             final FXMLLoader loader = new FXMLLoader(getClass().getResource("markersview/MarkersView.fxml"));
-            ScrollPane markersList = (ScrollPane) loader.load();
+            ScrollPane markersView = (ScrollPane) loader.load();
+
+            // Give the controller access to the main app.
+            markersViewController = loader.getController();
+            markersViewController.setMainApp(this);
 
             // Show the scene containing the root layout.
-            rootLayout.setRight(markersList);
+            rootLayout.setRight(markersView);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-
+    public MarkersViewController getMarkersViewController(){
+        return markersViewController;
+    }
 }
