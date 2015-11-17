@@ -26,6 +26,9 @@ public class MainApp extends Application {
     private Stage primaryStage;
     private BorderPane rootLayout;
 
+    /**
+     * Reference to MarkersViewController.
+     */
     private MarkersViewController markersViewController;
 
     // Starts app
@@ -105,6 +108,10 @@ public class MainApp extends Application {
         }
     }
 
+    /**
+     * Return markersViewController
+     * @return  markersViewController
+     */
     public MarkersViewController getMarkersViewController(){
         return markersViewController;
     }

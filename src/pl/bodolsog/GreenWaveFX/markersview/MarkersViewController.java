@@ -49,6 +49,13 @@ public class MarkersViewController {
         addMarkersListener();
     }
 
+    /**
+     * Adds listener to marker's map.
+     *
+     * When item is added to map, listener call addMarkerToPane (set new TitlePane for Marker into right pane) and set
+     * new listener for nameProperty of it. If reverse geocoding is finish his work and set new name of streets cross -
+     * this will change TitlePane title for this value.
+     */
     private void addMarkersListener(){
         markersMap.addListener((MapChangeListener.Change<? extends String, ? extends Marker> change) -> {
             if (change.wasAdded()) {
@@ -58,7 +65,7 @@ public class MarkersViewController {
                 // nameProperty was setted.
                 markersMap.get(change.getKey()).nameProperty().addListener(
                         ((observableValue, oldName, newName) ->
-                                editMarkerNameInPane(markersMap.get(change.getKey()), newName)
+                                setMarkerNameInPane(markersMap.get(change.getKey()))
                         )
                 );
             }
@@ -67,39 +74,45 @@ public class MarkersViewController {
 
     /**
      * Adds TitledPane for new marker.
-     * @param marker
+     * @param   marker
      */
     private void addMarkerToPane(Marker marker){
+        // New TitledPane.
         TitledPane tp = new TitledPane();
+        // Set this TitledPane into map <id, titledPane>.
         titledPanesMap.put(marker.idProperty().getValue(), tp);
-        try{
-            tp.setText(marker.nameProperty().getValue());
-        } catch (NullPointerException e){
-            tp.setText(marker.idProperty().getValue());
-        }
+        // Set cross name if exists, else set id as name.
+        setMarkerNameInPane(marker);
+        // VBox for content.
         VBox hb = new VBox();
+        // Temporary latLng values.
         hb.getChildren().addAll(
                 new Label("Lat: "+marker.latProperty().getValue()),
                 new Label("Lng: "+marker.lngProperty().getValue())
         );
         tp.setContent(hb);
+        // Add this pane to Accordion and set this active.
         markersPane.getPanes().add(tp);
         markersPane.setExpandedPane(tp);
     }
 
+
     /**
      * Edits TitledPane for new marker.
      * @param marker    Marker instance
-     * @param newName   new marker's name
      */
-    private void editMarkerNameInPane(Marker marker, String newName){
+    private void setMarkerNameInPane(Marker marker){
+        // Get pane from map.
         TitledPane tp = titledPanesMap.get(marker.idProperty().getValue());
-        try{
-            tp.setText(marker.nameProperty().getValue());
-        } catch (NullPointerException e){
+
+        // Try set cross name if that exists. Else set id as name.
+        if(marker.nameProperty().getValue().equals("")){
             tp.setText(marker.idProperty().getValue());
+        } else {
+            tp.setText(marker.nameProperty().getValue());
         }
     }
+
 
     /**
      * Add marker to observable list.
@@ -116,21 +129,32 @@ public class MarkersViewController {
      * @param id    hash
      * @param name  name (cross streets)
      */
-    public void setName(String id, String name){
+    private void setName(String id, String name){
         markersMap.get(id).setName(name);
     }
 
+    /**
+     * From streets names list get cross name. Set this for Marker and return. This is fired from listener, when all
+     * four location was geocoded (duplicated street names was set to empty string).
+     * @param   id - id of this marker
+     * @param   streetsNames - list of streets names
+     * @return  name of cross (street1/street2)
+     */
     public String setCrossName(String id, ObservableList<? extends String> streetsNames){
+        // Init string.
         String crossName = "";
+        // Build name from every not empty name.
         for(String street : streetsNames){
+            // Append street when is not empty string.
             if(!street.equals(""))
+                // If that isn't first street - add slash before street name.
                 if(!crossName.equals(""))
                     crossName += "/"+street;
                 else
                     crossName += street;
         }
+        // Set name to Marker and return.
         markersMap.get(id).setName(crossName);
         return crossName;
-
     }
 }

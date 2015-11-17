@@ -63,7 +63,7 @@
                 markersId++;
                 var markerId = "#"+markersId;
                 // Add marker to lists.
-                markerList.addMarker(markerId, marker.getPosition().lat(), marker.getPosition().lng());
+                controller.addMarker(markerId, marker.getPosition().lat(), marker.getPosition().lng());
                 markersMap[markerId] = marker;
 
                 //getCrossName(markerName, event.latLng.lat(), event.latLng.lng());
