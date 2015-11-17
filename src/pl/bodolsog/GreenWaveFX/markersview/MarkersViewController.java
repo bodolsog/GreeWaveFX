@@ -155,6 +155,12 @@ public class MarkersViewController {
         markersMap.put(id, new Marker(id, lat, lng));
     }
 
+    public void setMarkerLatLng(String id, double lat, double lng){
+        Marker marker = markersMap.get(id);
+        marker.setLat(lat);
+        marker.setLng(lng);
+    }
+
     /**
      * From streets names list get cross name. Set this for Marker and return. This is fired from listener, when all
      * four location was geocoded (duplicated street names was set to empty string).
