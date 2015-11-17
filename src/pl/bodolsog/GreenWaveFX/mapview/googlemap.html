@@ -90,6 +90,16 @@
             });
         }
 
+        function setCrossName(id, newName){
+            markersMap[id].setTitle(newName);
+        }
+
+        function deleteMarker(id){
+            markersMap[id].setMap(null);
+            markersMap[id] = null;
+            delete(markersMap[id]);
+        }
+
         function getCrossName(id, lat, lng){
             latLng = {lat: lat, lng: lng};
             getStreetName(id, latLng);
@@ -110,9 +120,6 @@
             });
         }
 
-        function setCrossName(id, newName){
-            markersMap[id].setTitle(newName);
-        }
     </script>
 
 </head>

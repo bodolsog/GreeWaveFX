@@ -31,6 +31,11 @@ public class MainApp extends Application {
      */
     private MarkersViewController markersViewController;
 
+    /**
+     * Reference to MapViewController.
+     */
+    private MapViewController mapViewController;
+
     // Starts app
     public static void main(String[] args) {
         launch(args);
@@ -76,7 +81,7 @@ public class MainApp extends Application {
             WebView mapView = (WebView) loader.load();
 
             // Give the controller access to the main app.
-            MapViewController mapViewController = loader.getController();
+            mapViewController = loader.getController();
             mapViewController.setMainApp(this);
 
             // Show the scene containing the root layout.
@@ -114,5 +119,13 @@ public class MainApp extends Application {
      */
     public MarkersViewController getMarkersViewController(){
         return markersViewController;
+    }
+
+    /**
+     * Return mapViewController
+     * @return  mapViewController
+     */
+    public MapViewController getMapViewController(){
+        return mapViewController;
     }
 }

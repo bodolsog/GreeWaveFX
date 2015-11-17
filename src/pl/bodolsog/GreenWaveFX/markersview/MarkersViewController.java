@@ -6,6 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.scene.control.Accordion;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
@@ -87,17 +88,40 @@ public class MarkersViewController {
         setMarkerNameInPane(marker);
         // VBox for content.
         VBox hb = new VBox();
+        // Delete label.
+        Hyperlink delete = new Hyperlink("Delete");
+        delete.setOnMouseClicked(mouseEvent -> {
+            deleteMarker(marker.idProperty().getValue());
+        });
         // Temporary latLng values.
         hb.getChildren().addAll(
                 new Label("Lat: "+marker.latProperty().getValue()),
-                new Label("Lng: "+marker.lngProperty().getValue())
+                new Label("Lng: "+marker.lngProperty().getValue()),
+                delete
         );
+
         tp.setContent(hb);
         // Add this pane to Accordion and set this active.
         markersPane.getPanes().add(tp);
         markersPane.setExpandedPane(tp);
     }
 
+    /**
+     * Remove TitledPane from Accordion. Called after user clicks delete hyperlink.
+     * @param markerId  Marker's id
+     */
+    private void deleteMarkerFromPane(String markerId){
+        // Get TitledPane.
+        TitledPane tp = titledPanesMap.get(markerId);
+        // Remove TitledPane from Accordion.
+        markersPane.getPanes().remove(tp);
+        // Remove TitledPane from map.
+        titledPanesMap.remove(markerId);
+    }
+
+    private void deleteMarkerFromMap(String id){
+        mainApp.getMapViewController().deleteMarker(id);
+    }
 
     /**
      * Edits TitledPane for new marker.
@@ -115,6 +139,11 @@ public class MarkersViewController {
         }
     }
 
+    public void deleteMarker(String id){
+        deleteMarkerFromPane(id);
+        deleteMarkerFromMap(id);
+        markersMap.remove(id);
+    }
 
     /**
      * Add marker to observable list.
