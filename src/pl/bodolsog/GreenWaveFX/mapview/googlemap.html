@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+        html { height: 100% }
+        body { height: 100%; margin: 0px; padding: 0px }
+        #map_canvas { height: 100%; background-color: #666970; }
+    </style>
+    <script type="text/javascript">
+        /*
+        * Add to head script file from Google API with Google API key from config.
+        */
+        var head = document.getElementsByTagName('head')[0];
+        var key = properties.getGoogleAPIKey();
+
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = 'http://maps.google.com/maps/api/js?key=' + key + '&sensor=false';
+        head.appendChild(script);
+    </script>
+    <script type="text/javascript">
+        function test(tex){
+            document.getElementById('test').innerHTML = tex;
+        }
+
+        var markersMap = {};
+
+        function initialize() {
+            var latlng = new google.maps.LatLng(52.03, 23.14);
+            var myOptions = {
+                zoom: 15,
+                center: latlng,
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                mapTypeControl: false,
+                navigationControl: false,
+                streetViewControl: false,
+                backgroundColor: "#666970",
+                zoomControl: false,
+                scaleControl: true
+            };
+
+            document.map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+            document.geocoder = new google.maps.Geocoder();
+            markersId = 0;
+
+            google.maps.event.addListener(document.map, 'click', function (event) {
+
+                // Create marker
+                var marker = new google.maps.Marker({
+                    position: event.latLng,
+                    draggable: true,
+                    map: document.map
+                });
+
+                // Increment id-number
+                markersId++;
+                // Create id
+                var markerId = "#"+markersId;
+                // Add marker to lists.
+                controller.addMarker(markerId, marker.getPosition().lat(), marker.getPosition().lng());
+                markersMap[markerId] = marker;
+
+                google.maps.event.addListener(marker, 'dragend', function(){
+                    var newLatLng = marker.getPosition();
+                    controller.setMarkerLatLng(markerId, newLatLng.lat(), newLatLng.lng());
+                    backThread.cancelThreads(markerId);
+                    backThread.getStreetsNames(markerId, newLatLng.lat(), newLatLng.lng());
+                });
+
+                backThread.getStreetsNames(markerId, event.latLng.lat(), event.latLng.lng());
+
+                /*
+                var infowindow = new google.maps.InfoWindow({
+                    content: marker.getCursor()
+                });
+                marker.addListener('click', function () {
+                    infowindow.setOptions({content: marker.getPosition().toString()});
+                    infowindow.open(marker.get('map'), marker);
+                });
+                marker.addListener('drag', function () {
+                    infowindow.setOptions({content: marker.getPosition().lat().toString()});
+                });
+                */
+
+                //var JXmarker = markers;
+                //JXmarker.setLatLng(marker.getPosition().lat(), marker.getPosition().lng());
+                //document.getElementById('output').innerHTML = markersArray[markersArray.length-1][1].getLatLng();
+                //document.getElementById('output').innerHTML = mm.test1();
+                //document.getElementById('output').innerHTML = "xxxxxx";
+            });
+        }
+
+        function setCrossName(id, newName){
+            markersMap[id].setTitle(newName);
+        }
+
+        /**
+         * Delete Marker from map, set them to null and remove hash from markersMap.
+         * @param id Marker's id
+         */
+        function deleteMarker(id){
+            markersMap[id].setMap(null);
+            markersMap[id] = null;
+            delete(markersMap[id]);
+        }
+
+        function getCrossName(id, lat, lng){
+            latLng = {lat: lat, lng: lng};
+            getStreetName(id, latLng);
+        }
+
+        function getStreetName(id, latLng){
+            document.geocoder.geocode({'location': latLng}, function(results, status) {
+                if(status === google.maps.GeocoderStatus.OVER_QUERY_LIMIT){
+                    setTimeout(function(){
+                        backThread.startThread(id, latLng['lat'], latLng['lng']);
+                    }, 1000);
+
+                } else if(status === google.maps.GeocoderStatus.OK) {
+                    backThread.putToMap(id, results[0].address_components[1].short_name);
+                } else {
+                    backThread.error(status);
+                }
+            });
+        }
+
+    </script>
+
+</head>
+<body onload="initialize();">
+<div id="test">d</div>
+<div id="map_canvas" style="width:100%; height:100%"></div>
+
+</body>
+</html>

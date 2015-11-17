@@ -1,14 +1,13 @@
-package pl.bodolsog.GreenWaveFX;
+package pl.bodolsog.GreenWaveFX.tools;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
 /**
- * This class handle properties from config.properties file.
+ * Handle properties from config.properties file.
  *
  * @author Paweł B.B. Drozd
- *
  */
 public class PropertiesManager {
 
@@ -34,4 +33,7 @@ public class PropertiesManager {
         return properties.getProperty("googleAPIKey");
     }
 
+    public void p(String t){
+        System.out.println(t);
+    }
 }
