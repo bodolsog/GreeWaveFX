@@ -91,7 +91,7 @@ public class MarkersViewController {
         // Delete label.
         Hyperlink delete = new Hyperlink("Delete");
         delete.setOnMouseClicked(mouseEvent -> {
-            //id: marker.idProperty().getValue()
+            deleteMarker(marker.idProperty().getValue());
         });
         // Temporary latLng values.
         hb.getChildren().addAll(
@@ -106,6 +106,22 @@ public class MarkersViewController {
         markersPane.setExpandedPane(tp);
     }
 
+    /**
+     * Remove TitledPane from Accordion. Called after user clicks delete hyperlink.
+     * @param markerId  Marker's id
+     */
+    private void deleteMarkerFromPane(String markerId){
+        // Get TitledPane.
+        TitledPane tp = titledPanesMap.get(markerId);
+        // Remove TitledPane from Accordion.
+        markersPane.getPanes().remove(tp);
+        // Remove TitledPane from map.
+        titledPanesMap.remove(markerId);
+    }
+
+    private void deleteMarkerFromMap(String id){
+        mainApp.getMapViewController().deleteMarker(id);
+    }
 
     /**
      * Edits TitledPane for new marker.
@@ -123,6 +139,11 @@ public class MarkersViewController {
         }
     }
 
+    public void deleteMarker(String id){
+        deleteMarkerFromPane(id);
+        deleteMarkerFromMap(id);
+        markersMap.remove(id);
+    }
 
     /**
      * Add marker to observable list.

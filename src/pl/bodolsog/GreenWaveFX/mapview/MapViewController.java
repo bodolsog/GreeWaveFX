@@ -20,7 +20,6 @@ public class MapViewController {
 
     @FXML
     private WebView webView;
-
     private WebEngine webEngine;
 
     /**
@@ -29,7 +28,7 @@ public class MapViewController {
     @FXML
     private void initialize(){
         // Initializes web engine and Google Maps into.
-        WebEngine webEngine = webView.getEngine();
+        webEngine = webView.getEngine();
         webEngine.load(getClass().getResource("googlemap.html").toString());
 
         // Register classes for use from javascript.
@@ -57,6 +56,10 @@ public class MapViewController {
      */
     public void addMarker(String id, double lat, double lng){
         mainApp.getMarkersViewController().addMarker(id, lat, lng);
+    }
+
+    public void deleteMarker(String id){
+        webEngine.executeScript("deleteMarker('"+id+"')");
     }
 
     /**
