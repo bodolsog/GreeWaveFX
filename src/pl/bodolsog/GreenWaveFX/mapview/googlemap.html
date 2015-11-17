@@ -90,6 +90,10 @@
             });
         }
 
+        function setCrossName(id, newName){
+            markersMap[id].setTitle(newName);
+        }
+
         function getCrossName(id, lat, lng){
             latLng = {lat: lat, lng: lng};
             getStreetName(id, latLng);
@@ -110,9 +114,6 @@
             });
         }
 
-        function setCrossName(id, newName){
-            markersMap[id].setTitle(newName);
-        }
     </script>
 
 </head>
