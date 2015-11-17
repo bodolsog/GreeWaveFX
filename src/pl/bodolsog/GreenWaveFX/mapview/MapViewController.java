@@ -58,6 +58,20 @@ public class MapViewController {
         mainApp.getMarkersViewController().addMarker(id, lat, lng);
     }
 
+    /**
+     * Call MarkersViewController's method for set new Marker's latLng.
+     * @param id Marker's id
+     * @param lat latitude
+     * @param lng longitude
+     */
+    public void setMarkerLatLng(String id, double lat, double lng){
+        mainApp.getMarkersViewController().setMarkerLatLng(id, lat, lng);
+    }
+
+    /**
+     * Execute script from js which deletes Marker.
+     * @param id Marker's id
+     */
     public void deleteMarker(String id){
         webEngine.executeScript("deleteMarker('"+id+"')");
     }
@@ -68,7 +82,9 @@ public class MapViewController {
     public class BackThread {
 
         public WebEngine webEngine;
-        private Map<String,ObservableList<String>> ol = new HashMap<String,ObservableList<String>>();
+        private Map<String,ObservableList<String>> streetsList = new HashMap<String,ObservableList<String>>();
+        private Map<String,ObservableList<CrossingStreetsNamesThread>> threadsList =
+                new HashMap<String,ObservableList<CrossingStreetsNamesThread>>();
 
         /**
          * Constructor.
@@ -92,13 +108,34 @@ public class MapViewController {
 
 
         /**
-         * Creates new task which calls reverse-geocoding js-script in Maps for this lat-lng.
-         * @param markerId  Marker's id
-         * @param lat       latitude
-         * @param lng       longitude
+         * Creates new task which calls reverse-geocoding js-script in Maps for this lat-lng. Reference to thread set
+         * into map, reference is used when user drags Marker: if threads are not finished yet, this woul'd be canceled.
+         * @param id    Marker's id
+         * @param lat   latitude
+         * @param lng   longitude
          */
-        public void startThread(String markerId, double lat, double lng){
-            Platform.runLater(new getStreetsNamesThread(webEngine, markerId, lat, lng));
+        public void startThread(String id, double lat, double lng){
+            // Create variable thread contained new Thread.
+            CrossingStreetsNamesThread thread = new CrossingStreetsNamesThread(webEngine, id, lat, lng);
+            // Set new array in map identified with Marker's id if not exist yet.
+            if(!threadsList.containsKey(id)){
+                threadsList.put(id, FXCollections.observableArrayList());
+            }
+            // Add thread to list.
+            threadsList.get(id).add(thread);
+            // Set into queue.
+            Platform.runLater(thread);
+        }
+
+        public void cancelThreads(String id){
+            // Remove saved streets names.
+            streetsList.remove(id);
+            // Avoid starting threads in queue.
+            for (CrossingStreetsNamesThread t : threadsList.get(id)) {
+                t.cancel();
+            }
+            // Remove threads list from map.
+            threadsList.remove(id);
         }
 
         /**
@@ -107,20 +144,25 @@ public class MapViewController {
          * @param id     Marker's id
          * @param street street name
          */
-        //TODO przejrzeć
         public void putToMap(String id, String street){
-            if(!ol.containsKey(id)){
-                ol.put(id, FXCollections.observableArrayList());
-                ol.get(id).addListener((ListChangeListener<String>) change -> { while(change.next()){
+            // If map haven't this id, set new ArrayList identified by id to map and add listener to it.
+            if(!streetsList.containsKey(id)){
+                streetsList.put(id, FXCollections.observableArrayList());
+                // Listener will set cross name when all 4 queries is completed.
+                streetsList.get(id).addListener((ListChangeListener<String>) change -> { while(change.next()){
                     if(change.getList().size() >= 4){
+                        // Set cross name to TitledPane
                         String crossName = mainApp.getMarkersViewController().setCrossName(id, change.getList());
+                        // Set cross name to marker.
                         webEngine.executeScript("setCrossName('"+id+"', '"+crossName+"')");
                     }
                 }});
             }
-            if (ol.get(id).contains(street))
+            // When list contains this street name - set string to empty.
+            if (streetsList.get(id).contains(street))
                 street = "";
-            ol.get(id).add(street);
+            // Adds street to list.
+            streetsList.get(id).add(street);
         }
 
         /**
@@ -133,10 +175,10 @@ public class MapViewController {
             // Radius.
             double r = 0.00015;
             double[][] latLngSquare = {
-                    { lat+r, lng }, // N
-                    { lat, lng-r }, // E
-                    { lat-r, lng }, // S
-                    { lat, lng+r }  // W
+                    { lat+r, lng }, // North
+                    { lat, lng-r }, // West
+                    { lat-r, lng }, // South
+                    { lat, lng+r }  // East
             };
             return latLngSquare;
         }
@@ -145,11 +187,12 @@ public class MapViewController {
     /**
      * Class for new thread.
      */
-    public class getStreetsNamesThread implements Runnable{
+    public class CrossingStreetsNamesThread implements Runnable{
         private WebEngine webEngine;
         private String markerId;
         private double lat;
         private double lng;
+        private boolean blinker = true;
 
         /**
          * Constructor.
@@ -158,11 +201,15 @@ public class MapViewController {
          * @param lat       latitude
          * @param lng       longitude
          */
-        public getStreetsNamesThread(WebEngine webEngine, String markerId, double lat, double lng) {
+        public CrossingStreetsNamesThread(WebEngine webEngine, String markerId, double lat, double lng) {
             this.webEngine = webEngine;
             this.markerId = markerId;
             this.lat = lat;
             this.lng = lng;
+        }
+
+        public void cancel() {
+            blinker = false;
         }
 
         /**
@@ -171,7 +218,9 @@ public class MapViewController {
          */
         @Override
         public void run(){
-            webEngine.executeScript("getCrossName('" + markerId + "', " + lat + ", " + lng + ")");
+            if (blinker) {
+                webEngine.executeScript("getCrossName('" + markerId + "', " + lat + ", " + lng + ")");
+            }
         }
     }
 }

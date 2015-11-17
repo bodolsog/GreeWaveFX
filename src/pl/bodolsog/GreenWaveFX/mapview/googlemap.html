@@ -20,21 +20,13 @@
         head.appendChild(script);
     </script>
     <script type="text/javascript">
-        function t(tex){
+        function test(tex){
             document.getElementById('test').innerHTML = tex;
         }
 
         var markersMap = {};
 
         function initialize() {
-            //TODO bounds
-            //var bounds = new google.maps.LatLngBounds;
-
-/*            var origin1 = {lat: 52.03, lng: 23.14};
-            var origin2 = {lat: 52.05, lng: 23.24};
-            var destinationA = {lat: 53.03, lng: 23.84};
-            var destinationB = {lat: 53.15, lng: 23.14};*/
-
             var latlng = new google.maps.LatLng(52.03, 23.14);
             var myOptions = {
                 zoom: 15,
@@ -60,13 +52,22 @@
                     draggable: true,
                     map: document.map
                 });
+
+                // Increment id-number
                 markersId++;
+                // Create id
                 var markerId = "#"+markersId;
                 // Add marker to lists.
                 controller.addMarker(markerId, marker.getPosition().lat(), marker.getPosition().lng());
                 markersMap[markerId] = marker;
 
-                //getCrossName(markerName, event.latLng.lat(), event.latLng.lng());
+                google.maps.event.addListener(marker, 'dragend', function(){
+                    var newLatLng = marker.getPosition();
+                    controller.setMarkerLatLng(markerId, newLatLng.lat(), newLatLng.lng());
+                    backThread.cancelThreads(markerId);
+                    backThread.getStreetsNames(markerId, newLatLng.lat(), newLatLng.lng());
+                });
+
                 backThread.getStreetsNames(markerId, event.latLng.lat(), event.latLng.lng());
 
                 /*
@@ -94,6 +95,10 @@
             markersMap[id].setTitle(newName);
         }
 
+        /**
+         * Delete Marker from map, set them to null and remove hash from markersMap.
+         * @param id Marker's id
+         */
         function deleteMarker(id){
             markersMap[id].setMap(null);
             markersMap[id] = null;

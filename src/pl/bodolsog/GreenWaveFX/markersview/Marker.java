@@ -47,6 +47,13 @@ public class Marker {
         return this.name;
     }
 
+    /**
+     * Set new value for latProperty.
+     * @param lat latitude
+     */
+    public void setLat(double lat){
+        latProperty().setValue(lat);
+    }
 
     /**
      * Returns latitude as DoubleProperty
@@ -56,6 +63,13 @@ public class Marker {
         return lat;
     }
 
+    /**
+     * Set new value for latProperty.
+     * @param lng latitude
+     */
+    public void setLng(double lng){
+        lngProperty().setValue(lng);
+    }
 
     /**
      * Returns longitude as DoubleProperty
