@@ -63,15 +63,9 @@
 
                 google.maps.event.addListener(marker, 'dragend', function(){
                     var newLatLng = marker.getPosition();
-                    controller.setMarkerLatLng(markerId, newLatLng.lat(), new newLatLng.lng());
-
-
-                     test(markerId+" dragged");
-
-                    /*
-                        TODO: anulowanie wyszukiwania nazwy skrzyżowania jeżeli jeszcze szuka
-                        TODO: zainicjowanie nowego wyszukiwania
-                    */
+                    controller.setMarkerLatLng(markerId, newLatLng.lat(), newLatLng.lng());
+                    backThread.cancelThreads(markerId);
+                    backThread.getStreetsNames(markerId, newLatLng.lat(), newLatLng.lng());
                 });
 
                 backThread.getStreetsNames(markerId, event.latLng.lat(), event.latLng.lng());
