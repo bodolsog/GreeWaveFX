@@ -36,7 +36,10 @@ public class MarkersViewController {
     private Accordion markersPane;
 
     @FXML
-    private void initialize(){}
+    private void initialize(){
+        // Adds listener to markersMap.
+        addMarkersListener();
+    }
 
 
     /**
@@ -46,7 +49,6 @@ public class MarkersViewController {
      */
     public void setMainApp(MainApp mainApp) {
         this.mainApp = mainApp;
-        addMarkersListener();
     }
 
     /**
@@ -122,15 +124,6 @@ public class MarkersViewController {
      */
     public void addMarker(String id, double lat, double lng){
         markersMap.put(id, new Marker(id, lat, lng));
-    }
-
-    /**
-     * Set name for Marker.
-     * @param id    hash
-     * @param name  name (cross streets)
-     */
-    private void setName(String id, String name){
-        markersMap.get(id).setName(name);
     }
 
     /**

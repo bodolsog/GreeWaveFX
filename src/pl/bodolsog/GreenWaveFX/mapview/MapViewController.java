@@ -59,17 +59,6 @@ public class MapViewController {
         mainApp.getMarkersViewController().addMarker(id, lat, lng);
     }
 
-
-    /**
-     *
-     * @param id
-     * @param newName
-     */
-    public void setMarkerCrossName(String id, String newName){
-        //TODO connections between controllers (via mainApp) and set new name here
-    }
-
-
     /**
      * Send works to back thread.
      */
