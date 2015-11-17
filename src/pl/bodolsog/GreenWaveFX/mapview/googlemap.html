@@ -20,7 +20,7 @@
         head.appendChild(script);
     </script>
     <script type="text/javascript">
-        function t(tex){
+        function test(tex){
             document.getElementById('test').innerHTML = tex;
         }
 
@@ -66,7 +66,7 @@
                     controller.setMarkerLatLng(markerId, newLatLng.lat(), new newLatLng.lng());
 
 
-                    document.getElementById('test').innerHTML = markerId+" dragged";
+                     test(markerId+" dragged");
 
                     /*
                         TODO: anulowanie wyszukiwania nazwy skrzyżowania jeżeli jeszcze szuka
@@ -101,6 +101,10 @@
             markersMap[id].setTitle(newName);
         }
 
+        /**
+         * Delete Marker from map, set them to null and remove hash from markersMap.
+         * @param id Marker's id
+         */
         function deleteMarker(id){
             markersMap[id].setMap(null);
             markersMap[id] = null;

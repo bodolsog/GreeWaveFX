@@ -119,6 +119,10 @@ public class MarkersViewController {
         titledPanesMap.remove(markerId);
     }
 
+    /**
+     * Call deleteMarker from MapViewController
+     * @param id Marker's id
+     */
     private void deleteMarkerFromMap(String id){
         mainApp.getMapViewController().deleteMarker(id);
     }
@@ -139,6 +143,10 @@ public class MarkersViewController {
         }
     }
 
+    /**
+     * Bound function to remove Marker. Call functions that removes from Pane, Map and remove from markersMap.
+     * @param id Marker's id
+     */
     public void deleteMarker(String id){
         deleteMarkerFromPane(id);
         deleteMarkerFromMap(id);
@@ -155,6 +163,12 @@ public class MarkersViewController {
         markersMap.put(id, new Marker(id, lat, lng));
     }
 
+    /**
+     * Get Marker from markersMap and set new latLng for them.
+     * @param id Marker's id
+     * @param lat latitiude
+     * @param lng longitude
+     */
     public void setMarkerLatLng(String id, double lat, double lng){
         Marker marker = markersMap.get(id);
         marker.setLat(lat);

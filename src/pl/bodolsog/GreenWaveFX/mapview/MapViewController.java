@@ -58,10 +58,20 @@ public class MapViewController {
         mainApp.getMarkersViewController().addMarker(id, lat, lng);
     }
 
+    /**
+     * Call MarkersViewController's method for set new Marker's latLng.
+     * @param id Marker's id
+     * @param lat latitude
+     * @param lng longitude
+     */
     public void setMarkerLatLng(String id, double lat, double lng){
         mainApp.getMarkersViewController().setMarkerLatLng(id, lat, lng);
     }
 
+    /**
+     * Execute script from js which deletes Marker.
+     * @param id Marker's id
+     */
     public void deleteMarker(String id){
         webEngine.executeScript("deleteMarker('"+id+"')");
     }
