@@ -131,9 +131,8 @@ public class MapViewController {
             // Remove saved streets names.
             streetsList.remove(id);
             // Avoid starting threads in queue.
-            for (CrossingStreetsNamesThread t : threadsList.get(id)) {
+            for (CrossingStreetsNamesThread t : threadsList.get(id))
                 t.cancel();
-            }
             // Remove threads list from map.
             threadsList.remove(id);
         }

@@ -6,6 +6,19 @@
         html { height: 100% }
         body { height: 100%; margin: 0px; padding: 0px }
         #map_canvas { height: 100%; background-color: #666970; }
+        .context-menu {
+            display: none;
+            position: absolute;
+            z-index: 10;
+            padding: 12px 0;
+            width: 240px;
+            background-color: #fff;
+            border: solid 1px #dfdfdf;
+            box-shadow: 1px 1px 2px #cfcfcf;
+        }
+        .context-menu--active {
+            display: block;
+        }
     </style>
     <script type="text/javascript">
         /*
@@ -26,6 +39,7 @@
 
         var markersMap = {};
 
+
         function initialize() {
             var latlng = new google.maps.LatLng(52.03, 23.14);
             var myOptions = {
@@ -40,36 +54,61 @@
                 scaleControl: true
             };
 
+            var menu = document.querySelector("#context-menu");
+            var menuActive = false;
+
             document.map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
             document.geocoder = new google.maps.Geocoder();
+
+            overlay = new google.maps.OverlayView();
+            overlay.draw = function () {};
+            overlay.setMap(document.map);
+
+
             markersId = 0;
 
             google.maps.event.addListener(document.map, 'click', function (event) {
+                if(menuActive){
+                    menu.classList.remove("context-menu--active");
+                    menuActive = false;
+                }else{
+                    // Create marker
+                    var marker = new google.maps.Marker({
+                        position: event.latLng,
+                        draggable: true,
+                        map: document.map
+                    });
 
-                // Create marker
-                var marker = new google.maps.Marker({
-                    position: event.latLng,
-                    draggable: true,
-                    map: document.map
-                });
+                    // Increment id-number
+                    markersId++;
+                    // Create id
+                    var markerId = "#" + markersId;
+                    // Add marker to lists.
+                    controller.addMarker(markerId, marker.getPosition().lat(), marker.getPosition().lng());
+                    markersMap[markerId] = marker;
+                    google.maps.event.addListener(marker, 'drag', function(){
+                        if(menuActive){
+                            menu.classList.remove("context-menu--active");
+                            menuActive = false;
+                        }
+                    });
+                    google.maps.event.addListener(marker, 'dragend', function () {
+                        var newLatLng = marker.getPosition();
+                        controller.setMarkerLatLng(markerId, newLatLng.lat(), newLatLng.lng());
+                        backThread.cancelThreads(markerId);
+                        backThread.getStreetsNames(markerId, newLatLng.lat(), newLatLng.lng());
+                    });
 
-                // Increment id-number
-                markersId++;
-                // Create id
-                var markerId = "#"+markersId;
-                // Add marker to lists.
-                controller.addMarker(markerId, marker.getPosition().lat(), marker.getPosition().lng());
-                markersMap[markerId] = marker;
+                    google.maps.event.addListener(marker, 'rightclick', function () {
+                        var point = overlay.getProjection().fromLatLngToDivPixel(marker.getPosition());
+                        menu.style.left = point.x + "px";
+                        menu.style.top = point.y + "px";
+                        menu.classList.add("context-menu--active");
+                        menuActive = true;
+                    });
 
-                google.maps.event.addListener(marker, 'dragend', function(){
-                    var newLatLng = marker.getPosition();
-                    controller.setMarkerLatLng(markerId, newLatLng.lat(), newLatLng.lng());
-                    backThread.cancelThreads(markerId);
-                    backThread.getStreetsNames(markerId, newLatLng.lat(), newLatLng.lng());
-                });
-
-                backThread.getStreetsNames(markerId, event.latLng.lat(), event.latLng.lng());
-
+                    backThread.getStreetsNames(markerId, event.latLng.lat(), event.latLng.lng());
+                }
                 /*
                 var infowindow = new google.maps.InfoWindow({
                     content: marker.getCursor()
@@ -129,8 +168,15 @@
 
 </head>
 <body onload="initialize();">
-<div id="test">d</div>
+<div id="test"></div>
 <div id="map_canvas" style="width:100%; height:100%"></div>
 
+<nav id="context-menu" class="context-menu">
+    <ul class="context-menu__items">
+        <li class="context-menu__item">
+            <a href="#" class="context-menu__link" data-action="View">Test task</a>
+        </li>
+    </ul>
+</nav>
 </body>
 </html>
