@@ -55,7 +55,7 @@
             };
 
             var menu = document.querySelector("#context-menu");
-            var menuActive = false;
+            var menuWasActive = false;
 
             document.map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
             document.geocoder = new google.maps.Geocoder();
@@ -64,14 +64,17 @@
             overlay.draw = function () {};
             overlay.setMap(document.map);
 
-
             markersId = 0;
-
-            google.maps.event.addListener(document.map, 'click', function (event) {
-                if(menuActive){
+            google.maps.event.addListener(document.map, 'mousedown', function(){
+                if(menu.classList.contains("context-menu--active")){
                     menu.classList.remove("context-menu--active");
-                    menuActive = false;
-                }else{
+                    menuWasActive = true;
+                }
+            });
+            google.maps.event.addListener(document.map, 'click', function (event) {
+                if(menuWasActive)
+                    menuWasActive = false;
+                else{
                     // Create marker
                     var marker = new google.maps.Marker({
                         position: event.latLng,
@@ -89,15 +92,16 @@
                     markersMap[markerId] = marker;
 
                     google.maps.event.addListener(marker, 'click', function(){
-                        controller.setClickedFocus(markerId);
+                        if(menu.classList.contains("context-menu--active"))
+                            menu.classList.remove("context-menu--active");
+                        else
+                            controller.setClickedFocus(markerId);
                     });
                     google.maps.event.addListener(marker, 'drag', function(){
-                        if(menuActive){
+                        if(menu.classList.contains("context-menu--active"))
                             menu.classList.remove("context-menu--active");
-                            menuActive = false;
-                        }else{
+                        else
                             controller.setClickedFocus(markerId);
-                        }
                     });
                     google.maps.event.addListener(marker, 'position_changed', function () {
                         var newLatLng = marker.getPosition();
@@ -105,7 +109,6 @@
                         backThread.cancelThreads(markerId);
                         backThread.getStreetsNames(markerId, newLatLng.lat(), newLatLng.lng());
                     });
-
                     google.maps.event.addListener(marker, 'rightclick', function () {
                         var point = overlay.getProjection().fromLatLngToDivPixel(marker.getPosition());
                         menu.style.left = point.x + "px";
@@ -116,25 +119,8 @@
 
                     backThread.getStreetsNames(markerId, event.latLng.lat(), event.latLng.lng());
                 }
-                /*
-                var infowindow = new google.maps.InfoWindow({
-                    content: marker.getCursor()
-                });
-                marker.addListener('click', function () {
-                    infowindow.setOptions({content: marker.getPosition().toString()});
-                    infowindow.open(marker.get('map'), marker);
-                });
-                marker.addListener('drag', function () {
-                    infowindow.setOptions({content: marker.getPosition().lat().toString()});
-                });
-                */
-
-                //var JXmarker = markers;
-                //JXmarker.setLatLng(marker.getPosition().lat(), marker.getPosition().lng());
-                //document.getElementById('output').innerHTML = markersArray[markersArray.length-1][1].getLatLng();
-                //document.getElementById('output').innerHTML = mm.test1();
-                //document.getElementById('output').innerHTML = "xxxxxx";
             });
+
         }
 
         function setCrossName(id, newName){
@@ -194,7 +180,7 @@
 <nav id="context-menu" class="context-menu">
     <ul class="context-menu__items">
         <li class="context-menu__item">
-            <a href="#" class="context-menu__link" data-action="View">Test task</a>
+            <a href="#" class="context-menu__link" data-action="Connect">Connect with this</a>
         </li>
     </ul>
 </nav>
