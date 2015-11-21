@@ -40,6 +40,7 @@ public class MarkersViewController {
     private void initialize(){
         // Adds listener to markersMap.
         addMarkersListener();
+        addAccordionListener();
     }
 
 
@@ -75,6 +76,19 @@ public class MarkersViewController {
         });
     }
 
+    private void addAccordionListener(){
+        markersPane.expandedPaneProperty().addListener((observable, oldTitledPane, newTitledPane) -> {
+            String oldMarkerId = "";
+            String newMarkerId = "";
+            if(oldTitledPane != null)
+                oldMarkerId = oldTitledPane.getId();
+            if(newTitledPane != null)
+                newMarkerId = newTitledPane.getId();
+            mainApp.getMapViewController().setMarkerFocus(oldMarkerId, newMarkerId);
+        });
+    }
+
+
     /**
      * Adds TitledPane for new marker.
      * @param   marker
@@ -82,6 +96,8 @@ public class MarkersViewController {
     private void addMarkerToPane(Marker marker){
         // New TitledPane.
         TitledPane tp = new TitledPane();
+
+        tp.setId(marker.idProperty().getValue());
         // Set this TitledPane into map <id, titledPane>.
         titledPanesMap.put(marker.idProperty().getValue(), tp);
         // Set cross name if exists, else set id as name.
@@ -141,6 +157,11 @@ public class MarkersViewController {
         } else {
             tp.setText(marker.nameProperty().getValue());
         }
+    }
+
+    public void setClickedFocus(String id){
+        TitledPane tp = titledPanesMap.get(id);
+        markersPane.setExpandedPane(tp);
     }
 
     /**

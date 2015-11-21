@@ -83,16 +83,23 @@
                     markersId++;
                     // Create id
                     var markerId = "#" + markersId;
+
                     // Add marker to lists.
                     controller.addMarker(markerId, marker.getPosition().lat(), marker.getPosition().lng());
                     markersMap[markerId] = marker;
+
+                    google.maps.event.addListener(marker, 'click', function(){
+                        controller.setClickedFocus(markerId);
+                    });
                     google.maps.event.addListener(marker, 'drag', function(){
                         if(menuActive){
                             menu.classList.remove("context-menu--active");
                             menuActive = false;
+                        }else{
+                            controller.setClickedFocus(markerId);
                         }
                     });
-                    google.maps.event.addListener(marker, 'dragend', function () {
+                    google.maps.event.addListener(marker, 'position_changed', function () {
                         var newLatLng = marker.getPosition();
                         controller.setMarkerLatLng(markerId, newLatLng.lat(), newLatLng.lng());
                         backThread.cancelThreads(markerId);
@@ -162,6 +169,19 @@
                     backThread.error(status);
                 }
             });
+        }
+
+        function setMarkerFocus(oldMarkerId, newMarkerId){
+            if(oldMarkerId in markersMap)
+                markersMap[oldMarkerId].setOpacity(0.7);
+
+            if(newMarkerId in markersMap) {
+                markersMap[newMarkerId].setOpacity(1.0);
+                markersMap[newMarkerId].setAnimation(google.maps.Animation.BOUNCE);
+                window.setTimeout(function () {
+                    markersMap[newMarkerId].setAnimation(null);
+                }, 1500);
+            }
         }
 
     </script>

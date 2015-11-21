@@ -76,6 +76,14 @@ public class MapViewController {
         webEngine.executeScript("deleteMarker('"+id+"')");
     }
 
+    public void setMarkerFocus(String oldMarkerId, String newMarkerId){
+        webEngine.executeScript("setMarkerFocus('"+oldMarkerId+"', '"+newMarkerId+"')");
+    }
+
+    public void setClickedFocus(String id){
+        mainApp.getMarkersViewController().setClickedFocus(id);
+    }
+
     /**
      * Send works to back thread.
      */
