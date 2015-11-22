@@ -220,4 +220,11 @@ public class MarkersViewController {
         markersMap.get(id).setName(crossName);
         return crossName;
     }
+
+    public void connectMarkers(String mode, String markerOne, String markerTwo){
+        markersMap.get(markerOne).addConnection(markerTwo);
+        if(mode == "connect2w"){
+            markersMap.get(markerTwo).addConnection(markerOne);
+        }
+    }
 }

@@ -83,8 +83,8 @@
             for(i=0; i<menuItem.length; i++){
                 menuItem[i].addEventListener('click', function(){
                     action = this.querySelector('a').getAttribute("data-action");
-                    if(action == "connect")
-                        test(action+", activeMarkerId: "+activeMarkerId+", thisMarkerId: "+menuMarkerId);
+                    if(action == "connect2w" || action == "connect1w")
+                        controller.connectMarkers(action, menuMarkerId, activeMarkerId);
                 });
             }
 
@@ -146,7 +146,6 @@
                         menu.classList.add("context-menu--active");
                         menuWasActive = true;
                         menuMarkerId = markerId;
-
                     });
 
                     backThread.getStreetsNames(markerId, event.latLng.lat(), event.latLng.lng());
@@ -213,7 +212,10 @@
 <nav id="context-menu" class="context-menu">
     <ul class="context-menu__items">
         <li class="context-menu__item">
-            <a href="#" class="context-menu__link" data-action="connect">Connect with this</a>
+            <a href="#" class="context-menu__link" data-action="connect2w">Connect with this</a>
+        </li>
+        <li class="context-menu__item">
+            <a href="#" class="context-menu__link" data-action="connect1w">Connect one way to this</a>
         </li>
     </ul>
 </nav>
