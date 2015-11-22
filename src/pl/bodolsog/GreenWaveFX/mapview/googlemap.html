@@ -84,10 +84,10 @@
                 menuItem[i].addEventListener('click', function(){
                     action = this.querySelector('a').getAttribute("data-action");
                     if(action == "connect2w" || action == "connect1w")
-                        controller.connectMarkers(action, menuMarkerId, activeMarkerId);
+                        controller.connectMarkers(action, activeMarkerId, menuMarkerId);
                 });
             }
-
+//TODO opacity=1 by hover
             google.maps.event.addListener(document.map, 'mousedown', function(){
                 if(menu.classList.contains("context-menu--active")){
                     menu.classList.remove("context-menu--active");
