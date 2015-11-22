@@ -30,7 +30,6 @@
         }
         .context-menu__items{
             margin: 0;
-
         }
     </style>
     <script type="text/javascript">
@@ -51,7 +50,8 @@
         }
 
         var markersMap = {};
-
+        var activeMarkerId;
+        var menuMarkerId;
 
         function initialize() {
             var latlng = new google.maps.LatLng(52.03, 23.14);
@@ -78,10 +78,21 @@
             overlay.setMap(document.map);
 
             markersId = 0;
+
+            var menuItem = menu.querySelectorAll(".context-menu__item")
+            for(i=0; i<menuItem.length; i++){
+                menuItem[i].addEventListener('click', function(){
+                    action = this.querySelector('a').getAttribute("data-action");
+                    if(action == "connect")
+                        test(action+", activeMarkerId: "+activeMarkerId+", thisMarkerId: "+menuMarkerId);
+                });
+            }
+
             google.maps.event.addListener(document.map, 'mousedown', function(){
                 if(menu.classList.contains("context-menu--active")){
                     menu.classList.remove("context-menu--active");
                     menuWasActive = true;
+                    menuMarkerId = null;
                 }
             });
             google.maps.event.addListener(document.map, 'click', function (event) {
@@ -99,20 +110,25 @@
                     markersId++;
                     // Create id
                     var markerId = "#" + markersId;
+                    activeMarkerId = markerId;
 
                     // Add marker to lists.
                     controller.addMarker(markerId, marker.getPosition().lat(), marker.getPosition().lng());
                     markersMap[markerId] = marker;
 
                     google.maps.event.addListener(marker, 'click', function(){
-                        if(menu.classList.contains("context-menu--active"))
+                        if(menu.classList.contains("context-menu--active")) {
                             menu.classList.remove("context-menu--active");
+                            menuMarkerId = null;
+                        }
                         else
                             controller.setClickedFocus(markerId);
                     });
                     google.maps.event.addListener(marker, 'drag', function(){
-                        if(menu.classList.contains("context-menu--active"))
+                        if(menu.classList.contains("context-menu--active")){
                             menu.classList.remove("context-menu--active");
+                            menuMarkerId = null;
+                        }
                         else
                             controller.setClickedFocus(markerId);
                     });
@@ -123,11 +139,14 @@
                         backThread.getStreetsNames(markerId, newLatLng.lat(), newLatLng.lng());
                     });
                     google.maps.event.addListener(marker, 'rightclick', function () {
+                        //TODO new method to get points
                         var point = overlay.getProjection().fromLatLngToDivPixel(marker.getPosition());
                         menu.style.left = point.x + "px";
                         menu.style.top = point.y + "px";
                         menu.classList.add("context-menu--active");
-                        menuActive = true;
+                        menuWasActive = true;
+                        menuMarkerId = markerId;
+
                     });
 
                     backThread.getStreetsNames(markerId, event.latLng.lat(), event.latLng.lng());
@@ -171,6 +190,7 @@
         }
 
         function setMarkerFocus(oldMarkerId, newMarkerId){
+            activeMarkerId = newMarkerId;
             if(oldMarkerId in markersMap)
                 markersMap[oldMarkerId].setOpacity(0.7);
 
@@ -193,7 +213,7 @@
 <nav id="context-menu" class="context-menu">
     <ul class="context-menu__items">
         <li class="context-menu__item">
-            <a href="#" class="context-menu__link" data-action="Connect">Connect with this</a>
+            <a href="#" class="context-menu__link" data-action="connect">Connect with this</a>
         </li>
     </ul>
 </nav>
