@@ -72,19 +72,53 @@
 
             document.map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
             document.geocoder = new google.maps.Geocoder();
+            document.service = new google.maps.DistanceMatrixService;
+            document.directionsService = new google.maps.DirectionsService;
+            document.directionsDisplay = new google.maps.DirectionsRenderer;
 
             overlay = new google.maps.OverlayView();
             overlay.draw = function () {};
             overlay.setMap(document.map);
 
+            document.directionsDisplay.setMap(document.map);
             markersId = 0;
 
             var menuItem = menu.querySelectorAll(".context-menu__item")
             for(i=0; i<menuItem.length; i++){
                 menuItem[i].addEventListener('click', function(){
                     action = this.querySelector('a').getAttribute("data-action");
-                    if(action == "connect2w" || action == "connect1w")
+                    if(action == "connect2w" || action == "connect1w"){
                         controller.connectMarkers(action, activeMarkerId, menuMarkerId);
+                        pointA = markersMap[activeMarkerId].getPosition();
+                        pointB = markersMap[menuMarkerId].getPosition();
+
+                        document.service.getDistanceMatrix({
+                            origins: [pointA],
+                            destinations: [pointB],
+                            travelMode: google.maps.TravelMode.DRIVING,
+                            unitSystem: google.maps.UnitSystem.METRIC,
+                            avoidHighways: true,
+                            avoidTolls: true
+                        }, function(response, status){
+                            if (status !== google.maps.DistanceMatrixStatus.OK) {
+                                test('Error was: ' + status);
+                            } else {
+                                test(response.rows[0].elements[0].distance.value);
+                            }
+                        });
+
+                        document.directionsService.route({
+                            origin: pointA,
+                            destination: pointB,
+                            travelMode: google.maps.TravelMode.DRIVING
+                        }, function(response, status) {
+                            if (status === google.maps.DirectionsStatus.OK) {
+                                document.directionsDisplay.setDirections(response);
+                            } else {
+                                test('Directions request failed due to ' + status);
+                            }
+                        });
+                    }
                 });
             }
 //TODO opacity=1 by hover
