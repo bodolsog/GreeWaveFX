@@ -5,6 +5,7 @@ import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -159,6 +160,15 @@ public class MarkersViewController {
         }
     }
 
+    public void addConnectionToTitledPane(Marker marker, int conectionIndex){
+        // Get pane from map.
+        TitledPane tp = titledPanesMap.get(marker.idProperty().getValue());
+        String connection = marker.getConnections().get(conectionIndex);
+        VBox vbox = (VBox) tp.getContent();
+        vbox.getChildren().add(new Label(": "+connection));
+        tp.setContent(vbox);
+    }
+
     public void setClickedFocus(String id){
         TitledPane tp = titledPanesMap.get(id);
         markersPane.setExpandedPane(tp);
@@ -181,7 +191,9 @@ public class MarkersViewController {
      * @param lng   longitude from Google Maps
      */
     public void addMarker(String id, double lat, double lng){
-        markersMap.put(id, new Marker(id, lat, lng));
+        Marker newMarker = new Marker(id, lat, lng);
+        newMarker.setController(this);
+        markersMap.put(id, newMarker);
     }
 
     /**
@@ -223,7 +235,7 @@ public class MarkersViewController {
 
     public void connectMarkers(String mode, String markerOne, String markerTwo){
         markersMap.get(markerOne).addConnection(markerTwo);
-        if(mode == "connect2w"){
+        if(mode.equals("connect2w")){
             markersMap.get(markerTwo).addConnection(markerOne);
         }
     }
