@@ -1,9 +1,6 @@
 package pl.bodolsog.GreenWaveFX.markersview;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 
 
 public class Marker {
@@ -11,6 +8,8 @@ public class Marker {
     private StringProperty name = new SimpleStringProperty("");
     private DoubleProperty lat;
     private DoubleProperty lng;
+
+    final private ListProperty<String> connections = new SimpleListProperty<>();
 
     /**
      * Constructor.
@@ -79,4 +78,19 @@ public class Marker {
         return lng;
     }
 
+    /**
+     * Add Marker's id to connection list.
+     * @param id Marker's id
+     */
+    public void addConnection(String id){
+        connections.add(id);
+    }
+
+    /**
+     * Return list of Marker's connected other's ids.
+     * @return ListProperty
+     */
+    public ListProperty<String> getConnections(){
+        return connections;
+    }
 }
