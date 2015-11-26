@@ -23,20 +23,19 @@ public class MarkersViewController {
     // Reference to main app.
     public MainApp mainApp;
 
-    /**
-     * Map of markers <id, marker>.
-     */
+    // Map of markers <id, marker>.
     private ObservableMap<String,Marker> markersMap = FXCollections.observableHashMap();
 
-    /**
-     * Map of titledPanes <id, titledPane>.
-     */
+    // Map of titledPanes <id, titledPane>.
     private ObservableMap<String,TitledPane> titledPanesMap = FXCollections.observableHashMap();
 
-
+    // Accordion that lists all Markers.
     @FXML
     private Accordion markersPane;
 
+    /**
+     * Initializes view.
+     */
     @FXML
     private void initialize(){
         // Adds listener to markersMap.
@@ -44,10 +43,8 @@ public class MarkersViewController {
         addAccordionListener();
     }
 
-
     /**
      * Is called by the main application to give a reference back to itself.
-     *
      * @param mainApp
      */
     public void setMainApp(MainApp mainApp) {
@@ -77,14 +74,24 @@ public class MarkersViewController {
         });
     }
 
+    /**
+     * Adds listener to accordion expander property.
+     *
+     * When expande is changed, listener get id of expanded Marker and launch method that calls js function
+     * that set variables to previous marker id and actual (this will have focus).
+     */
     private void addAccordionListener(){
+        // Launch when new pane is expanded.
         markersPane.expandedPaneProperty().addListener((observable, oldTitledPane, newTitledPane) -> {
+            // Set empty variables.
             String oldMarkerId = "";
             String newMarkerId = "";
+            // TODO switch to catch
             if(oldTitledPane != null)
                 oldMarkerId = oldTitledPane.getId();
             if(newTitledPane != null)
                 newMarkerId = newTitledPane.getId();
+            // Call MapViewController method for set new variables and marker focus.
             mainApp.getMapViewController().setMarkerFocus(oldMarkerId, newMarkerId);
         });
     }
@@ -160,15 +167,28 @@ public class MarkersViewController {
         }
     }
 
+    /**
+     * Add new label witch info about new estabilished connection to another pane.
+     * @param marker reference to marker
+     * @param conectionIndex index added/edited connection from marker's label.
+     */
     public void addConnectionToTitledPane(Marker marker, int conectionIndex){
+        // Get connection.
+        String connection = marker.getConnections().get(conectionIndex);
         // Get pane from map.
         TitledPane tp = titledPanesMap.get(marker.idProperty().getValue());
-        String connection = marker.getConnections().get(conectionIndex);
+        // Get VBox from TitledPane content.
         VBox vbox = (VBox) tp.getContent();
+        // Adds new label
         vbox.getChildren().add(new Label(": "+connection));
+        // Set new content.
         tp.setContent(vbox);
     }
 
+    /**
+     * Expand pane with informations about marker, that was clicked in map.
+     * @param id Marker's id
+     */
     public void setClickedFocus(String id){
         TitledPane tp = titledPanesMap.get(id);
         markersPane.setExpandedPane(tp);
@@ -233,8 +253,16 @@ public class MarkersViewController {
         return crossName;
     }
 
+    /**
+     * Estabilish new one or two way connection between Markers.
+     * @param mode connect2w for two way connection, other string for one way
+     * @param markerOne (if one way: from) marker's id
+     * @param markerTwo (if one way: to) marker's id
+     */
     public void connectMarkers(String mode, String markerOne, String markerTwo){
+        // Add connection from markerOne to markerTwo
         markersMap.get(markerOne).addConnection(markerTwo);
+        // If mode is "cinnect2w" adds connection backwards (mTwo-mOne)
         if(mode.equals("connect2w")){
             markersMap.get(markerTwo).addConnection(markerOne);
         }

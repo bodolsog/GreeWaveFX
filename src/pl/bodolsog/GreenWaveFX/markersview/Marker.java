@@ -5,14 +5,20 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
-
+/**
+ * Model for markers.
+ */
 public class Marker {
+    // Reference to MarkersViewController
     private MarkersViewController controller;
+    // Marker's id.
     private StringProperty id;
-    private StringProperty name = new SimpleStringProperty("");
+    // Marker's name - this is a roads cross name.
+    private StringProperty name = new SimpleStringProperty();
+    // Latitude and longitude of marker's place.
     private DoubleProperty lat;
     private DoubleProperty lng;
-
+    // List of all one way connections from marker to another.
     private ObservableList<String> connections = FXCollections.<String>observableArrayList();
 
     /**
@@ -22,9 +28,13 @@ public class Marker {
      * @param lng   longitude
      */
     public Marker(String id, double lat, double lng){
+        // Set variables.
         this.id = new SimpleStringProperty(id);
         this.lat = new SimpleDoubleProperty(lat);
         this.lng = new SimpleDoubleProperty(lng);
+
+        // Add listener. When something is added to connections list - launch method that adds this connection
+        // to TitledPane.
         connections.addListener((ListChangeListener.Change<? extends String> change) -> {
             while(change.next()){
                 if(change.wasAdded()){
@@ -106,6 +116,10 @@ public class Marker {
         return connections;
     }
 
+    /**
+     * Assign controller to variable. This is launched from controller after create new marker.
+     * @param controller controller get self as argument
+     */
     public void setController(MarkersViewController controller){
         this.controller = controller;
     }
