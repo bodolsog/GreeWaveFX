@@ -1,16 +1,19 @@
 package pl.bodolsog.GreenWaveFX.markersview;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 
 
 public class Marker {
+    private MarkersViewController controller;
     private StringProperty id;
     private StringProperty name = new SimpleStringProperty("");
     private DoubleProperty lat;
     private DoubleProperty lng;
+
+    private ObservableList<String> connections = FXCollections.<String>observableArrayList();
 
     /**
      * Constructor.
@@ -22,6 +25,13 @@ public class Marker {
         this.id = new SimpleStringProperty(id);
         this.lat = new SimpleDoubleProperty(lat);
         this.lng = new SimpleDoubleProperty(lng);
+        connections.addListener((ListChangeListener.Change<? extends String> change) -> {
+            while(change.next()){
+                if(change.wasAdded()){
+                    controller.addConnectionToTitledPane(this, change.getFrom());
+                }
+            }
+        });
     }
 
     /**
@@ -79,4 +89,24 @@ public class Marker {
         return lng;
     }
 
+    /**
+     * Add Marker's id to connection list.
+     * @param id Marker's id
+     */
+    public void addConnection(String id){
+        if(!connections.contains(id))
+            connections.add(id);
+    }
+
+    /**
+     * Return list of Marker's connected other's ids.
+     * @return ListProperty
+     */
+    public ObservableList<String> getConnections(){
+        return connections;
+    }
+
+    public void setController(MarkersViewController controller){
+        this.controller = controller;
+    }
 }

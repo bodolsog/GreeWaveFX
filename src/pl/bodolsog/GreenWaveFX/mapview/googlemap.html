@@ -10,14 +10,26 @@
             display: none;
             position: absolute;
             z-index: 10;
-            padding: 12px 0;
-            width: 240px;
+            padding: 0;
+            width: 160px;
             background-color: #fff;
             border: solid 1px #dfdfdf;
             box-shadow: 1px 1px 2px #cfcfcf;
+            font-size: 14px;
         }
         .context-menu--active {
             display: block;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .context-menu__item{
+            padding: 5px;
+        }
+        .context-menu__items{
+            margin: 0;
         }
     </style>
     <script type="text/javascript">
@@ -38,7 +50,8 @@
         }
 
         var markersMap = {};
-
+        var activeMarkerId;
+        var menuMarkerId;
 
         function initialize() {
             var latlng = new google.maps.LatLng(52.03, 23.14);
@@ -59,16 +72,61 @@
 
             document.map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
             document.geocoder = new google.maps.Geocoder();
+            document.service = new google.maps.DistanceMatrixService;
+            document.directionsService = new google.maps.DirectionsService;
+            document.directionsDisplay = new google.maps.DirectionsRenderer;
 
             overlay = new google.maps.OverlayView();
             overlay.draw = function () {};
             overlay.setMap(document.map);
 
+            document.directionsDisplay.setMap(document.map);
             markersId = 0;
+
+            var menuItem = menu.querySelectorAll(".context-menu__item")
+            for(i=0; i<menuItem.length; i++){
+                menuItem[i].addEventListener('click', function(){
+                    action = this.querySelector('a').getAttribute("data-action");
+                    if(action == "connect2w" || action == "connect1w"){
+                        controller.connectMarkers(action, activeMarkerId, menuMarkerId);
+                        pointA = markersMap[activeMarkerId].getPosition();
+                        pointB = markersMap[menuMarkerId].getPosition();
+
+                        document.service.getDistanceMatrix({
+                            origins: [pointA],
+                            destinations: [pointB],
+                            travelMode: google.maps.TravelMode.DRIVING,
+                            unitSystem: google.maps.UnitSystem.METRIC,
+                            avoidHighways: true,
+                            avoidTolls: true
+                        }, function(response, status){
+                            if (status !== google.maps.DistanceMatrixStatus.OK) {
+                                test('Error was: ' + status);
+                            } else {
+                                test(response.rows[0].elements[0].distance.value);
+                            }
+                        });
+
+                        document.directionsService.route({
+                            origin: pointA,
+                            destination: pointB,
+                            travelMode: google.maps.TravelMode.DRIVING
+                        }, function(response, status) {
+                            if (status === google.maps.DirectionsStatus.OK) {
+                                document.directionsDisplay.setDirections(response);
+                            } else {
+                                test('Directions request failed due to ' + status);
+                            }
+                        });
+                    }
+                });
+            }
+//TODO opacity=1 by hover
             google.maps.event.addListener(document.map, 'mousedown', function(){
                 if(menu.classList.contains("context-menu--active")){
                     menu.classList.remove("context-menu--active");
                     menuWasActive = true;
+                    menuMarkerId = null;
                 }
             });
             google.maps.event.addListener(document.map, 'click', function (event) {
@@ -86,20 +144,25 @@
                     markersId++;
                     // Create id
                     var markerId = "#" + markersId;
+                    activeMarkerId = markerId;
 
                     // Add marker to lists.
                     controller.addMarker(markerId, marker.getPosition().lat(), marker.getPosition().lng());
                     markersMap[markerId] = marker;
 
                     google.maps.event.addListener(marker, 'click', function(){
-                        if(menu.classList.contains("context-menu--active"))
+                        if(menu.classList.contains("context-menu--active")) {
                             menu.classList.remove("context-menu--active");
+                            menuMarkerId = null;
+                        }
                         else
                             controller.setClickedFocus(markerId);
                     });
                     google.maps.event.addListener(marker, 'drag', function(){
-                        if(menu.classList.contains("context-menu--active"))
+                        if(menu.classList.contains("context-menu--active")){
                             menu.classList.remove("context-menu--active");
+                            menuMarkerId = null;
+                        }
                         else
                             controller.setClickedFocus(markerId);
                     });
@@ -110,11 +173,13 @@
                         backThread.getStreetsNames(markerId, newLatLng.lat(), newLatLng.lng());
                     });
                     google.maps.event.addListener(marker, 'rightclick', function () {
+                        //TODO new method to get points
                         var point = overlay.getProjection().fromLatLngToDivPixel(marker.getPosition());
                         menu.style.left = point.x + "px";
                         menu.style.top = point.y + "px";
                         menu.classList.add("context-menu--active");
-                        menuActive = true;
+                        menuWasActive = true;
+                        menuMarkerId = markerId;
                     });
 
                     backThread.getStreetsNames(markerId, event.latLng.lat(), event.latLng.lng());
@@ -158,6 +223,7 @@
         }
 
         function setMarkerFocus(oldMarkerId, newMarkerId){
+            activeMarkerId = newMarkerId;
             if(oldMarkerId in markersMap)
                 markersMap[oldMarkerId].setOpacity(0.7);
 
@@ -180,7 +246,10 @@
 <nav id="context-menu" class="context-menu">
     <ul class="context-menu__items">
         <li class="context-menu__item">
-            <a href="#" class="context-menu__link" data-action="Connect">Connect with this</a>
+            <a href="#" class="context-menu__link" data-action="connect2w">Connect with this</a>
+        </li>
+        <li class="context-menu__item">
+            <a href="#" class="context-menu__link" data-action="connect1w">Connect one way to this</a>
         </li>
     </ul>
 </nav>

@@ -84,6 +84,10 @@ public class MapViewController {
         mainApp.getMarkersViewController().setClickedFocus(id);
     }
 
+    public void connectMarkers(String mode, String markerOne, String markerTwo){
+        mainApp.getMarkersViewController().connectMarkers(mode, markerOne, markerTwo);
+    }
+
     /**
      * Send works to back thread.
      */
