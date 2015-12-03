@@ -1,12 +1,12 @@
 package pl.bodolsog.GreenWaveFX.markersview;
-
+//TODO: Move model to model package
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 /**
- * Model for markers.
+ * model for markers.
  */
 public class Marker {
     // Reference to MarkersViewController
@@ -14,7 +14,8 @@ public class Marker {
     // Marker's id.
     private StringProperty id;
     // Marker's name - this is a roads cross name.
-    private StringProperty name = new SimpleStringProperty();
+    // TODO: set this to null
+    private StringProperty name = new SimpleStringProperty("");
     // Latitude and longitude of marker's place.
     private DoubleProperty lat;
     private DoubleProperty lng;
