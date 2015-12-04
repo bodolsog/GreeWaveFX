@@ -14,7 +14,8 @@ public class Ways {
     private Markers end;
     private StringProperty type;
     private IntegerProperty distance;
-    private HashMap<Integer, Double> duration;
+    private HashMap<Integer, Double> durations = new HashMap<>();
+    private int acceleration = 5;
 
     public Ways(int id){
         this.id.setValue(id);
@@ -40,16 +41,31 @@ public class Ways {
         this.distance.setValue(distance);
     }
 
-    public void setDuration(){
-        //6 s do 30 km/h, ile to m
-        //8 s di 35 km/h, ile to m
-        //10 s do 40 km/h, ile to m
-        //12 s do 45 km/h, ile to m
-        //14 s do 50 km/h, ile to m
-        duration.put(30, 0.0);
-        duration.put(35, 0.0);
-        duration.put(40, 0.0);
-        duration.put(45, 0.0);
-        duration.put(50, 0.0);
+    public void setDurations(){
+        setDuration(30);
+        setDuration(35);
+        setDuration(40);
+        setDuration(45);
+        setDuration(50);
+    }
+
+    public void setDuration(int speed){
+        double t;
+        double d;
+        double restDist;
+        double restTime;
+
+        t = getAccelerationTime(speed);
+        d = getAccelerationDistance(t);
+        restDist = distance.getValue()-d;
+        restTime = restDist/(double)speed;
+        durations.put(speed, t+restTime);
+     }
+
+    private double getAccelerationTime(int speed){
+        return speed/acceleration;
+    }
+    private double getAccelerationDistance(double t){
+        return acceleration*t*t / 2;
     }
 }
