@@ -1,14 +1,14 @@
-package pl.bodolsog.GreenWaveFX.markersview;
-//TODO: Move model to model package
+package pl.bodolsog.GreenWaveFX.model;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import pl.bodolsog.GreenWaveFX.markersview.MarkersViewController;
 
 /**
  * model for markers.
  */
-public class Marker {
+public class Markers {
     // Reference to MarkersViewController
     private MarkersViewController controller;
     // Marker's id.
@@ -28,7 +28,7 @@ public class Marker {
      * @param lat   latitude
      * @param lng   longitude
      */
-    public Marker(String id, double lat, double lng){
+    public Markers(String id, double lat, double lng){
         // Set variables.
         this.id = new SimpleStringProperty(id);
         this.lat = new SimpleDoubleProperty(lat);
