@@ -5,13 +5,13 @@ import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.VBox;
 import pl.bodolsog.GreenWaveFX.MainApp;
+import pl.bodolsog.GreenWaveFX.model.Markers;
 
 
 /**
@@ -24,7 +24,7 @@ public class MarkersViewController {
     public MainApp mainApp;
 
     // Map of markers <id, marker>.
-    private ObservableMap<String,Marker> markersMap = FXCollections.observableHashMap();
+    private ObservableMap<String,Markers> markersMap = FXCollections.observableHashMap();
 
     // Map of titledPanes <id, titledPane>.
     private ObservableMap<String,TitledPane> titledPanesMap = FXCollections.observableHashMap();
@@ -59,7 +59,7 @@ public class MarkersViewController {
      * this will change TitlePane title for this value.
      */
     private void addMarkersListener(){
-        markersMap.addListener((MapChangeListener.Change<? extends String, ? extends Marker> change) -> {
+        markersMap.addListener((MapChangeListener.Change<? extends String, ? extends Markers> change) -> {
             if (change.wasAdded()) {
                 // Adds marker to AccordionPane.
                 addMarkerToPane(markersMap.get(change.getKey()));
@@ -101,7 +101,7 @@ public class MarkersViewController {
      * Adds TitledPane for new marker.
      * @param   marker
      */
-    private void addMarkerToPane(Marker marker){
+    private void addMarkerToPane(Markers marker){
         // New TitledPane.
         TitledPane tp = new TitledPane();
 
@@ -155,7 +155,7 @@ public class MarkersViewController {
      * Edits TitledPane for new marker.
      * @param marker    Marker instance
      */
-    private void setMarkerNameInPane(Marker marker){
+    private void setMarkerNameInPane(Markers marker){
         // Get pane from map.
         TitledPane tp = titledPanesMap.get(marker.idProperty().getValue());
 
@@ -172,7 +172,7 @@ public class MarkersViewController {
      * @param marker reference to marker
      * @param conectionIndex index added/edited connection from marker's label.
      */
-    public void addConnectionToTitledPane(Marker marker, int conectionIndex){
+    public void addConnectionToTitledPane(Markers marker, int conectionIndex){
         // Get connection.
         String connection = marker.getConnections().get(conectionIndex);
         // Get pane from map.
@@ -211,7 +211,7 @@ public class MarkersViewController {
      * @param lng   longitude from Google Maps
      */
     public void addMarker(String id, double lat, double lng){
-        Marker newMarker = new Marker(id, lat, lng);
+        Markers newMarker = new Markers(id, lat, lng);
         newMarker.setController(this);
         markersMap.put(id, newMarker);
     }
@@ -223,7 +223,7 @@ public class MarkersViewController {
      * @param lng longitude
      */
     public void setMarkerLatLng(String id, double lat, double lng){
-        Marker marker = markersMap.get(id);
+        Markers marker = markersMap.get(id);
         marker.setLat(lat);
         marker.setLng(lng);
     }

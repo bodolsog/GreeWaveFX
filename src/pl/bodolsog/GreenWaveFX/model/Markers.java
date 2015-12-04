@@ -1,14 +1,17 @@
-package pl.bodolsog.GreenWaveFX.markersview;
-//TODO: Move model to model package
+package pl.bodolsog.GreenWaveFX.model;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import pl.bodolsog.GreenWaveFX.crossroads.Crossroad;
+import pl.bodolsog.GreenWaveFX.crossroads.FourWayCrossroad;
+import pl.bodolsog.GreenWaveFX.crossroads.ThreeWayCrossroad;
+import pl.bodolsog.GreenWaveFX.markersview.MarkersViewController;
 
 /**
  * model for markers.
  */
-public class Marker {
+public class Markers {
     // Reference to MarkersViewController
     private MarkersViewController controller;
     // Marker's id.
@@ -21,6 +24,7 @@ public class Marker {
     private DoubleProperty lng;
     // List of all one way connections from marker to another.
     private ObservableList<String> connections = FXCollections.<String>observableArrayList();
+    private Crossroad crossroad;
 
     /**
      * Constructor.
@@ -28,7 +32,7 @@ public class Marker {
      * @param lat   latitude
      * @param lng   longitude
      */
-    public Marker(String id, double lat, double lng){
+    public Markers(String id, double lat, double lng){
         // Set variables.
         this.id = new SimpleStringProperty(id);
         this.lat = new SimpleDoubleProperty(lat);
@@ -123,5 +127,18 @@ public class Marker {
      */
     public void setController(MarkersViewController controller){
         this.controller = controller;
+    }
+
+    public void setCrossroad(String type){
+        if(type.equals("3_WAY")){
+            crossroad = new ThreeWayCrossroad();
+        }
+        else if(type.equals("4_WAY")){
+            crossroad = new FourWayCrossroad();
+        }
+    }
+
+    public String getCrossroadType(){
+        return crossroad.getType();
     }
 }
