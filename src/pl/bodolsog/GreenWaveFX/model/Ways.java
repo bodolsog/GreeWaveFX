@@ -16,11 +16,11 @@ public class Ways {
     private IntegerProperty distance;
     private HashMap<Integer, Double> duration;
 
-    Ways(int id){
+    public Ways(int id){
         this.id.setValue(id);
     }
 
-    Ways(int id, Markers beginMarker, Markers endMarker){
+    public Ways(int id, Markers beginMarker, Markers endMarker){
         this.id.setValue(id);
         setBegin(beginMarker);
         setEnd(endMarker);
