@@ -5,8 +5,9 @@ import java.util.ArrayList;
 /**
  * Created by bodolsog on 04.12.15.
  */
-public class FourWayCrossroad {
+public class FourWayCrossroad extends Crossroad {
     private ArrayList<ArrayList<ArrayList<Boolean>>> states = new ArrayList<>();
+    private final String crossType = "4_WAY";
 
     /*
      false = red light
@@ -100,7 +101,10 @@ public class FourWayCrossroad {
                 setNewState(state, 3, false, false, true, false);
                 break;
         }
+    }
 
+    public String getType(){
+        return crossType;
     }
 }
 

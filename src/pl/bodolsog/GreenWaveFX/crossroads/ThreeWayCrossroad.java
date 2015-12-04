@@ -7,6 +7,7 @@ import java.util.ArrayList;
  */
 public class ThreeWayCrossroad extends Crossroad {
     private ArrayList<ArrayList<ArrayList<Boolean>>> states = new ArrayList<>();
+    private final String crossType = "3_WAY";
 
     /*
      false = red light
@@ -82,6 +83,9 @@ public class ThreeWayCrossroad extends Crossroad {
                 setNewState(state, 2, true, false, false);
                 break;
         }
+    }
 
+    public String getType(){
+        return crossType;
     }
 }
