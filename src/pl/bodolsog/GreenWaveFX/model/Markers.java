@@ -3,6 +3,9 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import pl.bodolsog.GreenWaveFX.crossroads.Crossroad;
+import pl.bodolsog.GreenWaveFX.crossroads.FourWayCrossroad;
+import pl.bodolsog.GreenWaveFX.crossroads.ThreeWayCrossroad;
 import pl.bodolsog.GreenWaveFX.markersview.MarkersViewController;
 
 /**
@@ -21,6 +24,7 @@ public class Markers {
     private DoubleProperty lng;
     // List of all one way connections from marker to another.
     private ObservableList<String> connections = FXCollections.<String>observableArrayList();
+    private Crossroad crossroad;
 
     /**
      * Constructor.
@@ -123,5 +127,18 @@ public class Markers {
      */
     public void setController(MarkersViewController controller){
         this.controller = controller;
+    }
+
+    public void setCrossroad(String type){
+        if(type.equals("3_WAY")){
+            crossroad = new ThreeWayCrossroad();
+        }
+        else if(type.equals("4_WAY")){
+            crossroad = new FourWayCrossroad();
+        }
+    }
+
+    public String getCrossroadType(){
+        return crossroad.getType();
     }
 }
