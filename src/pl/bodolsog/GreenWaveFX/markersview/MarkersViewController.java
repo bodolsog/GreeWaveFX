@@ -23,9 +23,6 @@ public class MarkersViewController {
     // Reference to main app.
     public MainApp mainApp;
 
-    // Map of markers <id, marker>.
-    private ObservableMap<String,Markers> markersMap = FXCollections.observableHashMap();
-
     // Map of titledPanes <id, titledPane>.
     private ObservableMap<String,TitledPane> titledPanesMap = FXCollections.observableHashMap();
 
@@ -39,6 +36,7 @@ public class MarkersViewController {
     @FXML
     private void initialize(){
         // Adds listener to markersMap.
+        //TODO move listener to main app?
         addMarkersListener();
         addAccordionListener();
     }
@@ -59,15 +57,15 @@ public class MarkersViewController {
      * this will change TitlePane title for this value.
      */
     private void addMarkersListener(){
-        markersMap.addListener((MapChangeListener.Change<? extends String, ? extends Markers> change) -> {
+        mainApp.markers.addListener((MapChangeListener.Change<? extends String, ? extends Markers> change) -> {
             if (change.wasAdded()) {
                 // Adds marker to AccordionPane.
-                addMarkerToPane(markersMap.get(change.getKey()));
+                addMarkerToPane(mainApp.markers.get(change.getKey()));
                 // Adds listener to nameProperty of new marker. Listener change TitledPane title, when new
                 // nameProperty was setted.
-                markersMap.get(change.getKey()).nameProperty().addListener(
+                mainApp.markers.get(change.getKey()).nameProperty().addListener(
                         ((observableValue, oldName, newName) ->
-                                setMarkerNameInPane(markersMap.get(change.getKey()))
+                                setMarkerNameInPane(mainApp.markers.get(change.getKey()))
                         )
                 );
             }
@@ -201,7 +199,7 @@ public class MarkersViewController {
     public void deleteMarker(String id){
         deleteMarkerFromPane(id);
         deleteMarkerFromMap(id);
-        markersMap.remove(id);
+        mainApp.markers.remove(id);
     }
 
     /**
@@ -213,7 +211,7 @@ public class MarkersViewController {
     public void addMarker(String id, double lat, double lng){
         Markers newMarker = new Markers(id, lat, lng);
         newMarker.setController(this);
-        markersMap.put(id, newMarker);
+        mainApp.markers.put(id, newMarker);
     }
 
     /**
@@ -223,7 +221,7 @@ public class MarkersViewController {
      * @param lng longitude
      */
     public void setMarkerLatLng(String id, double lat, double lng){
-        Markers marker = markersMap.get(id);
+        Markers marker = mainApp.markers.get(id);
         marker.setLat(lat);
         marker.setLng(lng);
     }
@@ -249,7 +247,7 @@ public class MarkersViewController {
                     crossName += street;
         }
         // Set name to Marker and return.
-        markersMap.get(id).setName(crossName);
+        mainApp.markers.get(id).setName(crossName);
         return crossName;
     }
 
@@ -261,10 +259,10 @@ public class MarkersViewController {
      */
     public void connectMarkers(String mode, String markerOne, String markerTwo){
         // Add connection from markerOne to markerTwo
-        markersMap.get(markerOne).addConnection(markerTwo);
+        mainApp.markers.get(markerOne).addConnection(markerTwo);
         // If mode is "cinnect2w" adds connection backwards (mTwo-mOne)
         if(mode.equals("connect2w")){
-            markersMap.get(markerTwo).addConnection(markerOne);
+            mainApp.markers.get(markerTwo).addConnection(markerOne);
         }
     }
 }

@@ -2,6 +2,8 @@ package pl.bodolsog.GreenWaveFX;
 
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableMap;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
@@ -10,6 +12,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import pl.bodolsog.GreenWaveFX.mapview.MapViewController;
 import pl.bodolsog.GreenWaveFX.markersview.MarkersViewController;
+import pl.bodolsog.GreenWaveFX.model.Markers;
 
 import java.io.IOException;
 
@@ -17,6 +20,16 @@ public class MainApp extends Application {
 
     private Stage primaryStage;
     private BorderPane rootLayout;
+
+    /**
+     * Map of markers <id, marker>.
+     */
+    public ObservableMap<String,Markers> ways = FXCollections.observableHashMap();
+
+    /**
+     * Map of markers <id, marker>.
+     */
+    public ObservableMap<String,Markers> markers = FXCollections.observableHashMap();
 
     /**
      * Reference to MarkersViewController.
