@@ -2,24 +2,16 @@ package pl.bodolsog.GreenWaveFX;
 
 
 import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.collections.MapChangeListener;
-import javafx.collections.ObservableMap;
-import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Accordion;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TitledPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import pl.bodolsog.GreenWaveFX.mapview.MapViewController;
-import pl.bodolsog.GreenWaveFX.markersview.Marker;
 import pl.bodolsog.GreenWaveFX.markersview.MarkersViewController;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
 
 public class MainApp extends Application {
 
