@@ -8,7 +8,7 @@ import java.util.HashMap;
 /**
  * Created by bodolsog on 04.12.15.
  */
-public class Edges {
+public class Ways {
     private StringProperty id;
     private Markers begin;
     private Markers end;
