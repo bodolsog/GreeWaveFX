@@ -14,7 +14,7 @@ public class Ways {
     private Markers end;
     private StringProperty type;
     private IntegerProperty distance;
-    private HashMap<Integer, Double> durations = new HashMap<>();
+    private HashMap<Integer, Integer> durations = new HashMap<>();
     private int acceleration = 5;
 
     public Ways(int id){
@@ -59,7 +59,7 @@ public class Ways {
         d = getAccelerationDistance(t);
         restDist = distance.getValue()-d;
         restTime = restDist/(double)speed;
-        durations.put(speed, t+restTime);
+        durations.put(speed, (int) Math.round(t+restTime));
      }
 
     private double getAccelerationTime(int speed){
@@ -67,5 +67,9 @@ public class Ways {
     }
     private double getAccelerationDistance(double t){
         return acceleration*t*t / 2;
+    }
+
+    public int getDuration(int speed){
+        return durations.get(speed);
     }
 }
