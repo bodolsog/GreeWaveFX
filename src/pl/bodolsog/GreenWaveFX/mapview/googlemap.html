@@ -133,45 +133,64 @@
                 if(menuWasActive)
                     menuWasActive = false;
                 else{
+                    // Increment id-number
+                    markersId++;
+
+                    // Create id
+                    var markerId = markersId;
+                    activeMarkerId = markerId;
+
                     // Create marker
                     var marker = new google.maps.Marker({
                         position: event.latLng,
                         draggable: true,
+                        title: "#"+markerId,
                         map: document.map
                     });
-
-                    // Increment id-number
-                    markersId++;
-                    // Create id
-                    var markerId = "#" + markersId;
-                    activeMarkerId = markerId;
 
                     // Add marker to lists.
                     controller.addMarker(markerId, marker.getPosition().lat(), marker.getPosition().lng());
                     markersMap[markerId] = marker;
 
-                    google.maps.event.addListener(marker, 'click', function(){
-                        if(menu.classList.contains("context-menu--active")) {
-                            menu.classList.remove("context-menu--active");
-                            menuMarkerId = null;
-                        }
-                        else
-                            controller.setClickedFocus(markerId);
+                    var infowindow = new google.maps.InfoWindow({
+                        content: infowindowContent(marker)
                     });
+
+                    marker.addListener('click', function() {
+                        infowindow.open(document.map, marker);
+                    });
+
                     google.maps.event.addListener(marker, 'drag', function(){
-                        if(menu.classList.contains("context-menu--active")){
-                            menu.classList.remove("context-menu--active");
-                            menuMarkerId = null;
-                        }
-                        else
-                            controller.setClickedFocus(markerId);
+                        if(marker.getTitle().search('(updating...)') == -1)
+                            marker.setTitle(marker.getTitle()+" (updating...)");
+                        infowindow.setContent(infowindowContent(marker));
+                        /*if(menu.classList.contains("context-menu--active")){
+                         menu.classList.remove("context-menu--active");
+                         menuMarkerId = null;
+                         }
+                         else
+                         controller.setClickedFocus(markerId);*/
                     });
                     google.maps.event.addListener(marker, 'position_changed', function () {
-                        var newLatLng = marker.getPosition();
+                        newLatLng = marker.getPosition();
                         controller.setMarkerLatLng(markerId, newLatLng.lat(), newLatLng.lng());
                         backThread.cancelThreads(markerId);
                         backThread.getStreetsNames(markerId, newLatLng.lat(), newLatLng.lng());
                     });
+                    google.maps.event.addListener(marker, 'title_changed', function () {
+                        infowindow.setContent(infowindowContent(marker));
+                    });
+                    /* Add listeners for menu*/
+                    //google.maps.event.addListener(marker, 'click', function(){
+                    /*    /!*if(menu.classList.contains("context-menu--active")) {
+                            menu.classList.remove("context-menu--active");
+                            menuMarkerId = null;
+                        }
+                        else
+                            controller.setClickedFocus(markerId);*!/
+                    });*/
+
+
                     google.maps.event.addListener(marker, 'rightclick', function () {
                         //TODO new method to get points
                         var point = overlay.getProjection().fromLatLngToDivPixel(marker.getPosition());
@@ -181,11 +200,25 @@
                         menuWasActive = true;
                         menuMarkerId = markerId;
                     });
+                    /* End listeners */
 
                     backThread.getStreetsNames(markerId, event.latLng.lat(), event.latLng.lng());
                 }
             });
 
+        }
+
+        function infowindowContent(marker){
+            return "<div class='infowindow-content'>" +
+                      "<dl>" +
+                        "<dt>Cross:</dt>" +
+                         "<dd>"+ marker.getTitle() +"</dd>" +
+                        "<dt>Coordinates:</dt>" +
+                         "<dd>Lat:"+ marker.getPosition().lat() +", Lng: "+ marker.getPosition().lng() +"</dd>" +
+                        "<dt>Type:</dt>" +
+                         "<dd>-</dd>" +
+                      "</dl>" +
+                    "</div>";
         }
 
         function setCrossName(id, newName){

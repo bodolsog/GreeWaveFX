@@ -6,16 +6,13 @@ import javafx.collections.ObservableList;
 import pl.bodolsog.GreenWaveFX.crossroads.Crossroad;
 import pl.bodolsog.GreenWaveFX.crossroads.FourWayCrossroad;
 import pl.bodolsog.GreenWaveFX.crossroads.ThreeWayCrossroad;
-import pl.bodolsog.GreenWaveFX.markersview.MarkersViewController;
 
 /**
  * model for markers.
  */
 public class Markers {
-    // Reference to MarkersViewController
-    private MarkersViewController controller;
     // Marker's id.
-    private StringProperty id;
+    private IntegerProperty id;
     // Marker's name - this is a roads cross name.
     // TODO: set this to null
     private StringProperty name = new SimpleStringProperty("");
@@ -23,30 +20,30 @@ public class Markers {
     private DoubleProperty lat;
     private DoubleProperty lng;
     // List of all one way connections from marker to another.
-    private ObservableList<String> connections = FXCollections.<String>observableArrayList();
+    private ObservableList<Integer> connections = FXCollections.<Integer>observableArrayList();
     private Crossroad crossroad;
 
     /**
      * Constructor.
-     * @param id  marker's name
+     * @param id  marker's id
      * @param lat   latitude
      * @param lng   longitude
      */
-    public Markers(String id, double lat, double lng){
+    public Markers(int id, double lat, double lng){
         // Set variables.
-        this.id = new SimpleStringProperty(id);
+        this.id = new SimpleIntegerProperty(id);
         this.lat = new SimpleDoubleProperty(lat);
         this.lng = new SimpleDoubleProperty(lng);
 
         // Add listener. When something is added to connections list - launch method that adds this connection
         // to TitledPane.
-        connections.addListener((ListChangeListener.Change<? extends String> change) -> {
-            while(change.next()){
-                if(change.wasAdded()){
-                    controller.addConnectionToTitledPane(this, change.getFrom());
-                }
-            }
-        });
+//        connections.addListener((ListChangeListener.Change<? extends String> change) -> {
+//            while(change.next()){
+//                if(change.wasAdded()){
+//                    controller.addConnectionToTitledPane(this, change.getFrom());
+//                }
+//            }
+//        });
     }
 
     /**
@@ -59,7 +56,7 @@ public class Markers {
      * Returns name as StringProperty
      * @return
      */
-    public StringProperty idProperty(){
+    public IntegerProperty idProperty(){
         return id;
     }
 
@@ -108,7 +105,7 @@ public class Markers {
      * Add Marker's id to connection list.
      * @param id Marker's id
      */
-    public void addConnection(String id){
+    public void addConnection(int id){
         if(!connections.contains(id))
             connections.add(id);
     }
@@ -117,17 +114,10 @@ public class Markers {
      * Return list of Marker's connected other's ids.
      * @return ListProperty
      */
-    public ObservableList<String> getConnections(){
+    public ObservableList<Integer> getConnections(){
         return connections;
     }
 
-    /**
-     * Assign controller to variable. This is launched from controller after create new marker.
-     * @param controller controller get self as argument
-     */
-    public void setController(MarkersViewController controller){
-        this.controller = controller;
-    }
 
     public void setCrossroad(String type){
         if(type.equals("3_WAY")){

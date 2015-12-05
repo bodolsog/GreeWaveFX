@@ -9,6 +9,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 import pl.bodolsog.GreenWaveFX.MainApp;
+import pl.bodolsog.GreenWaveFX.model.Markers;
 import pl.bodolsog.GreenWaveFX.tools.PropertiesManager;
 
 import java.util.*;
@@ -49,54 +50,59 @@ public class MapViewController {
 
 
     /**
-     * Bridge to MarkersViewController. Adds new Marker to list.
-     * @param id    marker's id
+     * Add new Marker to list.
+     * @param id    Marker's id
      * @param lat   latitude
      * @param lng   longitude
      */
-    public void addMarker(String id, double lat, double lng){
-        mainApp.getMarkersViewController().addMarker(id, lat, lng);
+    public void addMarker(int id, double lat, double lng){
+        Markers newMarker = new Markers(id, lat, lng);
+        mainApp.getMarkers().put(id, newMarker);
     }
 
     /**
-     * Call MarkersViewController's method for set new Marker's latLng.
+     * Set new Marker's latLng.
      * @param id Marker's id
      * @param lat latitude
      * @param lng longitude
      */
-    public void setMarkerLatLng(String id, double lat, double lng){
-        mainApp.getMarkersViewController().setMarkerLatLng(id, lat, lng);
+    public void setMarkerLatLng(int id, double lat, double lng){
+        Markers marker = mainApp.getMarkers().get(id);
+        marker.setLat(lat);
+        marker.setLng(lng);
     }
 
     /**
      * Execute script from js which deletes Marker.
      * @param id Marker's id
      */
-    public void deleteMarker(String id){
+    public void deleteMarker(int id){
         webEngine.executeScript("deleteMarker('"+id+"')");
     }
 
-    public void setMarkerFocus(String oldMarkerId, String newMarkerId){
+    public void setMarkerFocus(int oldMarkerId, int newMarkerId){
         webEngine.executeScript("setMarkerFocus('"+oldMarkerId+"', '"+newMarkerId+"')");
     }
 
-    public void setClickedFocus(String id){
-        mainApp.getMarkersViewController().setClickedFocus(id);
+    public void setClickedFocus(int id){
+        //mainApp.getMarkersViewController().setClickedFocus(id);
     }
 
-    public void connectMarkers(String mode, String markerOne, String markerTwo){
-        mainApp.getMarkersViewController().connectMarkers(mode, markerOne, markerTwo);
+    public void connectMarkers(String mode, int markerOne, int markerTwo){
+        //mainApp.getMarkersViewController().connectMarkers(mode, markerOne, markerTwo);
     }
+
+
 
     /**
      * Send works to back thread.
      */
     public class BackThread {
 
-        public WebEngine webEngine;
-        private Map<String,ObservableList<String>> streetsList = new HashMap<String,ObservableList<String>>();
-        private Map<String,ObservableList<CrossingStreetsNamesThread>> threadsList =
-                new HashMap<String,ObservableList<CrossingStreetsNamesThread>>();
+        private WebEngine webEngine;
+        private Map<Integer,ObservableList<String>> streetsList = new HashMap<Integer,ObservableList<String>>();
+        private Map<Integer,ObservableList<CrossingStreetsNamesThread>> threadsList =
+                new HashMap<Integer,ObservableList<CrossingStreetsNamesThread>>();
 
         /**
          * Constructor.
@@ -112,7 +118,7 @@ public class MapViewController {
          * @param lat       latitude
          * @param lng       longitude
          */
-        public void getStreetsNames(String markerId, double lat, double lng){
+        public void getStreetsNames(int markerId, double lat, double lng){
             double[][] latLngSquare = getLatLngSquare(lat, lng);
             for(double[] line: latLngSquare )
                 startThread(markerId, line[0], line[1]);
@@ -122,24 +128,24 @@ public class MapViewController {
         /**
          * Creates new task which calls reverse-geocoding js-script in Maps for this lat-lng. Reference to thread set
          * into map, reference is used when user drags Marker: if threads are not finished yet, this woul'd be canceled.
-         * @param id    Marker's id
+         * @param markerId    Marker's id
          * @param lat   latitude
          * @param lng   longitude
          */
-        public void startThread(String id, double lat, double lng){
+        public void startThread(int markerId, double lat, double lng){
             // Create variable thread contained new Thread.
-            CrossingStreetsNamesThread thread = new CrossingStreetsNamesThread(webEngine, id, lat, lng);
+            CrossingStreetsNamesThread thread = new CrossingStreetsNamesThread(webEngine, markerId, lat, lng);
             // Set new array in map identified with Marker's id if not exist yet.
-            if(!threadsList.containsKey(id)){
-                threadsList.put(id, FXCollections.observableArrayList());
+            if(!threadsList.containsKey(markerId)){
+                threadsList.put(markerId, FXCollections.observableArrayList());
             }
             // Add thread to list.
-            threadsList.get(id).add(thread);
+            threadsList.get(markerId).add(thread);
             // Set into queue.
             Platform.runLater(thread);
         }
 
-        public void cancelThreads(String id){
+        public void cancelThreads(int id){
             // Remove saved streets names.
             streetsList.remove(id);
             // Avoid starting threads in queue.
@@ -152,28 +158,46 @@ public class MapViewController {
         /**
          * Add street name to list in map witch Marker's id as key. If this name was setted - sets empty string. This is
          * called when reverse-geocoding script returns status OK.
-         * @param id     Marker's id
+         * @param markerId     Marker's id
          * @param street street name
          */
-        public void putToMap(String id, String street){
+        public void putToMap(int markerId, String street){
             // If map haven't this id, set new ArrayList identified by id to map and add listener to it.
-            if(!streetsList.containsKey(id)){
-                streetsList.put(id, FXCollections.observableArrayList());
+            if(!streetsList.containsKey(markerId)){
+                streetsList.put(markerId, FXCollections.observableArrayList());
                 // Listener will set cross name when all 4 queries is completed.
-                streetsList.get(id).addListener((ListChangeListener<String>) change -> { while(change.next()){
+                streetsList.get(markerId).addListener((ListChangeListener<String>) change -> { while(change.next()){
                     if(change.getList().size() >= 4){
                         // Set cross name to TitledPane
-                        String crossName = mainApp.getMarkersViewController().setCrossName(id, change.getList());
+                        String crossName = setCrossName(markerId, change.getList());
                         // Set cross name to marker.
-                        webEngine.executeScript("setCrossName('"+id+"', '"+crossName+"')");
+                        webEngine.executeScript("setCrossName('"+markerId+"', '"+crossName+"')");
                     }
                 }});
             }
             // When list contains this street name - set string to empty.
-            if (streetsList.get(id).contains(street))
+            if (streetsList.get(markerId).contains(street))
                 street = "";
             // Adds street to list.
-            streetsList.get(id).add(street);
+            streetsList.get(markerId).add(street);
+        }
+
+        public String setCrossName(int markerId, ObservableList<? extends String> streetsNames){
+            // Init string.
+            String crossName = "";
+            // Build name from every not empty name.
+            for(String street : streetsNames){
+                // Append street when is not empty string.
+                if(!street.equals(""))
+                    // If that isn't first street - add slash before street name.
+                    if(!crossName.equals(""))
+                        crossName += "/"+street;
+                    else
+                        crossName += street;
+            }
+            // Set name to Marker and return.
+            mainApp.getMarkers().get(markerId).setName(crossName);
+            return crossName;
         }
 
         /**
@@ -200,7 +224,7 @@ public class MapViewController {
      */
     public class CrossingStreetsNamesThread implements Runnable{
         private WebEngine webEngine;
-        private String markerId;
+        private int markerId;
         private double lat;
         private double lng;
         private boolean blinker = true;
@@ -212,7 +236,7 @@ public class MapViewController {
          * @param lat       latitude
          * @param lng       longitude
          */
-        public CrossingStreetsNamesThread(WebEngine webEngine, String markerId, double lat, double lng) {
+        public CrossingStreetsNamesThread(WebEngine webEngine, int markerId, double lat, double lng) {
             this.webEngine = webEngine;
             this.markerId = markerId;
             this.lat = lat;

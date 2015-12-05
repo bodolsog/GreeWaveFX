@@ -24,17 +24,17 @@ public class MainApp extends Application {
     /**
      * Map of markers <id, marker>.
      */
-    public ObservableMap<String,Markers> ways = FXCollections.observableHashMap();
+    private ObservableMap<String,Markers> ways = FXCollections.observableHashMap();
 
     /**
      * Map of markers <id, marker>.
      */
-    public ObservableMap<String,Markers> markers = FXCollections.observableHashMap();
+    private ObservableMap<Integer, Markers> markers = FXCollections.observableHashMap();
 
     /**
      * Reference to MarkersViewController.
      */
-    private MarkersViewController markersViewController;
+    //private MarkersViewController markersViewController;
 
     /**
      * Reference to MapViewController.
@@ -54,7 +54,7 @@ public class MainApp extends Application {
         // Init layout
         initRootLayout();
         showMapView();
-        showMarkersView();
+        //showMarkersView();
     }
 
 
@@ -107,8 +107,8 @@ public class MainApp extends Application {
             ScrollPane markersView = (ScrollPane) loader.load();
 
             // Give the controller access to the main app.
-            markersViewController = loader.getController();
-            markersViewController.setMainApp(this);
+            //markersViewController = loader.getController();
+            //markersViewController.setMainApp(this);
 
             // Show the scene containing the root layout.
             rootLayout.setRight(markersView);
@@ -122,9 +122,9 @@ public class MainApp extends Application {
      * Return markersViewController
      * @return  markersViewController
      */
-    public MarkersViewController getMarkersViewController(){
-        return markersViewController;
-    }
+//    public MarkersViewController getMarkersViewController(){
+//        return markersViewController;
+//    }
 
     /**
      * Return mapViewController
@@ -133,4 +133,6 @@ public class MainApp extends Application {
     public MapViewController getMapViewController(){
         return mapViewController;
     }
+
+    public ObservableMap<Integer, Markers> getMarkers(){ return markers; }
 }
