@@ -32,6 +32,11 @@ public class MainApp extends Application {
     private ObservableMap<Integer, Markers> markers = FXCollections.observableHashMap();
 
     /**
+     *
+     */
+    private int focusedMarkerId;
+
+    /**
      * Reference to MarkersViewController.
      */
     //private MarkersViewController markersViewController;
@@ -135,4 +140,14 @@ public class MainApp extends Application {
     }
 
     public ObservableMap<Integer, Markers> getMarkers(){ return markers; }
+
+    public int getFocusedMarkerId(){
+        return focusedMarkerId;
+    }
+
+    public void setFocusedMarkerId(int newFocusedId){
+        focusedMarkerId = newFocusedId;
+    }
+
+
 }
