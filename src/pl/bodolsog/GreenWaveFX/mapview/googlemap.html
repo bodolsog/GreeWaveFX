@@ -11,11 +11,11 @@
             position: absolute;
             z-index: 10;
             padding: 0;
-            width: 160px;
-            background-color: #fff;
-            border: solid 1px #dfdfdf;
+            width: 180px;
+            background-color: #f8f8f8;
+            border: solid 1px #b4b4b4;
             box-shadow: 1px 1px 2px #cfcfcf;
-            font-size: 14px;
+            font-size: 12px;
         }
         .context-menu--active {
             display: block;
@@ -30,6 +30,9 @@
         }
         .context-menu__items{
             margin: 0;
+        }
+        .context-menu__link{
+            text-decoration: none;
         }
     </style>
     <script type="text/javascript">
@@ -67,7 +70,7 @@
                 scaleControl: true
             };
 
-            var menu = document.querySelector("#context-menu");
+            menu = document.querySelector("#context-menu");
             var menuWasActive = false;
 
             document.map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
@@ -158,18 +161,21 @@
 
                     marker.addListener('click', function() {
                         infowindow.open(document.map, marker);
+                        hideContentMenu(menuMarkerId);
                     });
 
+                    var point = overlay.getProjection().fromLatLngToContainerPixel(marker.getPosition());
+
+                    google.maps.event.addListener(document.map, 'center_changed', function(){
+                        hideContentMenu(menuMarkerId);
+                        point = overlay.getProjection().fromLatLngToContainerPixel(marker.getPosition());
+                    });
                     google.maps.event.addListener(marker, 'drag', function(){
                         if(marker.getTitle().search('(updating...)') == -1)
                             marker.setTitle(marker.getTitle()+" (updating...)");
                         infowindow.setContent(infowindowContent(marker));
-                        /*if(menu.classList.contains("context-menu--active")){
-                         menu.classList.remove("context-menu--active");
-                         menuMarkerId = null;
-                         }
-                         else
-                         controller.setClickedFocus(markerId);*/
+                        hideContentMenu(menuMarkerId);
+                        point = overlay.getProjection().fromLatLngToContainerPixel(marker.getPosition());
                     });
                     google.maps.event.addListener(marker, 'position_changed', function () {
                         newLatLng = marker.getPosition();
@@ -193,7 +199,6 @@
 
                     google.maps.event.addListener(marker, 'rightclick', function () {
                         //TODO new method to get points
-                        var point = overlay.getProjection().fromLatLngToDivPixel(marker.getPosition());
                         menu.style.left = point.x + "px";
                         menu.style.top = point.y + "px";
                         menu.classList.add("context-menu--active");
@@ -219,6 +224,13 @@
                          "<dd>-</dd>" +
                       "</dl>" +
                     "</div>";
+        }
+
+        function hideContentMenu(menuMarkerId){
+            if(menu.classList.contains("context-menu--active")){
+                menu.classList.remove("context-menu--active");
+                menuMarkerId = null;
+            }
         }
 
         function setCrossName(id, newName){
@@ -283,6 +295,12 @@
         </li>
         <li class="context-menu__item">
             <a href="#" class="context-menu__link" data-action="connect1w">Connect one way to this</a>
+        </li>
+        <li class="context-menu__item">
+            <a href="#" class="context-menu__link" data-action="setCrossType4">Set cross type (4way)</a>
+        </li>
+        <li class="context-menu__item">
+            <a href="#" class="context-menu__link" data-action="setCrossType3">Set cross type (3way)</a>
         </li>
     </ul>
 </nav>
