@@ -30,7 +30,7 @@ public class MapViewController {
     private void initialize(){
         // Initializes web engine and Google Maps into.
         webEngine = webView.getEngine();
-        webEngine.load(getClass().getResource("googlemap.html").toString());
+        webEngine.load(getClass().getResource("/googlemap.html").toString());
 
         // Register classes for use from javascript.
         JSObject window = (JSObject) webEngine.executeScript("window");

@@ -11,7 +11,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import pl.bodolsog.GreenWaveFX.mapview.MapViewController;
-import pl.bodolsog.GreenWaveFX.markersview.MarkersViewController;
 import pl.bodolsog.GreenWaveFX.model.Markers;
 
 import java.io.IOException;
@@ -58,7 +57,7 @@ public class MainApp extends Application {
 
         // Init layout
         initRootLayout();
-        showMapView();
+        //showMapView();
         //showMarkersView();
     }
 
@@ -69,7 +68,7 @@ public class MainApp extends Application {
     private void initRootLayout(){
         try {
             // Load root layout from fxml file.
-            final FXMLLoader loader = new FXMLLoader(getClass().getResource("MainAppView.fxml"));
+            final FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/MainAppView.fxml"));
             rootLayout = (BorderPane) loader.load();
 
             // Show the scene containing the root layout.
@@ -87,7 +86,7 @@ public class MainApp extends Application {
     private void showMapView(){
         try {
             // Load map from fxml file.
-            final FXMLLoader loader = new FXMLLoader(getClass().getResource("mapview/MapView.fxml"));
+            final FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/MapView.fxml"));
             WebView mapView = (WebView) loader.load();
 
             // Give the controller access to the main app.
@@ -108,7 +107,7 @@ public class MainApp extends Application {
     private void showMarkersView(){
         try {
             // Load accordion from fxml file.
-            final FXMLLoader loader = new FXMLLoader(getClass().getResource("markersview/MarkersView.fxml"));
+            final FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/MarkersView.fxml"));
             ScrollPane markersView = (ScrollPane) loader.load();
 
             // Give the controller access to the main app.
