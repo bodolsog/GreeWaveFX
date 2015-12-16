@@ -30,6 +30,4 @@ public class PropertiesManagerTest {
         assertNotNull("GoogleAPIKey is null", propertiesManager.getGoogleAPIKey());
         //assertEquals("GoogleAPIKey is not same", "[here add your Google API Key for browsers]", propertiesManager.getGoogleAPIKey());
     }
-
-
 }

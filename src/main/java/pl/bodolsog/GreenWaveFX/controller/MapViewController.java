@@ -1,4 +1,4 @@
-package pl.bodolsog.GreenWaveFX.mapview;
+package pl.bodolsog.GreenWaveFX.controller;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -9,6 +9,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 import pl.bodolsog.GreenWaveFX.MainApp;
+import pl.bodolsog.GreenWaveFX.model.Marker;
 import pl.bodolsog.GreenWaveFX.model.Markers;
 import pl.bodolsog.GreenWaveFX.tools.PropertiesManager;
 
@@ -19,12 +20,14 @@ public class MapViewController {
     // Reference to main app.
     private MainApp mainApp;
 
+    public Markers markers;
+
     @FXML
     private WebView webView;
     private WebEngine webEngine;
 
     /**
-     * Initializes controller.
+     * Initializes view.
      */
     @FXML
     private void initialize(){
@@ -39,58 +42,43 @@ public class MapViewController {
         window.setMember("backThread", new BackThread(webEngine));
     }
 
-    /**
-     * Is called by the main application to give a reference back to itself.
-     *
-     * @param mainApp
-     */
-    public void setMainApp(MainApp mainApp) {
-        this.mainApp = mainApp;
-    }
 
+    /**
+     * Set reference to Markers (called from MainApp).
+     * @param markers
+     */
+    public void passMarkersReference(Markers markers){
+        this.markers = markers;
+    }
 
     /**
      * Add new Marker to list.
-     * @param id    Marker's id
-     * @param lat   latitude
-     * @param lng   longitude
+     * @param jsMarker GoogleMaps marker object
      */
-    public void addMarker(int id, double lat, double lng){
-        Markers newMarker = new Markers(id, lat, lng);
-        mainApp.getMarkers().put(id, newMarker);
+    public void addMarker(JSObject jsMarker){
+        markers.addMarker(jsMarker);
     }
 
-    /**
-     * Set new Marker's latLng.
-     * @param id Marker's id
-     * @param lat latitude
-     * @param lng longitude
-     */
-    public void setMarkerLatLng(int id, double lat, double lng){
-        Markers marker = mainApp.getMarkers().get(id);
-        marker.setLat(lat);
-        marker.setLng(lng);
-    }
 
     /**
      * Execute script from js which deletes Marker.
      * @param id Marker's id
      */
-    public void deleteMarker(int id){
-        webEngine.executeScript("deleteMarker('"+id+"')");
-    }
-
-    public void setMarkerFocus(int oldMarkerId, int newMarkerId){
-        webEngine.executeScript("setMarkerFocus('"+oldMarkerId+"', '"+newMarkerId+"')");
-    }
-
-    public void setClickedFocus(int id){
-        //mainApp.getMarkersViewController().setClickedFocus(id);
-    }
-
-    public void connectMarkers(String mode, int markerOne, int markerTwo){
-        //mainApp.getMarkersViewController().connectMarkers(mode, markerOne, markerTwo);
-    }
+//    public void deleteMarker(int id){
+//        webEngine.executeScript("deleteMarker('"+id+"')");
+//    }
+//
+//    public void setMarkerFocus(int oldMarkerId, int newMarkerId){
+//        webEngine.executeScript("setMarkerFocus('"+oldMarkerId+"', '"+newMarkerId+"')");
+//    }
+//
+//    public void setClickedFocus(int id){
+//        //mainApp.getMarkersViewController().setClickedFocus(id);
+//    }
+//
+//    public void connectMarkers(String mode, int markerOne, int markerTwo){
+//        //mainApp.getMarkersViewController().connectMarkers(mode, markerOne, markerTwo);
+//    }
 
 
 
@@ -100,9 +88,8 @@ public class MapViewController {
     public class BackThread {
 
         private WebEngine webEngine;
-        private Map<Integer,ObservableList<String>> streetsList = new HashMap<Integer,ObservableList<String>>();
-        private Map<Integer,ObservableList<CrossingStreetsNamesThread>> threadsList =
-                new HashMap<Integer,ObservableList<CrossingStreetsNamesThread>>();
+        private Map<Integer,ObservableList<String>> streetsList = new HashMap<>();
+        private Map<Integer,ObservableList<CrossingStreetsNamesThread>> threadsList = new HashMap<>();
 
         /**
          * Constructor.
@@ -196,7 +183,7 @@ public class MapViewController {
                         crossName += street;
             }
             // Set name to Marker and return.
-            mainApp.getMarkers().get(markerId).setName(crossName);
+            //mainApp.getMarkers().get(markerId).setName(crossName);
             return crossName;
         }
 

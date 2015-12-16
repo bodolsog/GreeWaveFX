@@ -10,8 +10,8 @@ import java.util.HashMap;
  */
 public class Ways {
     private IntegerProperty id;
-    private Markers begin;
-    private Markers end;
+    private Marker begin;
+    private Marker end;
     private StringProperty type;
     private IntegerProperty distance;
     private HashMap<Integer, Integer> durations = new HashMap<>();
@@ -21,16 +21,16 @@ public class Ways {
         this.id.setValue(id);
     }
 
-    public Ways(int id, Markers beginMarker, Markers endMarker){
+    public Ways(int id, Marker beginMarker, Marker endMarker){
         this.id.setValue(id);
         setBegin(beginMarker);
         setEnd(endMarker);
     }
 
-    public void setBegin(Markers beginMarker){
+    public void setBegin(Marker beginMarker){
         begin = beginMarker;
     }
-    public void setEnd(Markers endMarker){
+    public void setEnd(Marker endMarker){
         end = endMarker;
     }
 

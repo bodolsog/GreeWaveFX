@@ -1,6 +1,5 @@
 package pl.bodolsog.GreenWaveFX.model;
 
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.StringProperty;
 
 import java.util.ArrayList;
@@ -11,7 +10,7 @@ import java.util.HashMap;
  */
 public class Waves {
     private StringProperty id;
-    private ArrayList<Markers> points = new ArrayList<>();
+    private ArrayList<Marker> points = new ArrayList<>();
     private ArrayList<Ways> ways = new ArrayList<>();
     private HashMap<Integer, Integer> duration = new HashMap<>();
 
@@ -19,20 +18,20 @@ public class Waves {
         return id.get();
     }
 
-    public Markers getStartPoint(){
+    public Marker getStartPoint(){
         return points.get(0);
     }
 
-    public Markers getEndPoint(){
+    public Marker getEndPoint(){
         return points.get(points.size()-1);
     }
 
-    public boolean belongMarkerToPoints(Markers marker){
+    public boolean belongMarkerToPoints(Marker marker){
         if(points.contains(marker)) return true;
         return false;
     }
 
-    public void addPoint(Markers marker, Ways way){
+    public void addPoint(Marker marker, Ways way){
         points.add(marker);
         ways.add(way);
         int[] newValues = {

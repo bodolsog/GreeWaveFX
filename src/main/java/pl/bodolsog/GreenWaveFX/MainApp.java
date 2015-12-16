@@ -1,16 +1,12 @@
 package pl.bodolsog.GreenWaveFX;
 
-
 import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableMap;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
-import pl.bodolsog.GreenWaveFX.mapview.MapViewController;
+import pl.bodolsog.GreenWaveFX.controller.MapViewController;
 import pl.bodolsog.GreenWaveFX.model.Markers;
 
 import java.io.IOException;
@@ -20,30 +16,19 @@ public class MainApp extends Application {
     private Stage primaryStage;
     private BorderPane rootLayout;
 
-    /**
-     * Map of markers <id, marker>.
-     */
-    private ObservableMap<String,Markers> ways = FXCollections.observableHashMap();
-
-    /**
-     * Map of markers <id, marker>.
-     */
-    private ObservableMap<Integer, Markers> markers = FXCollections.observableHashMap();
-
-    /**
-     *
-     */
-    private int focusedMarkerId;
-
-    /**
-     * Reference to MarkersViewController.
-     */
-    //private MarkersViewController markersViewController;
-
-    /**
-     * Reference to MapViewController.
-     */
+    // Reference to MapViewController.
     private MapViewController mapViewController;
+
+    private Markers markers;
+
+    // Map of markers <id, marker>.
+    //private ObservableMap<String,Marker> ways = FXCollections.observableHashMap();
+
+    //
+    //private int focusedMarkerId;
+
+    // Reference to MarkersController.
+    //private MarkersController markersViewController;
 
     // Starts app
     public static void main(String[] args) {
@@ -55,9 +40,12 @@ public class MainApp extends Application {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("GreenWaveFX");
 
+        // Set up Markers
+        markers = new Markers();
+
         // Init layout
         initRootLayout();
-        //showMapView();
+        showMapView();
         //showMarkersView();
     }
 
@@ -68,11 +56,11 @@ public class MainApp extends Application {
     private void initRootLayout(){
         try {
             // Load root layout from fxml file.
-            final FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/MainAppView.fxml"));
+            final FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainAppView.fxml"));
             rootLayout = (BorderPane) loader.load();
 
             // Show the scene containing the root layout.
-            Scene scene = new Scene(rootLayout, 1000, 600);
+            Scene scene = new Scene(rootLayout, 1600, 900);
             primaryStage.setScene(scene);
             primaryStage.show();
         } catch (IOException e) {
@@ -80,18 +68,20 @@ public class MainApp extends Application {
         }
     }
 
+
     /**
      * Show map in root layout.
      */
     private void showMapView(){
         try {
             // Load map from fxml file.
-            final FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/MapView.fxml"));
+            final FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MapView.fxml"));
             WebView mapView = (WebView) loader.load();
 
             // Give the controller access to the main app.
             mapViewController = loader.getController();
-            mapViewController.setMainApp(this);
+            //mapViewController.passMainAppReference(this);
+            mapViewController.passMarkersReference(markers);
 
             // Show the scene containing the root layout.
             rootLayout.setCenter(mapView);
@@ -101,13 +91,24 @@ public class MainApp extends Application {
         }
     }
 
-    /**
+
+
+//    public int getFocusedMarkerId(){
+//        return focusedMarkerId;
+//    }
+//
+//    public void setFocusedMarkerId(int newFocusedId){
+//        focusedMarkerId = newFocusedId;
+//    }
+
+
+/*    *//**
      * Show markers list in root layout.
-     */
+     *//*
     private void showMarkersView(){
         try {
             // Load accordion from fxml file.
-            final FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/MarkersView.fxml"));
+            final FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MarkersView.fxml"));
             ScrollPane markersView = (ScrollPane) loader.load();
 
             // Give the controller access to the main app.
@@ -120,13 +121,13 @@ public class MainApp extends Application {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     /**
      * Return markersViewController
      * @return  markersViewController
      */
-//    public MarkersViewController getMarkersViewController(){
+//    public MarkersController getMarkersViewController(){
 //        return markersViewController;
 //    }
 
@@ -134,19 +135,11 @@ public class MainApp extends Application {
      * Return mapViewController
      * @return  mapViewController
      */
-    public MapViewController getMapViewController(){
-        return mapViewController;
-    }
+//    public MapViewController getMapViewController(){
+//        return mapViewController;
+//    }
+//
 
-    public ObservableMap<Integer, Markers> getMarkers(){ return markers; }
-
-    public int getFocusedMarkerId(){
-        return focusedMarkerId;
-    }
-
-    public void setFocusedMarkerId(int newFocusedId){
-        focusedMarkerId = newFocusedId;
-    }
 
 
 }

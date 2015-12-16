@@ -7,7 +7,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<ScrollPane hbarPolicy="NEVER" minWidth="200.0" BorderPane.alignment="CENTER" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.bodolsog.GreenWaveFX.markersview.MarkersViewController">
+<ScrollPane hbarPolicy="NEVER" minWidth="200.0" BorderPane.alignment="CENTER" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.bodolsog.GreenWaveFX.controller.MarkersController">
    <content>
       <Accordion fx:id="markersPane" minWidth="200.0" prefHeight="-Infinity">
         <panes>

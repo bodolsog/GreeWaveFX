@@ -52,13 +52,17 @@
             document.getElementById('test').innerHTML = tex;
         }
 
-        var markersMap = {};
+        /* TODO: potrzebne? */
         var activeMarkerId;
         var menuMarkerId;
+        var markerStart = null;
+        var markerEnd = null;
 
         function initialize() {
+            /* Domestic center on Biala Podlaska. */
             var latlng = new google.maps.LatLng(52.03, 23.14);
-            var myOptions = {
+
+            var map = new google.maps.Map(document.getElementById("map_canvas"), {
                 zoom: 15,
                 center: latlng,
                 mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -68,124 +72,122 @@
                 backgroundColor: "#666970",
                 zoomControl: false,
                 scaleControl: true
-            };
-
-            menu = document.querySelector("#context-menu");
-            var menuWasActive = false;
-
-            document.map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
-            document.geocoder = new google.maps.Geocoder();
-            document.service = new google.maps.DistanceMatrixService;
-            document.directionsService = new google.maps.DirectionsService;
-            document.directionsDisplay = new google.maps.DirectionsRenderer;
-
-            overlay = new google.maps.OverlayView();
-            overlay.draw = function () {};
-            overlay.setMap(document.map);
-
-            document.directionsDisplay.setMap(document.map);
-            markersId = 0;
-
-            var menuItem = menu.querySelectorAll(".context-menu__item")
-            for(i=0; i<menuItem.length; i++){
-                menuItem[i].addEventListener('click', function(){
-                    action = this.querySelector('a').getAttribute("data-action");
-                    if(action == "connect2w" || action == "connect1w"){
-                        controller.connectMarkers(action, activeMarkerId, menuMarkerId);
-                        pointA = markersMap[activeMarkerId].getPosition();
-                        pointB = markersMap[menuMarkerId].getPosition();
-
-                        document.service.getDistanceMatrix({
-                            origins: [pointA],
-                            destinations: [pointB],
-                            travelMode: google.maps.TravelMode.DRIVING,
-                            unitSystem: google.maps.UnitSystem.METRIC,
-                            avoidHighways: true,
-                            avoidTolls: true
-                        }, function(response, status){
-                            if (status !== google.maps.DistanceMatrixStatus.OK) {
-                                test('Error was: ' + status);
-                            } else {
-                                test(response.rows[0].elements[0].distance.value);
-                            }
-                        });
-
-                        document.directionsService.route({
-                            origin: pointA,
-                            destination: pointB,
-                            travelMode: google.maps.TravelMode.DRIVING
-                        }, function(response, status) {
-                            if (status === google.maps.DirectionsStatus.OK) {
-                                document.directionsDisplay.setDirections(response);
-                            } else {
-                                test('Directions request failed due to ' + status);
-                            }
-                        });
-                    }
-                });
-            }
-//TODO opacity=1 by hover
-            google.maps.event.addListener(document.map, 'mousedown', function(){
-                if(menu.classList.contains("context-menu--active")){
-                    menu.classList.remove("context-menu--active");
-                    menuWasActive = true;
-                    menuMarkerId = null;
-                }
             });
-            google.maps.event.addListener(document.map, 'click', function (event) {
-                if(menuWasActive)
-                    menuWasActive = false;
-                else{
-                    // Increment id-number
-                    markersId++;
 
-                    // Create id
-                    var markerId = markersId;
-                    activeMarkerId = markerId;
+            //var directionsDisplay = new google.maps.DirectionsRenderer;
+            var directionsService = new google.maps.DirectionsService;
+
+            //directionsDisplay.setMap(map);
+
+/*            menu = document.querySelector("#context-menu");
+            var menuWasActive = false;*/
+//            geocoder = new google.maps.Geocoder();
+//            service = new google.maps.DistanceMatrixService;
+//            directionsService = new google.maps.DirectionsService;
+//            directionsDisplay = new google.maps.DirectionsRenderer;
+//
+//            overlay = new google.maps.OverlayView();
+//            overlay.draw = function () {};
+//            overlay.setMap(document.map);
+
+//            directionsDisplay.setMap(map);
+
+//            var menuItem = menu.querySelectorAll(".context-menu__item")
+//            for(i=0; i<menuItem.length; i++){
+//                menuItem[i].addEventListener('click', function(){
+//                    action = this.querySelector('a').getAttribute("data-action");
+//                    if(action == "connect2w" || action == "connect1w"){
+//                        controller.connectMarkers(action, activeMarkerId, menuMarkerId);
+//                        pointA = markersMap[activeMarkerId].getPosition();
+//                        pointB = markersMap[menuMarkerId].getPosition();
+//
+//                        document.service.getDistanceMatrix({
+//                            origins: [pointA],
+//                            destinations: [pointB],
+//                            travelMode: google.maps.TravelMode.DRIVING,
+//                            unitSystem: google.maps.UnitSystem.METRIC,
+//                            avoidHighways: true,
+//                            avoidTolls: true
+//                        }, function(response, status){
+//                            if (status !== google.maps.DistanceMatrixStatus.OK) {
+//                                test('Error was: ' + status);
+//                            } else {
+//                                test(response.rows[0].elements[0].distance.value);
+//                            }
+//                        });
+//
+//                        document.directionsService.route({
+//                            origin: pointA,
+//                            destination: pointB,
+//                            travelMode: google.maps.TravelMode.DRIVING
+//                        }, function(response, status) {
+//                            if (status === google.maps.DirectionsStatus.OK) {
+//                                document.directionsDisplay.setDirections(response);
+//                            } else {
+//                                test('Directions request failed due to ' + status);
+//                            }
+//                        });
+//                    }
+//                });
+//            }
+
+//            google.maps.event.addListener(map, 'mousedown', function(){
+//                if(menu.classList.contains("context-menu--active")){
+//                    menu.classList.remove("context-menu--active");
+//                    menuWasActive = true;
+//                    menuMarkerId = null;
+//                }
+//            });
+
+            map.addListener('click', function (event) {
+//                if(menuWasActive)
+//                    menuWasActive = false;
+//                else{
+                //var latLng =
 
                     // Create marker
                     var marker = new google.maps.Marker({
                         position: event.latLng,
                         draggable: true,
-                        title: "#"+markerId+" (updating...)",
-                        map: document.map
+                        map: map
                     });
+                    calibrateMarkerPosition(directionsService, marker);
 
                     // Add marker to lists.
-                    controller.addMarker(markerId, marker.getPosition().lat(), marker.getPosition().lng());
-                    markersMap[markerId] = marker;
+                    controller.addMarker(marker);
 
-                    var infowindow = new google.maps.InfoWindow({
+                    // Create infowindow
+                    marker.infowindow = new google.maps.InfoWindow({
                         content: infowindowContent(marker)
                     });
 
+                    /* Marker listeners */
                     marker.addListener('click', function() {
-                        infowindow.open(document.map, marker);
-                        hideContentMenu(menuMarkerId);
+                        marker.infowindow.open(map, marker);
                     });
 
-                    var point = overlay.getProjection().fromLatLngToContainerPixel(marker.getPosition());
+//                    var point = overlay.getProjection().fromLatLngToContainerPixel(marker.getPosition());
 
-                    google.maps.event.addListener(document.map, 'center_changed', function(){
-                        hideContentMenu(menuMarkerId);
-                        point = overlay.getProjection().fromLatLngToContainerPixel(marker.getPosition());
-                    });
-                    google.maps.event.addListener(marker, 'drag', function(){
-                        if(marker.getTitle().search('(updating...)') == -1)
-                            marker.setTitle(marker.getTitle()+" (updating...)");
-                        infowindow.setContent(infowindowContent(marker));
-                        hideContentMenu(menuMarkerId);
-                        point = overlay.getProjection().fromLatLngToContainerPixel(marker.getPosition());
-                    });
-                    google.maps.event.addListener(marker, 'position_changed', function () {
-                        newLatLng = marker.getPosition();
-                        controller.setMarkerLatLng(markerId, newLatLng.lat(), newLatLng.lng());
-                        backThread.cancelThreads(markerId);
-                        backThread.getStreetsNames(markerId, newLatLng.lat(), newLatLng.lng());
-                    });
-                    google.maps.event.addListener(marker, 'title_changed', function () {
-                        infowindow.setContent(infowindowContent(marker));
-                    });
+//                    google.maps.event.addListener(map, 'center_changed', function(){
+//                        hideContentMenu(menuMarkerId);
+//                        point = overlay.getProjection().fromLatLngToContainerPixel(marker.getPosition());
+//                    });
+//                    google.maps.event.addListener(marker, 'drag', function(){
+//                        if(marker.getTitle().search('(updating...)') == -1)
+//                            marker.setTitle(marker.getTitle()+" (updating...)");
+//                        marker.infowindow.setContent(infowindowContent(marker));
+//                        hideContentMenu(menuMarkerId);
+//                        point = overlay.getProjection().fromLatLngToContainerPixel(marker.getPosition());
+//                    });
+//                    google.maps.event.addListener(marker, 'position_changed', function () {
+//                        newLatLng = marker.getPosition();
+////                        controller.setMarkerLatLng(markerId, newLatLng.lat(), newLatLng.lng());
+////                        backThread.cancelThreads(markerId);
+////                        backThread.getStreetsNames(markerId, newLatLng.lat(), newLatLng.lng());
+//                    });
+//                    google.maps.event.addListener(marker, 'title_changed', function () {
+//                        marker.infowindow.setContent(infowindowContent(marker));
+//                    });
                     /* Add listeners for menu*/
                     //google.maps.event.addListener(marker, 'click', function(){
                     /*    /!*if(menu.classList.contains("context-menu--active")) {
@@ -197,95 +199,125 @@
                     });*/
 
 
-                    google.maps.event.addListener(marker, 'rightclick', function () {
-                        //TODO new method to get points
-                        menu.style.left = point.x + "px";
-                        menu.style.top = point.y + "px";
-                        menu.classList.add("context-menu--active");
-                        menuWasActive = true;
-                        menuMarkerId = markerId;
-                    });
+//                    marker.addListener('rightclick', function () {
+//                        //TODO new method to get points
+//                        menu.style.left = point.x + "px";
+//                        menu.style.top = point.y + "px";
+//                        menu.classList.add("context-menu--active");
+//                        menuWasActive = true;
+//                        menuMarkerId = markerId;
+//                    });
                     /* End listeners */
 
-                    backThread.getStreetsNames(markerId, event.latLng.lat(), event.latLng.lng());
-                }
+                    //backThread.getStreetsNames(markerId, event.latLng.lat(), event.latLng.lng());
+//                }
             });
 
         }
 
         function infowindowContent(marker){
-            return "<div class='infowindow-content'>" +
-                      "<dl>" +
-                        "<dt>Cross:</dt>" +
-                         "<dd>"+ marker.getTitle() +"</dd>" +
-                        "<dt>Coordinates:</dt>" +
-                         "<dd>Lat:"+ marker.getPosition().lat() +", Lng: "+ marker.getPosition().lng() +"</dd>" +
-                        "<dt>Type:</dt>" +
-                         "<dd>-</dd>" +
-                      "</dl>" +
+            return  "<div class='infowindow-content'>" +
+                    "   <dl>" +
+                    "       <dt>Cross:</dt>" +
+                    "       <dd>"+ marker.getTitle() +"</dd>" +
+                    "       <dt>Coordinates:</dt>" +
+                    "       <dd>Lat:"+ marker.getPosition().lat() +", Lng: "+ marker.getPosition().lng() +"</dd>" +
+                    "       <dt>Type:</dt>" +
+                    "       <dd>-</dd>" +
+                    "   </dl>" +
                     "</div>";
         }
 
-        function hideContentMenu(menuMarkerId){
-            if(menu.classList.contains("context-menu--active")){
-                menu.classList.remove("context-menu--active");
-                menuMarkerId = null;
-            }
-        }
+//        function hideContentMenu(menuMarkerId){
+//            if(menu.classList.contains("context-menu--active")){
+//                menu.classList.remove("context-menu--active");
+//                menuMarkerId = null;
+//            }
+//        }
 
-        function setCrossName(id, newName){
-            markersMap[id].setTitle(newName);
-        }
 
-        /**
-         * Delete Marker from map, set them to null and remove hash from markersMap.
-         * @param id Marker's id
-         */
-        function deleteMarker(id){
-            markersMap[id].setMap(null);
-            markersMap[id] = null;
-            delete(markersMap[id]);
-        }
 
-        function getCrossName(id, lat, lng){
-            latLng = {lat: lat, lng: lng};
-            getStreetName(id, latLng);
-        }
+//        function getCrossName(id, lat, lng){
+//            latLng = {lat: lat, lng: lng};
+//            getStreetName(id, latLng);
+//        }
 
-        function getStreetName(id, latLng){
-            document.geocoder.geocode({'location': latLng}, function(results, status) {
-                if(status === google.maps.GeocoderStatus.OVER_QUERY_LIMIT){
-                    setTimeout(function(){
-                        backThread.startThread(id, latLng['lat'], latLng['lng']);
-                    }, 1000);
+//        function getStreetName(id, latLng){
+//            document.geocoder.geocode({'location': latLng}, function(results, status) {
+//                if(status === google.maps.GeocoderStatus.OVER_QUERY_LIMIT){
+//                    setTimeout(function(){
+//                        backThread.startThread(id, latLng['lat'], latLng['lng']);
+//                    }, 1000);
+//
+//                } else if(status === google.maps.GeocoderStatus.OK) {
+//                    backThread.putToMap(id, results[0].address_components[1].short_name);
+//                } else {
+//                    backThread.error(status);
+//                }
+//            });
+//        }
 
-                } else if(status === google.maps.GeocoderStatus.OK) {
-                    backThread.putToMap(id, results[0].address_components[1].short_name);
-                } else {
-                    backThread.error(status);
-                }
+//        function setMarkerFocus(oldMarkerId, newMarkerId){
+//            activeMarkerId = newMarkerId;
+//            if(oldMarkerId in markersMap)
+//                markersMap[oldMarkerId].setOpacity(0.7);
+//
+//            if(newMarkerId in markersMap) {
+//                markersMap[newMarkerId].setOpacity(1.0);
+//                markersMap[newMarkerId].setAnimation(google.maps.Animation.BOUNCE);
+//                window.setTimeout(function () {
+//                    markersMap[newMarkerId].setAnimation(null);
+//                }, 1500);
+//            }
+//        }
+
+        function calibrateMarkerPosition(directionsService, marker) {
+            var lat = marker.getPosition().lat();
+            var lng = marker.getPosition().lng();
+            var d = 0.0002;
+
+            var north = {lat: (lat+d), lng: lng};
+            var south = {lat: (lat-d), lng: lng};
+            var east = {lat: lat, lng: (lng+d)};
+            var west = {lat: lat, lng: (lng-d)};
+
+            directionsService.route(
+                    directionsServiceOptions(north, east), function (response, status){
+                if (status === google.maps.DirectionsStatus.OK)
+                    if(getCalibration(response.routes[0].legs[0], marker, lat, lng, d))
+                        return;
+                directionsService.route(
+                        directionsServiceOptions(south, west), function (response, status){
+                            if (status === google.maps.DirectionsStatus.OK)
+                                if(getCalibration(response.routes[0].legs[0], marker, lat, lng, d))
+                                    return;
+                });
             });
         }
 
-        function setMarkerFocus(oldMarkerId, newMarkerId){
-            activeMarkerId = newMarkerId;
-            if(oldMarkerId in markersMap)
-                markersMap[oldMarkerId].setOpacity(0.7);
-
-            if(newMarkerId in markersMap) {
-                markersMap[newMarkerId].setOpacity(1.0);
-                markersMap[newMarkerId].setAnimation(google.maps.Animation.BOUNCE);
-                window.setTimeout(function () {
-                    markersMap[newMarkerId].setAnimation(null);
-                }, 1500);
+        function directionsServiceOptions(origin, destination){
+            return {
+                origin: origin,
+                destination: destination,
+                travelMode: google.maps.TravelMode.DRIVING
+            };
+        }
+        function getCalibration(way, marker, lat, lng, d){
+            for(var i=0; i<way.steps.length; i++){
+                if(
+                        Math.abs(way.steps[i].end_location.lat()-lat) < (d/2)
+                        && Math.abs(way.steps[i].end_location.lng()-lng) < (d/2)
+                ){
+                    marker.setPosition(way.steps[i].end_location);
+                    return true;
+                }
             }
         }
-
     </script>
 
 </head>
 <body onload="initialize();">
-<div id="test"></div>
+<div id="x"></div>
 <div id="map_canvas" style="width:100%; height:100%"></div>
 
 <nav id="context-menu" class="context-menu">
