@@ -50,10 +50,58 @@
             document.getElementById('test').innerHTML = tex;
         }
 
-        /* TODO: potrzebne? */
-        var activeMarkerId;
-        var menuMarkerId;
+        var activeMenu;
 
+        /**
+         * Context menu object.
+         */
+        var ContextMenu = function(marker, overlay){
+            var marker = marker;
+
+            var menu = document.createElement('nav');
+            menu.classList.add('context-menu');
+
+            return {
+                overlay: overlay,
+                container: document.querySelector('#menus'),
+                activeClass: 'context-menu--active',
+                isActive: function () {
+                    return menu.classList.contains(this.activeClass);
+                },
+                open: function () {
+                    if(activeMenu != null)
+                        if(activeMenu.isActive())
+                            activeMenu.close();
+                    this.anchor();
+                    menu.classList.add(this.activeClass);
+                    activeMenu = this;
+                },
+                close: function () {
+                    menu.classList.remove(this.activeClass);
+                },
+                toggle: function () {
+                    if (this.isActive())
+                        this.close();
+                    else
+                        this.open();
+                },
+                anchor: function () {
+                    var point = this.overlay.getProjection().fromLatLngToContainerPixel(marker.getPosition())
+                    menu.style.left = point.x + "px";
+                    menu.style.top = point.y + "px";
+                },
+                createMenu: function(){
+                    var ul = document.createElement('ul');
+                    var li = document.createElement('li');
+                    li.innerHTML = "aaa";
+                    ul.appendChild(li);
+                    menu.appendChild(ul);
+                    this.container.appendChild(menu);
+                }
+            };
+        };
+
+        /* Initialize Map */
         function initialize() {
             /* Domestic center on Biala Podlaska. */
             var latlng = new google.maps.LatLng(52.03, 23.14);
@@ -84,14 +132,10 @@
 //            directionsService = new google.maps.DirectionsService;
 //
 
-
-
-
-
 //            var menuItem = menu.querySelectorAll(".context-menu__item")
 //            for(i=0; i<menuItem.length; i++){
 //                menuItem[i].addEventListener('click', function(){
-//                    action = this.querySelector('a').getAttribute("data-action");
+//                    action = ;
 //                    if(action == "connect2w" || action == "connect1w"){
 //                        controller.connectMarkers(action, activeMarkerId, menuMarkerId);
 //                        pointA = markersMap[activeMarkerId].getPosition();
@@ -127,19 +171,11 @@
 //                });
 //            }
 
-//            google.maps.event.addListener(map, 'mousedown', function(){
-//                if(menu.classList.contains("context-menu--active")){
-//                    menu.classList.remove("context-menu--active");
-//                    menuWasActive = true;
-//                    menuMarkerId = null;
-//                }
-//            });
 
-            var activeMenu;
             map.addListener('mousedown', function(){
                 if(activeMenu != null)
-                    if(activeMenu.active())
-                        activeMenu.hide();
+                    if(activeMenu.isActive())
+                        activeMenu.close();
                     else
                         activeMenu = null;
             });
@@ -155,34 +191,6 @@
 
                     calibrateMarkerPosition(directionsService, marker);
 
-                    /* Context menu */
-                    marker.contextMenu = {
-                        body: document.querySelector("#context-menu"),
-                        activeClass: "context-menu--active",
-                        active: function () {
-                            return this.body.classList.contains(this.activeClass);
-                        },
-                        show: function () {
-                            this.anchor();
-                            this.body.classList.add(this.activeClass);
-                            activeMenu = this;
-                        },
-                        hide: function () {
-                            this.body.classList.remove(this.activeClass);
-                        },
-                        toggle: function () {
-                            if (this.active())
-                                this.hide();
-                            else
-                                this.show();
-                        },
-                        anchor: function () {
-                            var point = overlay.getProjection().fromLatLngToContainerPixel(marker.getPosition());
-                            this.body.style.left = point.x + "px";
-                            this.body.style.top = point.y + "px";
-                        }
-                    };
-
                     // Add marker to lists.
                     controller.addMarker(marker);
 
@@ -191,83 +199,49 @@
                         content: infowindowContent(marker)
                     });
 
+                    /* Context menu */
+//                    var body = document.querySelector('#context-menu');
+//                    var menuEntries = body.querySelectorAll(".context-menu__item");
+//                    for(var i=0; i<menuEntries.length; i++){
+//                        menuEntries[i].addEventListener('click', function(){
+//                            action = this.querySelector('a').getAttribute("context-menu-action");
+//                            test(marker.position);
+//                        });
+//                    }
+                    marker.contextMenu = new ContextMenu(marker, overlay);
+                    marker.contextMenu.createMenu();
+
+//                    marker.contextMenu.menuEntries = marker.contextMenu.body.querySelectorAll(".context-menu__item");
+//                    var entries = marker.contextMenu.menuEntries;
+//
+//                    /* Context menu items listeners */
+//                    for(var i=0; i<entries.length; i++){
+//                        entries[i].addEventListener('click', function(){
+//                            action = this.querySelector('a').getAttribute("context-menu-action");
+//                            marker.contextMenu.testx();
+//                        });
+//                    }
 
                     /* Marker listeners */
                     marker.addListener('click', function () {
-                        marker.contextMenu.hide();
-                        marker.infowindow.open(map, marker);
+                        this.contextMenu.close();
+                        this.infowindow.open(map, marker);
                     });
 
                     marker.addListener('drag', function () {
-                        marker.contextMenu.hide();
+                        this.contextMenu.close();
                     });
                     marker.addListener('dragend', function () {
-                        calibrateMarkerPosition(directionsService, marker);
+                        calibrateMarkerPosition(directionsService, this);
                     });
 
                     marker.addListener('rightclick', function () {
-                        marker.contextMenu.toggle();
+                        this.contextMenu.toggle();
                     });
-
-                    //                    var point = overlay.getProjection().fromLatLngToContainerPixel(marker.getPosition());
-
-                    //                    google.maps.event.addListener(map, 'center_changed', function(){
-                    //                        hideContentMenu(menuMarkerId);
-                    //                        point = overlay.getProjection().fromLatLngToContainerPixel(marker.getPosition());
-                    //                    });
-                    //                    google.maps.event.addListener(marker, 'drag', function(){
-                    //                        if(marker.getTitle().search('(updating...)') == -1)
-                    //                            marker.setTitle(marker.getTitle()+" (updating...)");
-                    //                        marker.infowindow.setContent(infowindowContent(marker));
-                    //                        hideContentMenu(menuMarkerId);
-                    //                        point = overlay.getProjection().fromLatLngToContainerPixel(marker.getPosition());
-                    //                    });
-                    //                    google.maps.event.addListener(marker, 'position_changed', function () {
-                    //                        newLatLng = marker.getPosition();
-                    ////                        controller.setMarkerLatLng(markerId, newLatLng.lat(), newLatLng.lng());
-                    ////                        backThread.cancelThreads(markerId);
-                    ////                        backThread.getStreetsNames(markerId, newLatLng.lat(), newLatLng.lng());
-                    //                    });
-                    //                    google.maps.event.addListener(marker, 'title_changed', function () {
-                    //                        marker.infowindow.setContent(infowindowContent(marker));
-                    //                    });
-                    /* Add listeners for menu*/
-                    //google.maps.event.addListener(marker, 'click', function(){
-                    /*    /!*if(menu.classList.contains("context-menu--active")) {
-                     menu.classList.remove("context-menu--active");
-                     menuMarkerId = null;
-                     }
-                     else
-                     controller.setClickedFocus(markerId);*!/
-                     });*/
-
-
-                    //                    marker.addListener('rightclick', function () {
-                    //                        //TODO new method to get points
-                    //                        menu.style.left = point.x + "px";
-                    //                        menu.style.top = point.y + "px";
-                    //                        menu.classList.add("context-menu--active");
-                    //                        menuWasActive = true;
-                    //                        menuMarkerId = markerId;
-                    //                    });
                     /* End listeners */
-
-                    //backThread.getStreetsNames(markerId, event.latLng.lat(), event.latLng.lng());
-                    //                }
                 }
             });
-
         }
-
-
-//        function hideContentMenu(menuMarkerId){
-//            if(menu.classList.contains("context-menu--active")){
-//                menu.classList.remove("context-menu--active");
-//                menuMarkerId = null;
-//            }
-//        }
-
-
 
 //        function getCrossName(id, lat, lng){
 //            latLng = {lat: lat, lng: lng};
@@ -327,7 +301,7 @@
         function calibrateMarkerPosition(directionsService, marker) {
             var lat = marker.getPosition().lat();
             var lng = marker.getPosition().lng();
-            var d = 0.0002;
+            var d = 0.0003;
 
             var north = {lat: (lat+d), lng: lng};
             var south = {lat: (lat-d), lng: lng};
@@ -383,32 +357,29 @@
                 }
             }
         }
+
     </script>
 
 </head>
 <body onload="initialize();">
-<menu type="context" id="mymenu">
-    <menuitem label="Refresh"></menuitem>
-    <menuitem label="Twitter"></menuitem>
-</menu>
 <div id="test"></div>
 <div id="map_canvas" style="width:100%; height:100%"></div>
-
-<nav id="context-menu" class="context-menu">
-    <ul class="context-menu__items">
-        <li class="context-menu__item">
-            <a href="#" class="context-menu__link" data-action="connect2w">Connect with this</a>
-        </li>
-        <li class="context-menu__item">
-            <a href="#" class="context-menu__link" data-action="connect1w">Connect one way to this</a>
-        </li>
-        <li class="context-menu__item">
-            <a href="#" class="context-menu__link" data-action="setCrossType4">Set cross type (4way)</a>
-        </li>
-        <li class="context-menu__item">
-            <a href="#" class="context-menu__link" data-action="setCrossType3">Set cross type (3way)</a>
-        </li>
-    </ul>
-</nav>
+<div id="menus"></div>
+<!--<nav id="context-menu" class="context-menu">-->
+    <!--<ul class="context-menu__items">-->
+        <!--<li class="context-menu__item">-->
+            <!--<a href="#" class="context-menu__link" context-menu-action="xx">Connect with this</a>-->
+        <!--</li>-->
+        <!--<li class="context-menu__item">-->
+            <!--<a href="#" class="context-menu__link" context-menu-action="connect1w">Connect one way to this</a>-->
+        <!--</li>-->
+        <!--<li class="context-menu__item">-->
+            <!--<a href="#" class="context-menu__link" context-menu-action="setCrossType4">Set cross type (4way)</a>-->
+        <!--</li>-->
+        <!--<li class="context-menu__item">-->
+            <!--<a href="#" class="context-menu__link" context-menu-action="setCrossType3">Set cross type (3way)</a>-->
+        <!--</li>-->
+    <!--</ul>-->
+<!--</nav>-->
 </body>
 </html>
