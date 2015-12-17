@@ -27,6 +27,7 @@
 
         .context-menu__item{
             padding: 5px;
+            text-decoration: none;
         }
         .context-menu__items{
             margin: 0;
@@ -60,6 +61,11 @@
 
             var menu = document.createElement('nav');
             menu.classList.add('context-menu');
+            var options = [
+                true, //connect1Way
+                true, //connect2Way
+                true  //setCrossType
+            ];
 
             return {
                 overlay: overlay,
@@ -92,11 +98,40 @@
                 },
                 createMenu: function(){
                     var ul = document.createElement('ul');
-                    var li = document.createElement('li');
-                    li.innerHTML = "aaa";
-                    ul.appendChild(li);
+                    ul.classList.add('context-menu__items');
+                    this.makeOptions(ul);
                     menu.appendChild(ul);
                     this.container.appendChild(menu);
+                },
+                connect1WayMenuOption: function(li){
+                    li.innerHTML = "<a href='#' class='context-menu__item'>c1w</a>";
+                },
+                connect2WayMenuOption: function(li){
+                    li.innerHTML = "<a href='#' class='context-menu__item'>c2w</a>";
+                },
+                setCrossTypeMenuOption: function(li){
+                    li.innerHTML = "<a href='#' class='context-menu__item'>ct</a>";
+                },
+                makeOptions: function(ul){
+                    var li = "";
+                    if(options[0]){
+                        li = document.createElement('li');
+                        this.connect1WayMenuOption(li);
+                        li.classList.add('context-menu__item');
+                        ul.appendChild(li);
+                    }
+                    if(options[1]){
+                        li = document.createElement('li');
+                        this.connect2WayMenuOption(li);
+                        li.classList.add('context-menu__item');
+                        ul.appendChild(li);
+                    }
+                    if(options[2]) {
+                        li = document.createElement('li');
+                        this.setCrossTypeMenuOption(li);
+                        li.classList.add('context-menu__item');
+                        ul.appendChild(li);
+                    }
                 }
             };
         };
@@ -199,28 +234,11 @@
                         content: infowindowContent(marker)
                     });
 
-                    /* Context menu */
-//                    var body = document.querySelector('#context-menu');
-//                    var menuEntries = body.querySelectorAll(".context-menu__item");
-//                    for(var i=0; i<menuEntries.length; i++){
-//                        menuEntries[i].addEventListener('click', function(){
-//                            action = this.querySelector('a').getAttribute("context-menu-action");
-//                            test(marker.position);
-//                        });
-//                    }
+                    // Create context menu
                     marker.contextMenu = new ContextMenu(marker, overlay);
                     marker.contextMenu.createMenu();
+                    //todo: add listeners
 
-//                    marker.contextMenu.menuEntries = marker.contextMenu.body.querySelectorAll(".context-menu__item");
-//                    var entries = marker.contextMenu.menuEntries;
-//
-//                    /* Context menu items listeners */
-//                    for(var i=0; i<entries.length; i++){
-//                        entries[i].addEventListener('click', function(){
-//                            action = this.querySelector('a').getAttribute("context-menu-action");
-//                            marker.contextMenu.testx();
-//                        });
-//                    }
 
                     /* Marker listeners */
                     marker.addListener('click', function () {
@@ -365,21 +383,6 @@
 <div id="test"></div>
 <div id="map_canvas" style="width:100%; height:100%"></div>
 <div id="menus"></div>
-<!--<nav id="context-menu" class="context-menu">-->
-    <!--<ul class="context-menu__items">-->
-        <!--<li class="context-menu__item">-->
-            <!--<a href="#" class="context-menu__link" context-menu-action="xx">Connect with this</a>-->
-        <!--</li>-->
-        <!--<li class="context-menu__item">-->
-            <!--<a href="#" class="context-menu__link" context-menu-action="connect1w">Connect one way to this</a>-->
-        <!--</li>-->
-        <!--<li class="context-menu__item">-->
-            <!--<a href="#" class="context-menu__link" context-menu-action="setCrossType4">Set cross type (4way)</a>-->
-        <!--</li>-->
-        <!--<li class="context-menu__item">-->
-            <!--<a href="#" class="context-menu__link" context-menu-action="setCrossType3">Set cross type (3way)</a>-->
-        <!--</li>-->
-    <!--</ul>-->
-<!--</nav>-->
+
 </body>
 </html>
