@@ -35,6 +35,9 @@
         .context-menu__link{
             text-decoration: none;
         }
+        .selected {
+            background: darkred;
+        }
     </style>
     <script type="text/javascript">
         /* Add to head script file from Google API with Google API key from config. */
@@ -59,17 +62,23 @@
         var ContextMenu = function(marker, overlay){
             var marker = marker;
 
+            /* Generate menu. */
             var menu = document.createElement('nav');
             menu.classList.add('context-menu');
-            var options = [
-                true, //connect1Way
-                true, //connect2Way
-                true  //setCrossType
-            ];
+            var ul = document.createElement('ul');
+            ul.classList.add('context-menu__items');
+            menu.appendChild(ul);
+            var container = document.querySelector('#menus');
+            container.appendChild(menu);
+
+            var options = {
+                c1w: 'Connect 1 way',
+                c2w: 'Commect 2 way',
+                ct: 'Set cross type'
+            };
 
             return {
                 overlay: overlay,
-                container: document.querySelector('#menus'),
                 activeClass: 'context-menu--active',
                 isActive: function () {
                     return menu.classList.contains(this.activeClass);
@@ -79,6 +88,7 @@
                         if(activeMenu.isActive())
                             activeMenu.close();
                     this.anchor();
+                    this.generateMenu();
                     menu.classList.add(this.activeClass);
                     activeMenu = this;
                 },
@@ -96,42 +106,16 @@
                     menu.style.left = point.x + "px";
                     menu.style.top = point.y + "px";
                 },
-                createMenu: function(){
-                    var ul = document.createElement('ul');
-                    ul.classList.add('context-menu__items');
-                    this.makeOptions(ul);
-                    menu.appendChild(ul);
-                    this.container.appendChild(menu);
-                },
-                connect1WayMenuOption: function(li){
-                    li.innerHTML = "<a href='#' class='context-menu__item'>c1w</a>";
-                },
-                connect2WayMenuOption: function(li){
-                    li.innerHTML = "<a href='#' class='context-menu__item'>c2w</a>";
-                },
-                setCrossTypeMenuOption: function(li){
-                    li.innerHTML = "<a href='#' class='context-menu__item'>ct</a>";
-                },
-                makeOptions: function(ul){
-                    var li = "";
-                    if(options[0]){
-                        li = document.createElement('li');
-                        this.connect1WayMenuOption(li);
-                        li.classList.add('context-menu__item');
-                        ul.appendChild(li);
+                generateMenu: function(){
+                    var content = "";
+                    for(key in options){
+                        if(options[key] != null)
+                            content += this.generateOption(key, options[key]);
                     }
-                    if(options[1]){
-                        li = document.createElement('li');
-                        this.connect2WayMenuOption(li);
-                        li.classList.add('context-menu__item');
-                        ul.appendChild(li);
-                    }
-                    if(options[2]) {
-                        li = document.createElement('li');
-                        this.setCrossTypeMenuOption(li);
-                        li.classList.add('context-menu__item');
-                        ul.appendChild(li);
-                    }
+                    ul.innerHTML = content;
+                },
+                generateOption: function(key, text){
+                    return "<li class='context-menu__item' action-key='"+key+"'><a href='#' class='context-menu__item'>"+text+"</a></li>";
                 }
             };
         };
@@ -236,7 +220,6 @@
 
                     // Create context menu
                     marker.contextMenu = new ContextMenu(marker, overlay);
-                    marker.contextMenu.createMenu();
                     //todo: add listeners
 
 
