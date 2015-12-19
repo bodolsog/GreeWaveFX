@@ -42,6 +42,9 @@ public class MapViewController {
         window.setMember("backThread", new BackThread(webEngine));
     }
 
+    public void log(String d){
+        System.out.println(d);
+    }
 
     /**
      * Set reference to Markers (called from MainApp).

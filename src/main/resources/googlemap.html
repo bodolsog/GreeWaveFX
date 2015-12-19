@@ -35,7 +35,7 @@
         .context-menu__link{
             text-decoration: none;
         }
-        .selected {
+        .menuItemHover {
             background: darkred;
         }
     </style>
@@ -63,13 +63,14 @@
             var marker = marker;
 
             /* Generate menu. */
-            var menu = document.createElement('nav');
+            var menu = document.createElement('nav')
             menu.classList.add('context-menu');
             var ul = document.createElement('ul');
             ul.classList.add('context-menu__items');
             menu.appendChild(ul);
-            var container = document.querySelector('#menus');
-            container.appendChild(menu);
+            document.querySelector('#menus').appendChild(menu);
+
+            var menuGenerated = false;
 
             var options = {
                 c1w: 'Connect 1 way',
@@ -79,21 +80,23 @@
 
             return {
                 overlay: overlay,
-                activeClass: 'context-menu--active',
+                visibleCSSClass: 'context-menu--active',
+                menuItemCSSClass: 'context-menu__item',
                 isActive: function () {
-                    return menu.classList.contains(this.activeClass);
+                    return menu.classList.contains(this.visibleCSSClass);
                 },
                 open: function () {
                     if(activeMenu != null)
                         if(activeMenu.isActive())
                             activeMenu.close();
-                    this.anchor();
-                    this.generateMenu();
-                    menu.classList.add(this.activeClass);
+                    this.calculateMenuPosition();
+                    if(!menuGenerated)
+                        this.generateMenu();
+                    menu.classList.add(this.visibleCSSClass); // show menu
                     activeMenu = this;
                 },
                 close: function () {
-                    menu.classList.remove(this.activeClass);
+                    menu.classList.remove(this.visibleCSSClass);
                 },
                 toggle: function () {
                     if (this.isActive())
@@ -101,27 +104,44 @@
                     else
                         this.open();
                 },
-                anchor: function () {
+                calculateMenuPosition: function () {
                     var point = this.overlay.getProjection().fromLatLngToContainerPixel(marker.getPosition())
                     menu.style.left = point.x + "px";
                     menu.style.top = point.y + "px";
                 },
                 generateMenu: function(){
-                    var content = "";
                     for(key in options){
                         if(options[key] != null)
-                            content += this.generateOption(key, options[key]);
+                            this.generateOption(key, options[key]);
+                    menuGenerated = true;
                     }
-                    ul.innerHTML = content;
                 },
                 generateOption: function(key, text){
-                    return "<li class='context-menu__item' action-key='"+key+"'><a href='#' class='context-menu__item'>"+text+"</a></li>";
+                    var li = document.createElement('li');
+                    li.classList.add(this.menuItemCSSClass);
+                    li.innerHTML = text;
+                    li.addEventListener('click', function(){
+                        document.getElementById("test").innerHTML = key;
+                    });
+                    li.addEventListener('mouseover', function(){
+                        this.style.cursor="pointer";
+                        this.classList.add('menuItemHover');
+                    });
+                    li.addEventListener('mouseout', function(){
+                        this.classList.remove('menuItemHover');
+                    });
+
+                    ul.appendChild(li);
+                },
+                setOptions: function(value){
+                    options.xx = value;
                 }
             };
         };
 
         /* Initialize Map */
         function initialize() {
+            var counter = 0;
             /* Domestic center on Biala Podlaska. */
             var latlng = new google.maps.LatLng(52.03, 23.14);
 
@@ -220,7 +240,7 @@
 
                     // Create context menu
                     marker.contextMenu = new ContextMenu(marker, overlay);
-                    //todo: add listeners
+                    marker.contextMenu.setOptions(++counter);
 
 
                     /* Marker listeners */
