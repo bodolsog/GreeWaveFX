@@ -121,7 +121,7 @@
                     li.classList.add(this.menuItemCSSClass);
                     li.innerHTML = text;
                     li.addEventListener('click', function(){
-                        document.getElementById("test").innerHTML = key;
+                        //document.getElementById("test").innerHTML = key;
                     });
                     li.addEventListener('mouseover', function(){
                         this.style.cursor="pointer";
@@ -245,8 +245,15 @@
 
                     /* Marker listeners */
                     marker.addListener('click', function () {
-                        this.contextMenu.close();
-                        this.infowindow.open(map, marker);
+                        if(activeMenu == null)
+                            this.infowindow.open(map, marker);
+
+                        else{
+                            if(activeMenu.isActive()){
+                                activeMenu.close();
+                                activeMenu = null;
+                            }
+                        }
                     });
 
                     marker.addListener('drag', function () {
