@@ -59,6 +59,34 @@ public class MapViewController {
         markers.addMarker(jsMarker);
     }
 
+    /**
+     * Set active Marker id into variable.
+     * @param markerId
+     */
+    public void setMarkerActiveId(int markerId){
+        markers.setMarkerActiveId(markerId);
+    }
+
+    /**
+     * Get active Marker id.
+     * @return
+     */
+    public int getMarkerActiveId(){
+        return markers.getMarkerActiveId();
+    }
+
+    public JSObject getMarkerActive(){
+        int id = markers.getMarkerActiveId();
+        Marker marker = markers.getMarker(id);
+        if(marker != null){
+            return marker.jsMarker;
+        }
+        return null;
+    }
+
+    public void log(String text){
+        System.out.println(text);
+    }
 
     /**
      * Execute script from js which deletes Marker.

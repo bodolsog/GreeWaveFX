@@ -136,6 +136,7 @@
 //            });
 
             var activeMenu;
+
             map.addListener('mousedown', function(){
                 if(activeMenu != null)
                     if(activeMenu.active())
@@ -152,6 +153,8 @@
                         draggable: true,
                         map: map
                     });
+
+                    toggleMarkersIcons(marker);
 
                     calibrateMarkerPosition(directionsService, marker);
 
@@ -195,7 +198,10 @@
                     /* Marker listeners */
                     marker.addListener('click', function () {
                         marker.contextMenu.hide();
-                        marker.infowindow.open(map, marker);
+                        if(!isMarkerActive(marker))
+                            setMarkerActive(marker);
+                        else
+                            marker.infowindow.open(map, marker);
                     });
 
                     marker.addListener('drag', function () {
@@ -304,7 +310,69 @@
 //        }
 
         /**
-         *
+         * Return true if Marker is active.
+         * @param marker
+         */
+        function isMarkerActive(marker){
+            if(marker.id == controller.getMarkerActiveId())
+                return true;
+            return false;
+        }
+
+        /**
+         * Set marker active and toggle old and new marker icon.
+         * @param marker
+         */
+        function setMarkerActive(marker){
+            toggleMarkersIcons(marker);
+            controller.setMarkerActiveId(marker.id);
+        }
+
+        /**
+         * Set active icon for newMarker and get from variable id of oldMarker. If this exists set domestic unactive
+         * icon for him.
+         * @param newMarker
+         */
+        function toggleMarkersIcons(newMarker){
+            var oldMarker = controller.getMarkerActive();
+            if(oldMarker != null)
+                setMarkerIconUnactive(oldMarker);
+            setMarkerIconActive(newMarker);
+        }
+
+        /**
+         * Set domestic active icon for Marker.
+         * @param marker
+         */
+        function setMarkerIconActive(marker){
+            setMarkerIcon(marker, 'yellow', 'dot');
+        }
+
+        /**
+         * Set domestic unactive icon for Marker.
+         * @param marker
+         */
+        function setMarkerIconUnactive(marker){
+            setMarkerIcon(marker, 'red', 'dot');
+        }
+
+        /**
+         * Set marker icon.
+         * @param marker
+         * @param color String
+         * @param emblem String
+         */
+        function setMarkerIcon(marker, color, emblem){
+            if(emblem != null)
+                emblem = '-'+emblem;
+            else
+                emblem = '';
+
+            marker.setIcon('markers/'+color+emblem+'.png');
+        }
+
+        /**
+         * Create infowidow content.
          * @param marker
          * @returns {string}
          */

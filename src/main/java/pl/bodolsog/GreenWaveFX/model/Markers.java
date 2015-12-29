@@ -7,10 +7,12 @@ import netscape.javascript.JSObject;
 
 public class Markers {
 
-    private int nextId = 0;
+    private int nextId;
 
     // Map of markers <id, marker>.
     private ObservableMap<Integer,Marker> markers = FXCollections.observableHashMap();
+
+    private int active;
 
     /**
      * Add marker to markers list.
@@ -21,6 +23,7 @@ public class Markers {
             nextId++;
         }
         markers.put(nextId, new Marker(nextId, jsMarker));
+        setMarkerActiveId(nextId);
     }
 
     /**
@@ -55,4 +58,21 @@ public class Markers {
     public int size(){
         return markers.size();
     }
+
+    /**
+     * Set as active Marker's id.
+     * @param id
+     */
+    public void setMarkerActiveId(int id){
+        active = id;
+    }
+
+    /**
+     * Get id of active Marker.
+     * @return
+     */
+    public int getMarkerActiveId(){
+        return active;
+    }
+
 }
