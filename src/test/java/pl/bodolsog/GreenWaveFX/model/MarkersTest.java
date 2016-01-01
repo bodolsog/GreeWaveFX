@@ -40,22 +40,17 @@ public class MarkersTest {
         thirdJSObject = new JSObjectTest();
     }
 
+    // CRUD: Create
     @Test
-    public void whenNewMarkerIsAddedThenItIdIsInActualVariable(){
-        markers.addMarker(firstJSObject);
-        assertEquals("Id from active variable should be equal to id of first Marker", markers.getMarker(0), markers.getActiveMarker());
-        markers.addMarker(secondJSObject);
-        assertEquals("Id from active variable should be equal to id of second Marker", markers.getMarker(1), markers.getActiveMarker());
-    }
-
-    @Test
-    public void whenTwoMarkersAreAddedThenTheyAreInMap(){
+    public void whenTwoMarkersAreAddedThenTheyBothAreInMap(){
         markers.addMarker(firstJSObject);
         markers.addMarker(secondJSObject);
         assertNotSame("First and second Markers are not equals", markers.getMarker(0), markers.getMarker(1));
         assertSame("First object has a firstJSObject as jsMarker", firstJSObject, markers.getMarker(0).jsMarker);
         assertSame("Second object has a secondJSObject as jsMarker", secondJSObject, markers.getMarker(1).jsMarker);
     }
+
+    // CRUD: Delete
     @Test
     public void whenObjectIsDeletedAndNewAddedAfterThenIndexIsntDuplicated(){
         markers.addMarker(firstJSObject);
@@ -66,4 +61,13 @@ public class MarkersTest {
         assertSame("Second element should be index 2, thirdJSObject", thirdJSObject, markers.getMarker(2).jsMarker);
         assertNull("Index 1 should get null", markers.getMarker(1));
     }
+
+    @Test
+    public void whenNewMarkerIsAddedThenItIdIsInActualVariable(){
+        markers.addMarker(firstJSObject);
+        assertEquals("Id from active variable should be equal to id of first Marker", markers.getMarker(0), markers.getActiveMarker());
+        markers.addMarker(secondJSObject);
+        assertEquals("Id from active variable should be equal to id of second Marker", markers.getMarker(1), markers.getActiveMarker());
+    }
+
 }
