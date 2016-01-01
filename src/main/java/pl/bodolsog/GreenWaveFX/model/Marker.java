@@ -8,6 +8,8 @@ import pl.bodolsog.GreenWaveFX.crossroads.Crossroad;
 import pl.bodolsog.GreenWaveFX.crossroads.FourWayCrossroad;
 import pl.bodolsog.GreenWaveFX.crossroads.ThreeWayCrossroad;
 
+import java.util.HashMap;
+
 /**
  * model for markers.
  */
@@ -21,6 +23,10 @@ public class Marker {
     public JSObject jsMarker;
     // List of all one way connections from marker to another.
     private ObservableList<Integer> connections = FXCollections.<Integer>observableArrayList();
+    // List of roads:
+    // 0 - north, 1 - east, 2 - south, 3 - west
+    // null - way is disabled
+    private HashMap<String, Way> cross = new HashMap<>();
 
     /**
      * Constructor
@@ -33,6 +39,12 @@ public class Marker {
         this.name = new SimpleStringProperty("");
         this.jsMarker = jsMarker;
         this.jsMarker.setMember("id", id+"");
+
+        // Set default cross with all routes disabled
+        cross.put("N", null);
+        cross.put("E", null);
+        cross.put("S", null);
+        cross.put("W", null);
     }
 
     /**
@@ -64,5 +76,6 @@ public class Marker {
     public int getId(){
         return id.getValue();
     }
+
 
 }
