@@ -14,10 +14,10 @@ public class WaysTest {
 
     private Ways ways;
     private JSObject js;
-    Marker markerOne;
-    Marker markerTwo;
-    Marker markerThree;
-    Marker markerFour;
+    private Marker markerOne;
+    private Marker markerTwo;
+    private Marker markerThree;
+    private Marker markerFour;
 
     @Before
     public void setUp(){

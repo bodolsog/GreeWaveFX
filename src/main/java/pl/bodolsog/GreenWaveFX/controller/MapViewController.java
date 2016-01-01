@@ -72,11 +72,11 @@ public class MapViewController {
      * @return
      */
     public int getMarkerActiveId(){
-        return markers.getMarkerActiveId();
+        return markers.getActiveMarkerId();
     }
 
     public JSObject getMarkerActive(){
-        int id = markers.getMarkerActiveId();
+        int id = markers.getActiveMarkerId();
         Marker marker = markers.getMarker(id);
         if(marker != null){
             return marker.jsMarker;
