@@ -81,15 +81,4 @@ public class Markers {
         return markers.get(getActiveMarkerId());
     }
 
-    /**
-     * Check if markers contain key.
-     * @param id
-     * @return boolean
-     */
-    public boolean containsKey(int id){
-        if(markers.containsKey(id))
-            return true;
-        return false;
-    }
-
 }
