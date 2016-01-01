@@ -75,7 +75,8 @@
             var options = {
                 c1w: 'Connect 1 way',
                 c2w: 'Commect 2 way',
-                ct:  'Set cross type'
+                ct:  'Set cross type',
+                del: 'Delete marker'
             };
 
             return {
@@ -121,7 +122,12 @@
                     li.classList.add(this.menuItemCSSClass);
                     li.innerHTML = text;
                     li.addEventListener('click', function(){
-                        //document.getElementById("test").innerHTML = key;
+                        if(key == 'del'){
+                            var x = confirm("sure?");
+                            x = true;
+                            if(x)
+                                deleteMarker(marker);
+                        }
                     });
                     li.addEventListener('mouseover', function(){
                         this.style.cursor="pointer";
@@ -132,9 +138,6 @@
                     });
 
                     ul.appendChild(li);
-                },
-                setOptions: function(value){
-                    options.xx = value;
                 }
             };
         };
@@ -243,8 +246,6 @@
 
                     // Create context menu
                     marker.contextMenu = new ContextMenu(marker, overlay);
-                    marker.contextMenu.setOptions(++counter);
-
 
                     /* Marker listeners */
                     marker.addListener('click', function() {
@@ -357,6 +358,14 @@
                     "   </dl>" +
                     "</div>";
         }
+
+        function deleteMarker(marker){
+            controller.deleteMarker(marker.id);
+            marker.setMap(null);
+            marker = null;
+            activeMenu.close();
+        }
+
 
         /**
          *
