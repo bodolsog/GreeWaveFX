@@ -359,6 +359,10 @@
                     "</div>";
         }
 
+        /**
+         * Removes and destroys marker.
+         * @param marker
+         */
         function deleteMarker(marker){
             controller.deleteMarker(marker.id);
             marker.setMap(null);
@@ -366,38 +370,51 @@
             activeMenu.close();
         }
 
-
         /**
-         *
+         * Calculate center point of crossroads.
+         * 
          * @param directionsService
          * @param marker
          */
         function calibrateMarkerPosition(directionsService, marker) {
             var lat = marker.getPosition().lat();
             var lng = marker.getPosition().lng();
-            var d = 0.0003;
+            var dimension = 0.0003;
 
-            var north = {lat: (lat+d), lng: lng};
-            var south = {lat: (lat-d), lng: lng};
-            var east = {lat: lat, lng: (lng+d)};
-            var west = {lat: lat, lng: (lng-d)};
+            var north = {lat: (lat+dimension), lng: lng};
+            var south = {lat: (lat-dimension), lng: lng};
+            var east = {lat: lat, lng: (lng+dimension)};
+            var west = {lat: lat, lng: (lng-dimension)};
 
+            // Calculate middle point for nort-east (this should work for all 4-way crossroads and for 3-way corossroads
+            // with routes on north and east).
             directionsService.route(
                 directionsServiceOptions(north, east), function (response, status){
-                    if (status === google.maps.DirectionsStatus.OK)
-                        if(getCalibration(response.routes[0].legs[0], marker, lat, lng, d))
+                    if (status === google.maps.DirectionsStatus.OK){
+                        var way = response.routes[0].legs[0];
+                        // Calculate if result contains crossroads middle point, if yes - end function (return).
+                        if(getCalibration(way, marker, lat, lng, dimension))
                             return;
+                    }
+                    // When first search not found middle point (status not OK or crossroads is 3-way without both north
+                    // and east route. Then search for south-west.
                     directionsService.route(
                         directionsServiceOptions(south, west), function (response, status){
-                            if (status === google.maps.DirectionsStatus.OK)
-                                if(getCalibration(response.routes[0].legs[0], marker, lat, lng, d))
+                            if (status === google.maps.DirectionsStatus.OK){
+                                var way = response.routes[0].legs[0];
+                                // Calculate if result contains crossroads middle point, if yes - end function (return).
+                                if(getCalibration(way, marker, lat, lng, dimension))
                                     return;
+                            }
                 });
             });
+            // When nothing found - marker stay there, where user has clicked (point is too far away from middle point
+            // or it isn't near crossroad.
         }
 
         /**
-         *
+         * Return options for directionService.
+         * 
          * @param origin
          * @param destination
          * @returns {{origin: *, destination: *, travelMode: *}}
@@ -411,21 +428,27 @@
         }
 
         /**
-         *
+         * Search in all becomes from Google steps a first one, that is in middle of dimensions (abs of location minus
+         * marker's clicked point is smallest as half of dimension for latitude and for longitude). If found this one 
+         * - updates marker data and return true.
+         * 
          * @param way
          * @param marker
          * @param lat
          * @param lng
-         * @param d
+         * @param dimension
          * @returns {boolean}
          */
-        function getCalibration(way, marker, lat, lng, d){
+        function getCalibration(way, marker, lat, lng, dimension){
+            var wayStageEndpoint;
             for(var i=0; i<way.steps.length; i++){
+                wayStageEndpoint = way.steps[i].end_location;
                 if(
-                        Math.abs(way.steps[i].end_location.lat()-lat) < (d/2)
-                        && Math.abs(way.steps[i].end_location.lng()-lng) < (d/2)
+                        Math.abs(wayStageEndpoint.lat()-lat) < (dimension/2)
+                        && Math.abs(wayStageEndpoint.lng()-lng) < (dimension/2)
                 ){
-                    marker.setPosition(way.steps[i].end_location);
+                    // If found - update data and return true.
+                    marker.setPosition(wayStageEndpoint);
                     marker.infowindow.setContent(infowindowContent(marker));
                     return true;
                 }
