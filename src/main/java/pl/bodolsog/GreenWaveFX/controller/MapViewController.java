@@ -5,6 +5,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
@@ -59,8 +61,19 @@ public class MapViewController {
         markers.addMarker(jsMarker);
     }
 
-    public void deleteMarker(int markerId){
-        markers.deleteMarker(markerId);
+    public boolean deleteMarker(int markerId){
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation Dialog");
+        //alert.setHeaderText("Look, a Confirmation Dialog");
+        alert.setContentText("Are you sure?");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
+            markers.deleteMarker(markerId);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

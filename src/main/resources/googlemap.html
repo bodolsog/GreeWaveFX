@@ -233,7 +233,6 @@
                     });
 
                     toggleMarkersIcons(marker);
-
                     calibrateMarkerPosition(directionsService, marker);
 
                     // Add marker to lists.
@@ -364,10 +363,11 @@
          * @param marker
          */
         function deleteMarker(marker){
-            controller.deleteMarker(marker.id);
-            marker.setMap(null);
-            marker = null;
             activeMenu.close();
+            if(controller.deleteMarker(marker.id)){
+                marker.setMap(null);
+                marker = null;
+            }
         }
 
         /**
