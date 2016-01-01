@@ -7,7 +7,7 @@ import netscape.javascript.JSObject;
 
 public class Markers {
 
-    private int nextId;
+    private int nextId = 0;
 
     // Map of markers <id, marker>.
     private ObservableMap<Integer,Marker> markers = FXCollections.observableHashMap();
@@ -19,11 +19,9 @@ public class Markers {
      * @param jsMarker GoogleMaps marker object
      */
     public void addMarker(JSObject jsMarker){
-        while(markers.containsKey(nextId)){
-            nextId++;
-        }
         markers.put(nextId, new Marker(nextId, jsMarker));
         setMarkerActiveId(nextId);
+        nextId++;
     }
 
     /**
@@ -69,10 +67,29 @@ public class Markers {
 
     /**
      * Get id of active Marker.
-     * @return
+     * @return active
      */
-    public int getMarkerActiveId(){
+    public int getActiveMarkerId(){
         return active;
+    }
+
+    /**
+     * Return Marker that is now active.
+     * @return Marker
+     */
+    public Marker getActiveMarker(){
+        return markers.get(getActiveMarkerId());
+    }
+
+    /**
+     * Check if markers contain key.
+     * @param id
+     * @return boolean
+     */
+    public boolean containsKey(int id){
+        if(markers.containsKey(id))
+            return true;
+        return false;
     }
 
 }
