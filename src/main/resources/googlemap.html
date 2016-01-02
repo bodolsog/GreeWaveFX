@@ -138,6 +138,9 @@
                     });
 
                     ul.appendChild(li);
+                },
+                removeMenu: function(){
+                    menu.remove();
                 }
             };
         };
@@ -365,8 +368,9 @@
         function deleteMarker(marker){
             activeMenu.close();
             if(controller.deleteMarker(marker.id)){
-                marker.setMap(null);
-                marker = null;
+                marker.contextMenu.removeMenu();    // Remove menu from DOM
+                marker.setMap(null);                // Remove Marker from Overlay
+                marker = null;                      // Remove reference to Marker
             }
         }
 
