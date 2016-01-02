@@ -13,16 +13,20 @@ import netscape.javascript.JSObject;
 import pl.bodolsog.GreenWaveFX.MainApp;
 import pl.bodolsog.GreenWaveFX.model.Marker;
 import pl.bodolsog.GreenWaveFX.model.Markers;
+import pl.bodolsog.GreenWaveFX.model.Ways;
 import pl.bodolsog.GreenWaveFX.tools.PropertiesManager;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 public class MapViewController {
 
     // Reference to main app.
     private MainApp mainApp;
 
-    public Markers markers;
+    private Markers markers;
+    private Ways ways;
 
     @FXML
     private WebView webView;
@@ -80,15 +84,15 @@ public class MapViewController {
      * Set active Marker id into variable.
      * @param markerId
      */
-    public void setMarkerActiveId(int markerId){
-        markers.setMarkerActiveId(markerId);
+    public void setActiveMarkerId(int markerId){
+        markers.setActiveMarkerId(markerId);
     }
 
     /**
      * Get active Marker id.
      * @return
      */
-    public int getMarkerActiveId(){
+    public int getActiveMarkerId(){
         return markers.getActiveMarkerId();
     }
 
@@ -101,29 +105,27 @@ public class MapViewController {
         return null;
     }
 
+    public void setConnection(int endMarkerId, boolean twoWay){
+        Marker beginMarker = markers.getActiveMarker();
+        Marker endMarker = markers.getMarker(endMarkerId);
+        ways.addWay(beginMarker, endMarker, twoWay);
+    }
+
     public void log(String text){
         System.out.println(text);
     }
 
-    /**
-     * Execute script from js which deletes Marker.
-     * @param id Marker's id
-     */
-//    public void deleteMarker(int id){
-//        webEngine.executeScript("deleteMarker('"+id+"')");
-//    }
-//
-//    public void setMarkerFocus(int oldMarkerId, int newMarkerId){
-//        webEngine.executeScript("setMarkerFocus('"+oldMarkerId+"', '"+newMarkerId+"')");
-//    }
-//
-//    public void setClickedFocus(int id){
-//        //mainApp.getMarkersViewController().setClickedFocus(id);
-//    }
-//
-//    public void connectMarkers(String mode, int markerOne, int markerTwo){
-//        //mainApp.getMarkersViewController().connectMarkers(mode, markerOne, markerTwo);
-//    }
+
+
+
+
+
+
+
+
+
+
+
 
 
 

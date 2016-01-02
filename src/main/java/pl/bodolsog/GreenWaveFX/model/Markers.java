@@ -20,7 +20,7 @@ public class Markers {
      */
     public void addMarker(JSObject jsMarker){
         markers.put(nextId, new Marker(nextId, jsMarker));
-        setMarkerActiveId(nextId);
+        setActiveMarkerId(nextId);
         nextId++;
     }
 
@@ -61,7 +61,7 @@ public class Markers {
      * Set as active Marker's id.
      * @param id
      */
-    public void setMarkerActiveId(int id){
+    public void setActiveMarkerId(int id){
         active = id;
     }
 

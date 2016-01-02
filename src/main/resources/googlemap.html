@@ -122,11 +122,13 @@
                     li.classList.add(this.menuItemCSSClass);
                     li.innerHTML = text;
                     li.addEventListener('click', function(){
-                        if(key == 'del'){
-                            var x = confirm("sure?");
-                            x = true;
-                            if(x)
-                                deleteMarker(marker);
+                        switch(key){
+                            case 'del':
+                                deleteMarker(marker); break;
+                            case 'c1w':
+                                connectMarkers(marker, false); break;
+                            case 'c2w':
+                                connectMarkers(marker, true); break;
                         }
                     });
                     li.addEventListener('mouseover', function(){
@@ -288,7 +290,7 @@
          * @param marker
          */
         function isMarkerActive(marker){
-            if(marker.id == controller.getMarkerActiveId())
+            if(marker.id == controller.getActiveMarkerId())
                 return true;
             return false;
         }
@@ -299,7 +301,7 @@
          */
         function setMarkerActive(marker){
             toggleMarkersIcons(marker);
-            controller.setMarkerActiveId(marker.id);
+            controller.setActiveMarkerId(marker.id);
         }
 
         /**
@@ -308,7 +310,7 @@
          * @param newMarker
          */
         function toggleMarkersIcons(newMarker){
-            var oldMarker = controller.getMarkerActive();
+            var oldMarker = controller.getActiveMarkerId();
             if(oldMarker != null)
                 setMarkerIconUnactive(oldMarker);
             setMarkerIconActive(newMarker);
@@ -363,15 +365,26 @@
 
         /**
          * Removes and destroys marker.
+         *
          * @param marker
          */
         function deleteMarker(marker){
             activeMenu.close();
             if(controller.deleteMarker(marker.id)){
-                marker.contextMenu.removeMenu();    // Remove menu from DOM
+                marker.contextMenu.removeMenu();    // Remove marker menu from DOM
                 marker.setMap(null);                // Remove Marker from Overlay
                 marker = null;                      // Remove reference to Marker
             }
+        }
+
+        /**
+         * Call setConnection from controller, which add new Way(s) between Markers.
+         *
+         * @param markerId
+         * @param twoWay - boolean: true - two-way connection or false - one-way connection
+         */
+        function connectMarkers(markerId, twoWay){
+            controller.setConnection(markerId, twoWay);
         }
 
         /**
