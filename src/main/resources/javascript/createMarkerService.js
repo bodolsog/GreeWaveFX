@@ -385,9 +385,16 @@ function findCrossroadPropereties(marker) {
                             if (!allMarkersAreInBounds(response.routes[0].bounds, centerPoint, dimensions.bigger))
                                 removeWaysOutOfBounds(directions, response.routes[0].legs, centerPoint, dimensions);
 
-                            //todo set properties to marker
+                            var crossroadWays = [];
+                            for (direction in directions) {
+                                if (directions[direction][4]) {
+                                    crossroadWays.push(direction);
+                                }
+                            }
+                            controller.
                         } else {
                             controller.log("Google second response error: " + status);
+                            1
                         }
                     });
             } else {

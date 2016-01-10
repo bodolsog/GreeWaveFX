@@ -21,7 +21,7 @@ public class Ways {
 
             // TODO: 31.12.15 add feedback if fails
             if (!firstWayOccur) {
-                ways.put(nextId, new Way(nextId, begin, end));
+                ways.put(nextId, new Way(this, nextId, begin, end));
                 nextId++;
             }
 
@@ -31,7 +31,7 @@ public class Ways {
                                 && integerWayEntry.getValue().getWayEnd() == begin
                 );
                 if (!secondWayOccur) {
-                    ways.put(nextId, new Way(nextId, end, begin));
+                    ways.put(nextId, new Way(this, nextId, end, begin));
                     nextId++;
                 }
             }

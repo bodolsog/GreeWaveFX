@@ -8,8 +8,10 @@ public class Way {
     private Marker wayBegin;
     private Marker wayEnd;
     private int distance;
+    private Ways ways;
 
-    public Way(int id, Marker begin, Marker end){
+    public Way(Ways ways, int id, Marker begin, Marker end) {
+        this.ways = ways;
         this.id = id;
         wayBegin = begin;
         wayEnd = end;
@@ -23,4 +25,9 @@ public class Way {
         return wayEnd;
     }
 
+    public void destroy() {
+        ways.deleteWay(id);
+        wayBegin.removeWay(this);
+        wayEnd.removeWay(this);
+    }
 }

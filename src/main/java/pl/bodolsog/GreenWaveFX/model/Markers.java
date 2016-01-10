@@ -7,6 +7,9 @@ import netscape.javascript.JSObject;
 
 public class Markers {
 
+    public static final String[] DIRECTIONS = new String[] {"north", "east", "south", "west", "northeast", "southeast",
+            "southwest", "northwest"};
+
     private int nextId = 0;
 
     // Map of markers <id, marker>.
@@ -58,19 +61,19 @@ public class Markers {
     }
 
     /**
-     * Set as active Marker's id.
-     * @param id
-     */
-    public void setActiveMarkerId(int id){
-        active = id;
-    }
-
-    /**
      * Get id of active Marker.
      * @return active
      */
     public int getActiveMarkerId(){
         return active;
+    }
+
+    /**
+     * Set as active Marker's id.
+     * @param id
+     */
+    public void setActiveMarkerId(int id){
+        active = id;
     }
 
     /**
