@@ -6,12 +6,15 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONValue;
 import pl.bodolsog.GreenWaveFX.MainApp;
 import pl.bodolsog.GreenWaveFX.model.Marker;
 import pl.bodolsog.GreenWaveFX.model.Markers;
 import pl.bodolsog.GreenWaveFX.model.Ways;
 import pl.bodolsog.GreenWaveFX.tools.PropertiesManager;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 public class MapViewController {
@@ -106,7 +109,11 @@ public class MapViewController {
         ways.addWay(beginMarker, beginDirection, endMarker, endDirection, twoWay);
     }
 
-    public void setCrossDirections(int markerId, String directions) {
+    public void setCrossDirections(int markerId, String JSONDirections) {
+        ArrayList<String> directions = new ArrayList<>();
+        Object obj = JSONValue.parse(JSONDirections);
+        JSONArray array = (JSONArray) obj;
+        array.forEach(s -> directions.add((String) s));
         markers.setCrossDirections(markerId, directions);
     }
 

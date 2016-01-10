@@ -28,7 +28,12 @@ public class MarkerTest {
 
     @Test
     public void whenCallSetCrossDirectionsWithWaluesThenAllDirectionsAreIn() {
-        String[] arr = new String[]{"north", "south", "northeast", "west"};
+        ArrayList<String> arr = new ArrayList<String>() {{
+            add("north");
+            add("south");
+            add("northeast");
+            add("west");
+        }};
         markerA.setCrossDirections(arr);
 
         ArrayList<String> dir = markerA.getCrossDirections();
@@ -41,18 +46,24 @@ public class MarkerTest {
 
     @Test
     public void whenCallTwiceSetCrossDirectionsWithDifferentWaluesThenOnlyNewValuesAreInAndWaysDeleted() {
-        String[] arr = new String[]{"north", "south"};
+        ArrayList<String> arr = new ArrayList<String>() {{
+            add("north");
+            add("south");
+        }};
         markerA.setCrossDirections(arr);
 
         Ways ways = new Ways();
-        Way way1 = new Way(ways, 0, markerA, markerB);
-        Way way2 = new Way(ways, 1, markerA, markerB);
+        Way way1 = new Way(ways, 0, markerA, "north", markerB, "south");
+        Way way2 = new Way(ways, 1, markerA, "north", markerB, "south");
 
         markerA.addWay(way1, "north");
         markerA.addWay(way2, "south");
 
-        arr = new String[]{"south", "west"};
-        markerA.setCrossDirections(arr);
+        ArrayList<String> arrr = new ArrayList<String>() {{
+            add("south");
+            add("west");
+        }};
+        markerA.setCrossDirections(arrr);
 
         assertEquals("South should be a Way2", way2, markerA.getCrossDirection("south"));
         assertNull("West should be null.", markerA.getCrossDirection("west"));

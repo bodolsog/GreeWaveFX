@@ -62,7 +62,7 @@ public class Marker {
         return r;
     }
 
-    protected void setCrossDirections(String[] directions) {
+    protected void setCrossDirections(ArrayList<String> directions) {
         // Make copy of old cross hashmap.
         if (cross != null)
             tmpCross = new HashMap<>(cross);
@@ -71,14 +71,14 @@ public class Marker {
         cross = new HashMap<>();
 
         // For each direction (if they are allowed in DIRECTIONS) try copy a Way if exists in same direction.
-        for (String direction : directions) {
+        directions.forEach(direction -> {
             if (Arrays.asList(Markers.DIRECTIONS).contains(direction))
                 if (tmpCross.containsKey(direction)) {
                     cross.put(direction, tmpCross.get(direction));
                     tmpCross.remove(direction);
                 } else
                     cross.put(direction, null);
-        }
+        });
 
         tmpCross.forEach((s, way) -> way.destroy());
     }

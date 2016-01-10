@@ -335,8 +335,7 @@ function setCrossDirections(marker, directions) {
             crossroadWays.push(direction);
         }
     }
-
-    controller.setCrossDirections(marker.id, crossroadWays.join(";"));
+    controller.setCrossDirections(marker.id, JSON.stringify(crossroadWays));
     marker.crossroadWays = crossroadWays;
     marker.infowindow.setContent(infowindowContent(marker));
 }

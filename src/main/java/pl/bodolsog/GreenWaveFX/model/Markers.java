@@ -5,6 +5,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import netscape.javascript.JSObject;
 
+import java.util.ArrayList;
+
 public class Markers {
 
     public static final String[] DIRECTIONS = new String[] {"north", "east", "south", "west", "northeast", "southeast",
@@ -84,8 +86,8 @@ public class Markers {
         return markers.get(getActiveMarkerId());
     }
 
-    public void setCrossDirections(int id, String directions) {
-        getMarker(id).setCrossDirections(directions.split(";"));
+    public void setCrossDirections(int id, ArrayList<String> directions) {
+        getMarker(id).setCrossDirections(directions);
     }
 
 }
