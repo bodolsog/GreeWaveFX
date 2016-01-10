@@ -203,6 +203,7 @@ function setMarkerIcon(marker, color, emblem) {
     marker.setIcon('markers/' + color + emblem + '.png');
 }
 
+
 /**
  * Create infowidow content.
  * @param marker
@@ -221,6 +222,7 @@ function setMarkerIcon(marker, color, emblem) {
         "</div>";
 }
 
+
 /**
  * Removes and destroys marker.
  * @param marker
@@ -233,90 +235,3 @@ function deleteMarker(marker) {
         marker = null;                      // Remove reference to Marker
     }
 }
-
-//        /**
-//         * Call setConnection from controller, which add new Way(s) between Markers.
-//         *
-//         * @param {Object} endMarker
-//         * @param {boolean} twoWay   boolean: true - two-way connection or false - one-way connection
-//         */
-//        function connectMarkers(endMarker, twoWay){
-//            //controller.setConnection(markerId, twoWay);
-//            var beginMarker = controller.getActiveMarker();
-//            var directionsService = new google.maps.DirectionsService;
-//
-//            directionsService.route(
-//                    directionsServiceOptions(beginMarker.getPosition(), endMarker.getPosition()), function (response, status) {
-//                        if (status === google.maps.DirectionsStatus.OK) {
-//                            //test(JSON.stringify(response, null, 4));
-//                            var stepsList = response.routes[0].overview_path;
-//                            var stepsCount = stepsList.length;
-//
-//                            var stepBegin = stepsList[0];
-//                            var stepNextFromBegin = stepsList[1];
-//                            var beginDirection = countDirection(stepBegin, stepNextFromBegin);
-//
-//                            var stepEnd = stepsList[stepsCount-1];
-//                            var stepNextFromEnd = stepsList[stepsCount-2];
-//                            var endDirection = countDirection(stepEnd, stepNextFromEnd);
-//
-//                            var sM = new google.maps.Marker({
-//                                position: stepNextFromBegin,
-//                                draggable: true,
-//                                map: beginMarker.map,
-//                                label: 'S'
-//                            });
-//
-//                            var nM = new google.maps.Marker({
-//                                position: stepNextFromEnd,
-//                                draggable: true,
-//                                map: beginMarker.map,
-//                                label: 'E'
-//                            });
-//
-//                            test("Begin: "+beginDirection+"\nEnd: "+endDirection);
-//                            //controller.setConnection(beginMarker.id, beginDirection, endMarker.id, endDirection, twoWay);
-//                        }
-//                    });
-//        }
-//
-//        function countDirection(start, next){
-//
-//            var lat = start.lat()-next.lat();
-//            var lng = start.lng()-next.lng();
-//
-//            if(Math.abs(lat) > Math.abs(lng))
-//                if(Math.abs(lat) >= Math.abs(2*lng))
-//                    if(lat>0)
-//                        return "SOUTH";
-//                    else
-//                        return "NORTH";
-//                else
-//                    if(lat>0)
-//                        if(lng>0)
-//                            return "SOUTH-WEST";
-//                        else
-//                            return "SOUTH-EAST";
-//                    else
-//                        if(lng>0)
-//                            return "NORTH-WEST";
-//                        else
-//                            return "NORTH-EAST";
-//            else
-//                if(Math.abs(lng) >= Math.abs(2*lat))
-//                    if(lng>0)
-//                        return "WEST";
-//                    else
-//                        return "EAST";
-//                else
-//                    if(lng>0)
-//                        if(lat>0)
-//                            return "SOUTH-WEST";
-//                        else
-//                            return "NORTH-WEST";
-//                    else
-//                        if(lat>0)
-//                            return "SOUTH-EAST";
-//                        else
-//                            return "NORTH-EAST";
-//        }

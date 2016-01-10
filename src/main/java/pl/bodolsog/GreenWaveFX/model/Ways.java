@@ -12,26 +12,31 @@ public class Ways {
     // Map of markers <id, marker>.
     private ObservableMap<Integer,Way> ways = FXCollections.observableHashMap();
 
-    public void addWay(Marker begin, Marker end, boolean twoWay){
+    public void addWay(Marker begin, String beginDir, Marker end, String endDir, boolean twoWay) {
         if(begin != end) {
+            // Check if way with this start and end exists in database.
             boolean firstWayOccur = ways.entrySet().stream().anyMatch(integerWayEntry ->
                     integerWayEntry.getValue().getWayBegin() == begin
                             && integerWayEntry.getValue().getWayEnd() == end
             );
 
             // TODO: 31.12.15 add feedback if fails
+            // Add way.
             if (!firstWayOccur) {
-                ways.put(nextId, new Way(this, nextId, begin, end));
+                ways.put(nextId, new Way(this, nextId, begin, beginDir, end, endDir));
                 nextId++;
             }
 
             if (twoWay) {
+                // Check if way with this start and end exists in database.
                 boolean secondWayOccur = ways.entrySet().stream().anyMatch(integerWayEntry ->
                         integerWayEntry.getValue().getWayBegin() == end
                                 && integerWayEntry.getValue().getWayEnd() == begin
                 );
+
+                // Add way.
                 if (!secondWayOccur) {
-                    ways.put(nextId, new Way(this, nextId, end, begin));
+                    ways.put(nextId, new Way(this, nextId, end, endDir, begin, beginDir));
                     nextId++;
                 }
             }

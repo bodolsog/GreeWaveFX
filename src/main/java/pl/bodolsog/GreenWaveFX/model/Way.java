@@ -7,16 +7,19 @@ public class Way {
     private int id;
     private Marker wayBegin;
     private Marker wayEnd;
+    private String beginDirection;
+    private String endDirection;
     private int distance;
     private Ways ways;
 
-    public Way(Ways ways, int id, Marker begin, Marker end) {
+    public Way(Ways ways, int id, Marker begin, String beginDirection, Marker end, String endDirection) {
         this.ways = ways;
         this.id = id;
         wayBegin = begin;
         wayEnd = end;
+        this.beginDirection = beginDirection;
+        this.endDirection = endDirection;
     }
-
 
     public Marker getWayBegin(){
         return wayBegin;

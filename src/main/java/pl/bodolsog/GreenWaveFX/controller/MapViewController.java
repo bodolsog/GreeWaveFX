@@ -99,12 +99,11 @@ public class MapViewController {
         return null;
     }
 
-    public void setConnection(int endMarkerId, boolean twoWay){
-        Marker beginMarker = markers.getActiveMarker();
+    public void setConnection(int beginMarkerId, String beginDirection, int endMarkerId, String endDirection, boolean twoWay) {
+        Marker beginMarker = markers.getMarker(beginMarkerId);
         Marker endMarker = markers.getMarker(endMarkerId);
 
-
-        ways.addWay(beginMarker, endMarker, twoWay);
+        ways.addWay(beginMarker, beginDirection, endMarker, endDirection, twoWay);
     }
 
     public void setCrossDirections(int markerId, String directions) {
