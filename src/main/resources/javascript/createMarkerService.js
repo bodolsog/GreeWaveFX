@@ -173,7 +173,7 @@ function directionsServiceOptions(latLng, waypoints) {
  * Search for point in center of nearest crossroad.
  * @param {JSON} points         list of points as json from DirectionService response (response.route[0].overview_path)
  * @param {latLng} startPoint   marker position
- * @param {Object} dimensions   full dimensions object
+ * @param {Object} dimensions   smaller dimensions object
  * @returns {latLng}            latLng of center crossroad point
  */
 function findCenterPoint(points, startPoint, dimensions) {
@@ -185,7 +185,7 @@ function findCenterPoint(points, startPoint, dimensions) {
     for (i = 0; i < pointsLength; i++) {
         // Check if actual one isn't duplicate a used one and if is in posible location (near click point).
         if ( points[i].lat() != centerPoint.lat() && points[i].lng() != centerPoint.lng() &&
-            isNear(points[i], startPoint, dimensions.smaller))
+            isNear(points[i], startPoint, dimensions))
         {
             tmpCount = 1;
             // Check only next items from list.
@@ -326,6 +326,25 @@ function removeWaysOutOfBounds(directions, legs, centerPoint, dimensions) {
 
 
 /**
+ * Set array of detected way directions to marker.
+ * @param {Marker} marker       marker
+ * @param {Object} directions   detected directions
+ */
+function setCrossDirections(marker, directions) {
+    var crossroadWays = [];
+    for (var direction in directions) {
+        if (directions[direction][4]) {
+            crossroadWays.push(direction);
+        }
+    }
+
+    controller.setCrossDirections(marker.id, crossroadWays.join(";"));
+    marker.crossroadWays = crossroadWays;
+    marker.infowindow.setContent(infowindowContent(marker));
+}
+
+
+/**
  * Calibrate marker and search crossroad type (and ways directions).
  * @param {Marker} marker
  */
@@ -344,7 +363,6 @@ function findCrossroadPropereties(marker) {
     directionsService.route(
         directionsServiceOptions(startEndClickPoint, clickWaypoints), function (response, status) {
             if (status === google.maps.DirectionsStatus.OK) {
-
                 // Find centerPoint.
                 var centerPoint = findCenterPoint(response.routes[0].overview_path, clickPoint, dimensions.smaller);
                 marker.setPosition(centerPoint);
@@ -385,16 +403,10 @@ function findCrossroadPropereties(marker) {
                             if (!allMarkersAreInBounds(response.routes[0].bounds, centerPoint, dimensions.bigger))
                                 removeWaysOutOfBounds(directions, response.routes[0].legs, centerPoint, dimensions);
 
-                            var crossroadWays = [];
-                            for (direction in directions) {
-                                if (directions[direction][4]) {
-                                    crossroadWays.push(direction);
-                                }
-                            }
-                            controller.
+                            setCrossDirections(marker, directions);
+
                         } else {
                             controller.log("Google second response error: " + status);
-                            1
                         }
                     });
             } else {

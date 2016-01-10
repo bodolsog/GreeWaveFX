@@ -84,4 +84,8 @@ public class Markers {
         return markers.get(getActiveMarkerId());
     }
 
+    public void setCrossDirections(int id, String directions) {
+        getMarker(id).setCrossDirections(directions.split(";"));
+    }
+
 }

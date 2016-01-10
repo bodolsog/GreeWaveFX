@@ -83,14 +83,14 @@ public class Marker {
         tmpCross.forEach((s, way) -> way.destroy());
     }
 
-    protected void addWay(Way way, String direction) {
-        cross.put(direction, way);
-    }
-
     protected Way getCrossDirection(String direction) {
         if (cross.containsKey(direction))
             return cross.get(direction);
         else
             throw new NullPointerException();
+    }
+
+    protected void addWay(Way way, String direction) {
+        cross.put(direction, way);
     }
 }

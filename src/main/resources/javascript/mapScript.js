@@ -90,6 +90,7 @@ function initialize() {
                 draggable: true,
                 map: map
             });
+            marker.crossroadWays = [];
 
             toggleMarkersIcons(marker);
             findCrossroadPropereties(marker, overlay);
@@ -213,7 +214,9 @@ function setMarkerIcon(marker, color, emblem) {
         "       <dt>Coordinates:</dt>" +
         "       <dd>Lat:" + marker.getPosition().lat() + ", Lng: " + marker.getPosition().lng() + "</dd>" +
         "       <dt>Type:</dt>" +
-        "       <dd>-</dd>" +
+        "       <dd>" + marker.crossroadWays.length + "-way</dd>" +
+        "       <dt>Ways:</dt>" +
+        "       <dd>" + marker.crossroadWays.join(", ") + "</dd>" +
         "   </dl>" +
         "</div>";
 }
