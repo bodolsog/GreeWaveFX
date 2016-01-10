@@ -57,7 +57,7 @@ public class MainApp extends Application {
         try {
             // Load root layout from fxml file.
             final FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainAppView.fxml"));
-            rootLayout = (BorderPane) loader.load();
+            rootLayout = loader.load();
 
             // Show the scene containing the root layout.
             Scene scene = new Scene(rootLayout, 1600, 900);
@@ -76,7 +76,7 @@ public class MainApp extends Application {
         try {
             // Load map from fxml file.
             final FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MapView.fxml"));
-            WebView mapView = (WebView) loader.load();
+            WebView mapView = loader.load();
 
             // Give the controller access to the main app.
             mapViewController = loader.getController();

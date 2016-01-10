@@ -96,7 +96,7 @@ public class MapViewController {
         return markers.getActiveMarkerId();
     }
 
-    public JSObject getMarkerActive(){
+    public JSObject getActiveMarker(){
         int id = markers.getActiveMarkerId();
         Marker marker = markers.getMarker(id);
         if(marker != null){
@@ -108,6 +108,8 @@ public class MapViewController {
     public void setConnection(int endMarkerId, boolean twoWay){
         Marker beginMarker = markers.getActiveMarker();
         Marker endMarker = markers.getMarker(endMarkerId);
+
+
         ways.addWay(beginMarker, endMarker, twoWay);
     }
 
