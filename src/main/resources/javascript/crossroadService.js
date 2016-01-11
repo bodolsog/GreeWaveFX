@@ -329,14 +329,14 @@ function removeWaysOutOfBounds(directions, legs, centerPoint, dimensions) {
  * @param {Object} directions   detected directions
  */
 function setCrossDirections(marker, directions) {
-    var crossroadWays = [];
+    var ways = [];
     for (var direction in directions) {
         if (directions[direction][4]) {
-            crossroadWays.push(direction);
+            ways.push(direction);
         }
     }
-    controller.setCrossDirections(marker.id, JSON.stringify(crossroadWays));
-    marker.crossroadWays = crossroadWays;
+    controller.setCrossDirections(marker.id, JSON.stringify(ways));
+    marker.crossroadWays = ways;
     marker.infowindow.setContent(infowindowContent(marker));
 }
 

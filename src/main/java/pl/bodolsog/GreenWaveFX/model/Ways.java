@@ -12,7 +12,7 @@ public class Ways {
     // Map of markers <id, marker>.
     private ObservableMap<Integer,Way> ways = FXCollections.observableHashMap();
 
-    public void addWay(Marker begin, String beginDir, Marker end, String endDir, boolean twoWay) {
+    public void addWay(Marker begin, String beginDir, Marker end, String endDir, boolean twoWay, String response) {
         if(begin != end) {
             // Check if way with this start and end exists in database.
             boolean firstWayOccur = ways.entrySet().stream().anyMatch(integerWayEntry ->
@@ -23,7 +23,7 @@ public class Ways {
             // TODO: 31.12.15 add feedback if fails
             // Add way.
             if (!firstWayOccur) {
-                ways.put(nextId, new Way(this, nextId, begin, beginDir, end, endDir));
+                ways.put(nextId, new Way(this, nextId, begin, beginDir, end, endDir, response));
                 nextId++;
             }
 
@@ -36,7 +36,7 @@ public class Ways {
 
                 // Add way.
                 if (!secondWayOccur) {
-                    ways.put(nextId, new Way(this, nextId, end, endDir, begin, beginDir));
+                    ways.put(nextId, new Way(this, nextId, end, endDir, begin, beginDir, response));
                     nextId++;
                 }
             }

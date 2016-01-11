@@ -11,6 +11,7 @@ import org.json.simple.JSONValue;
 import pl.bodolsog.GreenWaveFX.MainApp;
 import pl.bodolsog.GreenWaveFX.model.Marker;
 import pl.bodolsog.GreenWaveFX.model.Markers;
+import pl.bodolsog.GreenWaveFX.model.Way;
 import pl.bodolsog.GreenWaveFX.model.Ways;
 import pl.bodolsog.GreenWaveFX.tools.PropertiesManager;
 
@@ -52,6 +53,15 @@ public class MapViewController {
      */
     public void passMarkersReference(Markers markers){
         this.markers = markers;
+    }
+
+    /**
+     * Set reference to Ways (called from MainApp).
+     *
+     * @param ways
+     */
+    public void passWaysReference(Ways ways) {
+        this.ways = ways;
     }
 
     /**
@@ -102,11 +112,22 @@ public class MapViewController {
         return null;
     }
 
-    public void setConnection(int beginMarkerId, String beginDirection, int endMarkerId, String endDirection, boolean twoWay) {
+    public String getActiveMarkerWay(String direction) {
+        int id = markers.getActiveMarkerId();
+        Marker marker = markers.getMarker(id);
+        Way way = marker.getWay(direction);
+        if (way != null)
+            return way.getResponse();
+        else
+            return null;
+    }
+
+    public void setConnection(int beginMarkerId, String beginDirection, int endMarkerId, String endDirection,
+                              boolean twoWay, String response) {
         Marker beginMarker = markers.getMarker(beginMarkerId);
         Marker endMarker = markers.getMarker(endMarkerId);
 
-        ways.addWay(beginMarker, beginDirection, endMarker, endDirection, twoWay);
+        ways.addWay(beginMarker, beginDirection, endMarker, endDirection, twoWay, response);
     }
 
     public void setCrossDirections(int markerId, String JSONDirections) {

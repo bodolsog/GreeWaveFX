@@ -46,13 +46,11 @@ public class Marker {
         return id.getValue();
     }
 
-    protected void removeWay(Way way) {
-        List<String> key = cross.entrySet()
-                .stream()
-                .filter(p -> p.getValue() == way)
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
-        key.forEach(direction -> cross.remove(direction));
+    protected Way getCrossDirection(String direction) {
+        if (cross.containsKey(direction))
+            return cross.get(direction);
+        else
+            throw new NullPointerException();
     }
 
     protected ArrayList<String> getCrossDirections() {
@@ -83,14 +81,24 @@ public class Marker {
         tmpCross.forEach((s, way) -> way.destroy());
     }
 
-    protected Way getCrossDirection(String direction) {
-        if (cross.containsKey(direction))
-            return cross.get(direction);
-        else
-            throw new NullPointerException();
+    public HashMap<String, Way> getCross() {
+        return cross;
     }
 
-    protected void addWay(Way way, String direction) {
+    protected void setWay(Way way, String direction) {
         cross.put(direction, way);
+    }
+
+    public Way getWay(String direction) {
+        return cross.get(direction);
+    }
+
+    protected void removeWay(Way way) {
+        List<String> key = cross.entrySet()
+                .stream()
+                .filter(p -> p.getValue() == way)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+        key.forEach(direction -> cross.remove(direction));
     }
 }

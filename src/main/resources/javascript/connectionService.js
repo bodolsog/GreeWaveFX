@@ -24,25 +24,31 @@ function directionsInterpreter(startPoint, endPoint, factor) {
     var latShift = startPoint.lat() - endPoint.lat();
     var lngShift = startPoint.lng() - endPoint.lng();
 
-    if (Math.abs(factor) >= LIMES_UPPER)
+    if (Math.abs(factor) >= LIMES_UPPER) {
         if (latShift < 0)
             return "north";
         else
             return "south";
-    else if (Math.abs(factor) <= LIMES_LOWER)
+    }
+    else if (Math.abs(factor) <= LIMES_LOWER) {
         if (lngShift < 0)
             return "east";
         else
             return "west";
-    else if (latShift < 0)
-        if (lngShift < 0)
-            return "northeast";
-        else
-            return "northwest";
-    else if (lngShift < 0)
-        return "southeast";
-    else
-        return "southwest";
+    }
+    else {
+        if (latShift < 0) {
+            if (lngShift < 0)
+                return "northeast";
+            else
+                return "northwest";
+        } else {
+            if (lngShift < 0)
+                return "southeast";
+            else
+                return "southwest";
+        }
+    }
 }
 
 
@@ -72,7 +78,7 @@ function connectMarkers(endMarker, twoWay) {
                 var endFactor = calculateDirectionalFactor(stepLastBeforeEnd, stepEnd);
                 var endDirection = directionsInterpreter(stepEnd, stepLastBeforeEnd, endFactor);
 
-                controller.setConnection(beginMarker.id, beginDirection, endMarker.id, endDirection, twoWay);
+                controller.setConnection(beginMarker.id, beginDirection, endMarker.id, endDirection, twoWay, JSON.stringify(response));
             }
             else {
                 controller.log("Google Service error: " + status);

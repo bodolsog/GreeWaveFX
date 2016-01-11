@@ -21,56 +21,10 @@ function initialize() {
     });
 
     /* Services */
-    //var directionsService = new google.maps.DirectionsService;
+
     var overlay = new google.maps.OverlayView();
     overlay.draw = function () {};
     overlay.setMap(map);
-
-//            var directionsDisplay = new google.maps.DirectionsRenderer;
-//            directionsDisplay.setMap(map);
-//            geocoder = new google.maps.Geocoder();
-//            service = new google.maps.DistanceMatrixService;
-//            directionsService = new google.maps.DirectionsService;
-//
-
-//            var menuItem = menu.querySelectorAll(".context-menu__item")
-//            for(i=0; i<menuItem.length; i++){
-//                menuItem[i].addEventListener('click', function(){
-//                    action = ;
-//                    if(action == "connect2w" || action == "connect1w"){
-//                        controller.connectMarkers(action, activeMarkerId, menuMarkerId);
-//                        pointA = markersMap[activeMarkerId].getPosition();
-//                        pointB = markersMap[menuMarkerId].getPosition();
-//
-//                        document.service.getDistanceMatrix({
-//                            origins: [pointA],
-//                            destinations: [pointB],
-//                            travelMode: google.maps.TravelMode.DRIVING,
-//                            unitSystem: google.maps.UnitSystem.METRIC,
-//                            avoidHighways: true,
-//                            avoidTolls: true
-//                        }, function(response, status){
-//                            if (status !== google.maps.DistanceMatrixStatus.OK) {
-//                                test('Error was: ' + status);
-//                            } else {
-//                                test(response.rows[0].elements[0].distance.value);
-//                            }
-//                        });
-//
-//                        document.directionsService.route({
-//                            origin: pointA,
-//                            destination: pointB,
-//                            travelMode: google.maps.TravelMode.DRIVING
-//                        }, function(response, status) {
-//                            if (status === google.maps.DirectionsStatus.OK) {
-//                                document.directionsDisplay.setDirections(response);
-//                            } else {
-//                                test('Directions request failed due to ' + status);
-//                            }
-//                        });
-//                    }
-//                });
-//            }
 
 
     map.addListener('mousedown', function () {
@@ -158,6 +112,19 @@ function isMarkerActive(marker) {
 function setMarkerActive(marker) {
     toggleMarkersIcons(marker);
     controller.setActiveMarkerId(marker.id);
+    var directionsDisplay = {};
+    var direction;
+    var response;
+    for (var i = 0; i < marker.crossroadWays.length; i++) {
+        direction = marker.crossroadWays[i];
+        response = JSON.parse(controller.getActiveMarkerWay(direction));
+        if (response != null) {
+            directionsDisplay[direction] = new google.maps.DirectionsRenderer;
+            directionsDisplay[direction].setMap(marker.map);
+            directionsDisplay[direction].setDirections(response);
+        }
+    }
+
 }
 
 /**

@@ -52,12 +52,14 @@ public class MarkerTest {
         }};
         markerA.setCrossDirections(arr);
 
-        Ways ways = new Ways();
-        Way way1 = new Way(ways, 0, markerA, "north", markerB, "south");
-        Way way2 = new Way(ways, 1, markerA, "north", markerB, "south");
+        String response = "";
 
-        markerA.addWay(way1, "north");
-        markerA.addWay(way2, "south");
+        Ways ways = new Ways();
+        Way way1 = new Way(ways, 0, markerA, "north", markerB, "south", response);
+        Way way2 = new Way(ways, 1, markerA, "north", markerB, "south", response);
+
+        markerA.setWay(way1, "north");
+        markerA.setWay(way2, "south");
 
         ArrayList<String> arrr = new ArrayList<String>() {{
             add("south");

@@ -11,14 +11,17 @@ public class Way {
     private String endDirection;
     private int distance;
     private Ways ways;
+    private String response;
 
-    public Way(Ways ways, int id, Marker begin, String beginDirection, Marker end, String endDirection) {
+    public Way(Ways ways, int id, Marker begin, String beginDirection, Marker end, String endDirection, String response) {
         this.ways = ways;
         this.id = id;
         wayBegin = begin;
         wayEnd = end;
         this.beginDirection = beginDirection;
         this.endDirection = endDirection;
+        this.response = response;
+        addToMarkers();
     }
 
     public Marker getWayBegin(){
@@ -26,6 +29,15 @@ public class Way {
     }
     public Marker getWayEnd(){
         return wayEnd;
+    }
+
+    public String getResponse() {
+        return response;
+    }
+
+    private void addToMarkers() {
+        wayBegin.setWay(this, beginDirection);
+        wayEnd.setWay(this, endDirection);
     }
 
     public void destroy() {
