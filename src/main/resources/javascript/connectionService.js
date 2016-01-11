@@ -78,7 +78,14 @@ function connectMarkers(endMarker, twoWay) {
                 var endFactor = calculateDirectionalFactor(stepLastBeforeEnd, stepEnd);
                 var endDirection = directionsInterpreter(stepEnd, stepLastBeforeEnd, endFactor);
 
-                controller.setConnection(beginMarker.id, beginDirection, endMarker.id, endDirection, twoWay, JSON.stringify(response));
+                var legs = response.routes[0].legs;
+                var distance = 0;
+                for (var i = 0; i < legs.length; i++) {
+                    distance += legs[i].distance.value;
+                }
+
+                controller.setConnection(beginMarker.id, beginDirection, endMarker.id, endDirection, twoWay,
+                    JSON.stringify(response), distance);
             }
             else {
                 controller.log("Google Service error: " + status);

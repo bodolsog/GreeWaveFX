@@ -123,11 +123,11 @@ public class MapViewController {
     }
 
     public void setConnection(int beginMarkerId, String beginDirection, int endMarkerId, String endDirection,
-                              boolean twoWay, String response) {
+                              boolean twoWay, String response, int distance) {
         Marker beginMarker = markers.getMarker(beginMarkerId);
         Marker endMarker = markers.getMarker(endMarkerId);
 
-        ways.addWay(beginMarker, beginDirection, endMarker, endDirection, twoWay, response);
+        ways.addWay(beginMarker, beginDirection, endMarker, endDirection, twoWay, response, distance);
     }
 
     public void setCrossDirections(int markerId, String JSONDirections) {

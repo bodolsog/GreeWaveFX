@@ -13,7 +13,8 @@ public class Way {
     private Ways ways;
     private String response;
 
-    public Way(Ways ways, int id, Marker begin, String beginDirection, Marker end, String endDirection, String response) {
+    public Way(Ways ways, int id, Marker begin, String beginDirection,
+               Marker end, String endDirection, String response, int distance) {
         this.ways = ways;
         this.id = id;
         wayBegin = begin;
@@ -21,6 +22,7 @@ public class Way {
         this.beginDirection = beginDirection;
         this.endDirection = endDirection;
         this.response = response;
+        this.distance = distance;
         addToMarkers();
     }
 

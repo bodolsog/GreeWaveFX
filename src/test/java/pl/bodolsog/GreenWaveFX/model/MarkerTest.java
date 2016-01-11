@@ -53,10 +53,11 @@ public class MarkerTest {
         markerA.setCrossDirections(arr);
 
         String response = "";
+        int distance = 0;
 
         Ways ways = new Ways();
-        Way way1 = new Way(ways, 0, markerA, "north", markerB, "south", response);
-        Way way2 = new Way(ways, 1, markerA, "north", markerB, "south", response);
+        Way way1 = new Way(ways, 0, markerA, "north", markerB, "south", response, distance);
+        Way way2 = new Way(ways, 1, markerA, "north", markerB, "south", response, distance);
 
         markerA.setWay(way1, "north");
         markerA.setWay(way2, "south");

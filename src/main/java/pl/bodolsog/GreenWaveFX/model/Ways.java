@@ -12,7 +12,8 @@ public class Ways {
     // Map of markers <id, marker>.
     private ObservableMap<Integer,Way> ways = FXCollections.observableHashMap();
 
-    public void addWay(Marker begin, String beginDir, Marker end, String endDir, boolean twoWay, String response) {
+    public void addWay(Marker begin, String beginDir, Marker end, String endDir, boolean twoWay,
+                       String response, int distance) {
         if(begin != end) {
             // Check if way with this start and end exists in database.
             boolean firstWayOccur = ways.entrySet().stream().anyMatch(integerWayEntry ->
@@ -23,7 +24,7 @@ public class Ways {
             // TODO: 31.12.15 add feedback if fails
             // Add way.
             if (!firstWayOccur) {
-                ways.put(nextId, new Way(this, nextId, begin, beginDir, end, endDir, response));
+                ways.put(nextId, new Way(this, nextId, begin, beginDir, end, endDir, response, distance));
                 nextId++;
             }
 
@@ -36,7 +37,7 @@ public class Ways {
 
                 // Add way.
                 if (!secondWayOccur) {
-                    ways.put(nextId, new Way(this, nextId, end, endDir, begin, beginDir, response));
+                    ways.put(nextId, new Way(this, nextId, end, endDir, begin, beginDir, response, distance));
                     nextId++;
                 }
             }
@@ -57,31 +58,6 @@ public class Ways {
 }
 
 /**
- * Created by bodolsog on 04.12.15.
- *
- public class Waves {
- private StringProperty id;
- private ArrayList<Marker> points = new ArrayList<>();
- private ArrayList<Ways> ways = new ArrayList<>();
- private HashMap<Integer, Integer> duration = new HashMap<>();
-
- public String getId() {
- return id.get();
- }
-
- public Marker getStartPoint(){
- return points.get(0);
- }
-
- public Marker getEndPoint(){
- return points.get(points.size()-1);
- }
-
- public boolean belongMarkerToPoints(Marker marker){
- if(points.contains(marker)) return true;
- return false;
- }
-
  public void addPoint(Marker marker, Ways way){
  points.add(marker);
  ways.add(way);
