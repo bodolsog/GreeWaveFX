@@ -8,4 +8,11 @@ public class Nodes {
 
     private ObservableMap<Integer, Way> nodes = FXCollections.observableHashMap();
 
+    public void addNode() {
+
+    }
+
+    public void removeNode() {
+
+    }
 }

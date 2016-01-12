@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import netscape.javascript.JSObject;
+import pl.bodolsog.GreenWaveFX.staticVar.DIRECTIONS;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -70,7 +71,7 @@ public class Marker {
 
         // For each direction (if they are allowed in DIRECTIONS) try copy a Way if exists in same direction.
         directions.forEach(direction -> {
-            if (Arrays.asList(Markers.DIRECTIONS).contains(direction))
+            if (Arrays.asList(DIRECTIONS.NAMES).contains(direction))
                 if (tmpCross.containsKey(direction)) {
                     cross.put(direction, tmpCross.get(direction));
                     tmpCross.remove(direction);

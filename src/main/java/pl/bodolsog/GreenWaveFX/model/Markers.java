@@ -9,9 +9,6 @@ import java.util.ArrayList;
 
 public class Markers {
 
-    public static final String[] DIRECTIONS = new String[] {"north", "east", "south", "west", "northeast", "southeast",
-            "southwest", "northwest"};
-
     private int nextId = 0;
 
     // Map of markers <id, marker>.
