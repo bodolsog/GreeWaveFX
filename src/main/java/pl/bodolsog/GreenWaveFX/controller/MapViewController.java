@@ -9,10 +9,7 @@ import netscape.javascript.JSObject;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import pl.bodolsog.GreenWaveFX.MainApp;
-import pl.bodolsog.GreenWaveFX.model.Marker;
-import pl.bodolsog.GreenWaveFX.model.Markers;
-import pl.bodolsog.GreenWaveFX.model.Way;
-import pl.bodolsog.GreenWaveFX.model.Ways;
+import pl.bodolsog.GreenWaveFX.model.*;
 import pl.bodolsog.GreenWaveFX.tools.PropertiesManager;
 
 import java.util.ArrayList;
@@ -25,6 +22,7 @@ public class MapViewController {
 
     private Markers markers;
     private Ways ways;
+    private Nodes nodes;
 
     @FXML
     private WebView webView;
@@ -43,7 +41,6 @@ public class MapViewController {
         JSObject window = (JSObject) webEngine.executeScript("window");
         window.setMember("properties", new PropertiesManager());
         window.setMember("controller", this);
-        //window.setMember("backThread", new BackThread(webEngine));
     }
 
 
@@ -57,11 +54,19 @@ public class MapViewController {
 
     /**
      * Set reference to Ways (called from MainApp).
-     *
      * @param ways
      */
     public void passWaysReference(Ways ways) {
         this.ways = ways;
+    }
+
+    /**
+     * Set reference to Nodes (called from MainApp).
+     *
+     * @param nodes
+     */
+    public void passNodesReference(Nodes nodes) {
+        this.nodes = nodes;
     }
 
     /**
