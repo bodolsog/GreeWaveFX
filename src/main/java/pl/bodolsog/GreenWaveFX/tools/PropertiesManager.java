@@ -53,6 +53,22 @@ public class PropertiesManager {
         return properties.getProperty("googleAPIKey");
     }
 
+    public int[] getSpeedList() {
+        String speeds = properties.getProperty("speeds");
+        String[] speedsList = speeds.split(",");
+        int len = speedsList.length;
+        int[] rSpeeds = new int[len];
+        for (int i = 0; i < len; i++) {
+            rSpeeds[i] = Integer.parseInt(speedsList[i]);
+        }
+
+        return rSpeeds;
+    }
+
+    public int getAcceleration() {
+        return Integer.parseInt(properties.getProperty("acceleration"));
+    }
+
     private void setDefaultProperties(){
         properties.setProperty("googleAPIKey", "[here add your Google API Key for browsers]");
     }
