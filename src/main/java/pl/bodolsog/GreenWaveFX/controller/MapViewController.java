@@ -138,6 +138,10 @@ public class MapViewController {
         markers.setCrossDirections(markerId, directions);
     }
 
+    public boolean isStartPoint(int markerId) {
+        return markers.isStartPoint(markerId);
+    }
+
     public void log(String text){
         System.out.println(text);
     }

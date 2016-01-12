@@ -90,4 +90,8 @@ public class Markers {
         getMarker(id).setCrossDirections(directions);
     }
 
+    public boolean isStartPoint(int id) {
+        return markers.get(id).isStartPoint();
+    }
+
 }

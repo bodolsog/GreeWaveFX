@@ -152,7 +152,12 @@ function setMarkerIconActive(marker) {
  * @param marker
  */
 function setMarkerIconUnactive(marker) {
-    setMarkerIcon(marker, 'red', 'dot');
+    controller.log(controller.isStartPoint(marker.id));
+
+    if (controller.isStartPoint(marker.id))
+        setMarkerIcon(marker, 'green', 'dot');
+    else
+        setMarkerIcon(marker, 'red', 'dot');
 }
 
 /**

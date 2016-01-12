@@ -101,4 +101,14 @@ public class Marker {
                 .collect(Collectors.toList());
         key.forEach(direction -> cross.remove(direction));
     }
+
+    protected boolean isStartPoint() {
+        int count = (int) cross.entrySet()
+                .stream()
+                .filter(stringWayEntry -> stringWayEntry.getValue() != null)
+                .count();
+        if (count > 1)
+            return false;
+        return true;
+    }
 }
