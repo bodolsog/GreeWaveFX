@@ -3,9 +3,11 @@ package pl.bodolsog.GreenWaveFX.model;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.collections.MapChangeListener;
+import javafx.collections.ObservableMap;
 import netscape.javascript.JSObject;
 import pl.bodolsog.GreenWaveFX.staticVar.DIRECTIONS;
+import pl.bodolsog.GreenWaveFX.staticVar.NODE_TYPE;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -19,25 +21,75 @@ public class Marker {
     public JSObject jsMarker;
     // Marker's id.
     private IntegerProperty id;
-    // List of all one way connections from marker to another.
-    private ObservableList<Integer> connections = FXCollections.<Integer>observableArrayList();
-    // List of roads:
-    // 0 - north, 1 - east, 2 - south, 3 - west
-    // null - way is disabled
-    private HashMap<String, Way> cross = new HashMap<>();
-    private HashMap<String, Way> tmpCross;
+    private Markers markers;
+    private ObservableMap<String, Way> cross = FXCollections.observableHashMap();
+
+    private HashMap<Marker, ArrayList<Way>> connectedNodes = new HashMap<>();
+
+    private int nodeType = NODE_TYPE.STARTPOINT;
+
 
     /**
      * Constructor
      * @param id
      * @param jsMarker GoogleMaps marker object
      */
-    public Marker(int id, JSObject jsMarker){
+    public Marker(int id, JSObject jsMarker, Markers markers) {
         // Set variables.
         this.id = new SimpleIntegerProperty(id);
         this.jsMarker = jsMarker;
         this.jsMarker.setMember("id", id+"");
+        this.markers = markers;
+
+        cross.addListener((MapChangeListener<String, Way>) change -> {
+            if (change.wasAdded() && change.wasRemoved()) {               // updated
+                int connectedWays = (int) change.getMap().entrySet().stream()
+                        .filter(entry -> entry.getValue() != null)
+                        .count();
+
+                if (connectedWays == 2) {
+                    nodeType = NODE_TYPE.TRANSITION;
+                    connectedNodes.clear();
+                } else if (change.getValueAdded() != null) {         // added Way
+                    if (connectedWays == 3) {
+                        nodeType = NODE_TYPE.CROSSROAD;
+                        updateAllNodes();
+                    } else
+                        updateNode(change.getValueAdded());
+                } else {                                           // removed way
+                    if (connectedWays == 1) {
+                        nodeType = NODE_TYPE.STARTPOINT;
+                        updateAllNodes();
+                    } else
+                        updateNode(change.getValueAdded());
+                }
+            }
+        });
     }
+
+    private void updateNode(Way way) {
+        if (way.getWayEnd() != this) {
+            ArrayList<Way> waysList = new ArrayList<>();
+            connectedNodes.put(findNode(way, waysList), waysList);
+        }
+    }
+
+    private void updateAllNodes() {
+        cross.forEach((s, way) -> updateNode(way));
+    }
+
+    private Marker findNode(Way previousWay, ArrayList<Way> ways) {
+        ways.add(previousWay);
+        Marker previousMarker = previousWay.getWayBegin();
+        Marker marker = previousWay.getWayEnd();
+        if (marker.getNodeType() != NODE_TYPE.TRANSITION) {
+            return marker;
+        } else {
+            Way nextWay = marker.getCrossWays().stream().filter(way -> way.getWayEnd() != previousMarker).findFirst().get();
+            return findNode(nextWay, ways);
+        }
+    }
+
 
     /**
      * Return id as int.
@@ -57,32 +109,31 @@ public class Marker {
     protected ArrayList<String> getCrossDirections() {
         ArrayList<String> r = new ArrayList<>();
         cross.forEach((s, way) -> r.add(s));
-
         return r;
     }
 
-    protected void setCrossDirections(ArrayList<String> directions) {
-        // Make copy of old cross hashmap.
-        if (cross != null)
-            tmpCross = new HashMap<>(cross);
-
-        // Create new cross.
-        cross = new HashMap<>();
-
-        // For each direction (if they are allowed in DIRECTIONS) try copy a Way if exists in same direction.
-        directions.forEach(direction -> {
-            if (Arrays.asList(DIRECTIONS.NAMES).contains(direction))
-                if (tmpCross.containsKey(direction)) {
-                    cross.put(direction, tmpCross.get(direction));
-                    tmpCross.remove(direction);
-                } else
-                    cross.put(direction, null);
+    protected void setCrossDirections(ArrayList<String> decodedDirections) {
+        Arrays.asList(DIRECTIONS.NAMES).forEach(direction -> {
+            if (decodedDirections.contains(direction) && !cross.containsKey(direction))
+                cross.put(direction, null);
+            else if (cross.containsKey(direction) && !decodedDirections.contains(direction)) {
+                if (cross.get(direction) != null)
+                    cross.get(direction).destroy();
+                cross.remove(direction);
+            }
         });
-
-        tmpCross.forEach((s, way) -> way.destroy());
     }
 
-    public HashMap<String, Way> getCross() {
+    protected ArrayList<Way> getCrossWays() {
+        ArrayList<Way> r = new ArrayList<>();
+        cross.forEach((s, way) -> {
+            if (way != null)
+                r.add(way);
+        });
+        return r;
+    }
+
+    public ObservableMap<String, Way> getCross() {
         return cross;
     }
 
@@ -111,5 +162,17 @@ public class Marker {
         if (count > 1)
             return false;
         return true;
+    }
+
+    protected int getNodeType() {
+        return nodeType;
+    }
+
+    protected HashMap<Marker, ArrayList<Way>> getConnectedNodes() {
+        return connectedNodes;
+    }
+
+    protected ArrayList<Way> getNodeWaysList(Marker marker) {
+        return connectedNodes.get(marker);
     }
 }

@@ -1,11 +1,10 @@
 package pl.bodolsog.GreenWaveFX.model;
 
-import netscape.javascript.JSException;
-import netscape.javascript.JSObject;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import pl.bodolsog.GreenWaveFX.staticVar.NODE_TYPE;
 
 import java.util.ArrayList;
 
@@ -14,27 +13,38 @@ import static org.junit.Assert.*;
 
 public class MarkerTest {
 
+    private final ArrayList<String> crossDirections = new ArrayList<String>() {{
+        add("north");
+        add("south");
+        add("east");
+        add("west");
+    }};
     @Rule
     public ExpectedException thrown = ExpectedException.none();
-    JSObject jsMarker;
-    Marker markerA;
-    Marker markerB;
+    private Markers markers;
+    private Ways ways;
 
     @Before
     public void setUp() {
-        markerA = new Marker(0, new JSObjectTest());
-        markerB = new Marker(0, new JSObjectTest());
+        markers = new Markers();
+        ways = new Ways();
+        markers.addMarker(new JSObjectAdapter());
+        markers.getMarker(0).setCrossDirections(crossDirections);
+        markers.addMarker(new JSObjectAdapter());
+        markers.getMarker(1).setCrossDirections(crossDirections);
     }
 
     @Test
     public void whenCallSetCrossDirectionsWithWaluesThenAllDirectionsAreIn() {
-        ArrayList<String> arr = new ArrayList<String>() {{
+        final ArrayList<String> crossAnotherDirections = new ArrayList<String>() {{
             add("north");
             add("south");
             add("northeast");
             add("west");
         }};
-        markerA.setCrossDirections(arr);
+        markers.addMarker(new JSObjectAdapter());
+        markers.getMarker(2).setCrossDirections(crossAnotherDirections);
+        Marker markerA = markers.getMarker(2);
 
         ArrayList<String> dir = markerA.getCrossDirections();
         assertTrue("Should contain north", dir.contains("north"));
@@ -46,16 +56,14 @@ public class MarkerTest {
 
     @Test
     public void whenCallTwiceSetCrossDirectionsWithDifferentWaluesThenOnlyNewValuesAreInAndWaysDeleted() {
-        ArrayList<String> arr = new ArrayList<String>() {{
-            add("north");
-            add("south");
-        }};
-        markerA.setCrossDirections(arr);
+        Marker markerA = markers.getMarker(0);
+        markerA.setCrossDirections(crossDirections);
+
+        Marker markerB = markers.getMarker(1);
 
         String response = "";
-        int distance = 0;
+        int distance = 100;
 
-        Ways ways = new Ways();
         Way way1 = new Way(ways, 0, markerA, "north", markerB, "south", response, distance);
         Way way2 = new Way(ways, 1, markerA, "north", markerB, "south", response, distance);
 
@@ -75,40 +83,40 @@ public class MarkerTest {
         assertNull("North should not exists.", markerA.getCrossDirection("north"));
     }
 
-    /**
-     * JSObject adapter for test.
-     */
-    public class JSObjectTest extends JSObject {
-        @Override
-        public Object call(String s, Object... objects) throws JSException {
-            return null;
-        }
+    @Test
+    public void whenOnlyTwoMarkersAreConnectedThenBothAreStartpoints() {
+        Marker markerA = markers.getMarker(0);
+        Marker markerB = markers.getMarker(1);
 
-        @Override
-        public Object eval(String s) throws JSException {
-            return null;
-        }
+        ways.addWay(markerA, "east", markerB, "west", true, "", 100);
 
-        @Override
-        public Object getMember(String s) throws JSException {
-            return null;
-        }
-
-        @Override
-        public void setMember(String s, Object o) throws JSException {
-        }
-
-        @Override
-        public void removeMember(String s) throws JSException {
-        }
-
-        @Override
-        public Object getSlot(int i) throws JSException {
-            return null;
-        }
-
-        @Override
-        public void setSlot(int i, Object o) throws JSException {
-        }
+        assertEquals("EndNodes size should be 2", 2, markers.endNodesSize());
+        assertEquals("Node should be type Startpoint", NODE_TYPE.STARTPOINT, markers.getNode(0).getNodeType());
+        assertEquals("Node should be type Startpoint", NODE_TYPE.STARTPOINT, markers.getNode(1).getNodeType());
     }
+
+    @Test
+    public void whenTwoMarkersAreAddedAndConnectedThenTheirNodesAreConnected() {
+        Marker markerA = markers.getMarker(0);
+        Marker markerB = markers.getMarker(1);
+
+        ways.addWay(markerA, "east", markerB, "west", true, "", 100);
+
+        assertTrue("Node from MarkerA is connected to markerB", markerA.getConnectedNodes().containsKey(markerB));
+        assertTrue("Node from MarkerB is connected to markerA", markerB.getConnectedNodes().containsKey(markerA));
+    }
+
+    @Test
+    public void whenTwoMarkersAreAddedAndConnectedThenWaysAreInHisNodeLists() {
+        Marker markerA = markers.getMarker(0);
+        Marker markerB = markers.getMarker(1);
+
+        ways.addWay(markerA, "east", markerB, "west", true, "", 100);
+        Way wayA = ways.getWay(0);
+        Way wayB = ways.getWay(1);
+
+        assertTrue("Node from MarkerA should have wayA", markerA.getConnectedNodes().get(markerB).contains(wayA));
+        assertTrue("Node from MarkerB should have wayB", markerB.getConnectedNodes().get(markerA).contains(wayB));
+    }
+
 }

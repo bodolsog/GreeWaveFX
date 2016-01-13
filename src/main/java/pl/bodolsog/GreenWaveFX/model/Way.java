@@ -29,7 +29,7 @@ public class Way {
         this.endDirection = endDirection;
         this.response = response;
         this.distance = distance;
-        addToMarkers();
+        addToMarker();
 
         prop = new PropertiesManager();
 
@@ -47,9 +47,8 @@ public class Way {
         return response;
     }
 
-    private void addToMarkers() {
+    private void addToMarker() {
         wayBegin.setWay(this, beginDirection);
-        wayEnd.setWay(this, endDirection);
     }
 
     public void destroy() {

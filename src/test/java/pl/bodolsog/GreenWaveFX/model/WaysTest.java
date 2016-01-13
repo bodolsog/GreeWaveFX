@@ -1,6 +1,5 @@
 package pl.bodolsog.GreenWaveFX.model;
 
-import netscape.javascript.JSException;
 import netscape.javascript.JSObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,25 +19,18 @@ public class WaysTest {
     private Marker markerFour;
     private String response;
     private int distance = 0;
+    private Markers markers;
 
     @Before
     public void setUp(){
         ways = new Ways();
-        // JSObject for test
-        jsObject = new JSObject(){
-            @Override public Object call(String s, Object... objects) throws JSException { return null; }
-            @Override public Object eval(String s) throws JSException { return null; }
-            @Override public Object getMember(String s) throws JSException { return null; }
-            @Override public void setMember(String s, Object o) throws JSException {}
-            @Override public void removeMember(String s) throws JSException {}
-            @Override public Object getSlot(int i) throws JSException { return null; }
-            @Override public void setSlot(int i, Object o) throws JSException {}
-        };
+        jsObject = new JSObjectAdapter();
 
-        markerOne = new Marker(0, jsObject);
-        markerTwo = new Marker(1, jsObject);
-        markerThree = new Marker(2, jsObject);
-        markerFour = new Marker(3, jsObject);
+        markers = new Markers();
+        markerOne = new Marker(0, jsObject, markers);
+        markerTwo = new Marker(1, jsObject, markers);
+        markerThree = new Marker(2, jsObject, markers);
+        markerFour = new Marker(3, jsObject, markers);
         response = "";
 
     }

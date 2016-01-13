@@ -8,7 +8,6 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import pl.bodolsog.GreenWaveFX.controller.MapViewController;
 import pl.bodolsog.GreenWaveFX.model.Markers;
-import pl.bodolsog.GreenWaveFX.model.Nodes;
 import pl.bodolsog.GreenWaveFX.model.Ways;
 
 import java.io.IOException;
@@ -23,7 +22,6 @@ public class MainApp extends Application {
 
     private Markers markers;
     private Ways ways;
-    private Nodes nodes;
 
     // Map of markers <id, marker>.
     //private ObservableMap<String,Marker> ways = FXCollections.observableHashMap();
@@ -89,7 +87,6 @@ public class MainApp extends Application {
             //mapViewController.passMainAppReference(this);
             mapViewController.passMarkersReference(markers);
             mapViewController.passWaysReference(ways);
-            mapViewController.passNodesReference(nodes);
 
             // Show the scene containing the root layout.
             rootLayout.setCenter(mapView);

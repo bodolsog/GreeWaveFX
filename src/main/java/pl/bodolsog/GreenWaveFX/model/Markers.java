@@ -2,6 +2,7 @@ package pl.bodolsog.GreenWaveFX.model;
 
 
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import netscape.javascript.JSObject;
 
@@ -13,7 +14,7 @@ public class Markers {
 
     // Map of markers <id, marker>.
     private ObservableMap<Integer,Marker> markers = FXCollections.observableHashMap();
-
+    private ObservableList<Marker> endNodes = FXCollections.observableArrayList();
     private int active;
 
     /**
@@ -21,7 +22,8 @@ public class Markers {
      * @param jsMarker GoogleMaps marker object
      */
     public void addMarker(JSObject jsMarker){
-        markers.put(nextId, new Marker(nextId, jsMarker));
+        markers.put(nextId, new Marker(nextId, jsMarker, this));
+        endNodes.add(markers.get(nextId));
         setActiveMarkerId(nextId);
         nextId++;
     }
@@ -52,11 +54,15 @@ public class Markers {
     }
 
     /**
-     * Return size of Markers.
-     * @return size
+     * Return markersSize of Markers.
+     * @return markersSize
      */
-    public int size(){
+    public int markersSize() {
         return markers.size();
+    }
+
+    public int endNodesSize() {
+        return endNodes.size();
     }
 
     /**
@@ -89,6 +95,10 @@ public class Markers {
 
     public boolean isStartPoint(int id) {
         return markers.get(id).isStartPoint();
+    }
+
+    public Marker getNode(int i) {
+        return endNodes.get(i);
     }
 
 }

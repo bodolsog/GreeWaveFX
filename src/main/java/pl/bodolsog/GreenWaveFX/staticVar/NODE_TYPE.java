@@ -5,5 +5,6 @@ package pl.bodolsog.GreenWaveFX.staticVar;
  */
 public class NODE_TYPE {
     public static final int STARTPOINT = 0;
-    public static final int CROSSROAD = 1;
+    public static final int TRANSITION = 1;
+    public static final int CROSSROAD = 2;
 }

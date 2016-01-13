@@ -9,7 +9,10 @@ import netscape.javascript.JSObject;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import pl.bodolsog.GreenWaveFX.MainApp;
-import pl.bodolsog.GreenWaveFX.model.*;
+import pl.bodolsog.GreenWaveFX.model.Marker;
+import pl.bodolsog.GreenWaveFX.model.Markers;
+import pl.bodolsog.GreenWaveFX.model.Way;
+import pl.bodolsog.GreenWaveFX.model.Ways;
 import pl.bodolsog.GreenWaveFX.tools.PropertiesManager;
 
 import java.util.ArrayList;
@@ -22,7 +25,6 @@ public class MapViewController {
 
     private Markers markers;
     private Ways ways;
-    private Nodes nodes;
 
     @FXML
     private WebView webView;
@@ -60,14 +62,6 @@ public class MapViewController {
         this.ways = ways;
     }
 
-    /**
-     * Set reference to Nodes (called from MainApp).
-     *
-     * @param nodes
-     */
-    public void passNodesReference(Nodes nodes) {
-        this.nodes = nodes;
-    }
 
     /**
      * Add new Marker to list.
@@ -224,7 +218,7 @@ public class MapViewController {
 //                streetsList.put(markerId, FXCollections.observableArrayList());
 //                // Listener will set cross name when all 4 queries is completed.
 //                streetsList.get(markerId).addListener((ListChangeListener<String>) change -> { while(change.next()){
-//                    if(change.getList().size() >= 4){
+//                    if(change.getList().markersSize() >= 4){
 //                        // Set cross name to TitledPane
 //                        String crossName = setCrossName(markerId, change.getList());
 //                        // Set cross name to marker.
