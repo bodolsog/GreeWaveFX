@@ -42,54 +42,108 @@ public class Marker {
         this.markers = markers;
 
         cross.addListener((MapChangeListener<String, Way>) change -> {
-            if (change.wasAdded() && change.wasRemoved()) {               // updated
+            if (change.wasAdded() && change.wasRemoved()) {               // Added, removed or updated
                 int connectedWays = (int) change.getMap().entrySet().stream()
                         .filter(entry -> entry.getValue() != null)
                         .count();
 
                 if (connectedWays == 2) {
                     nodeType = NODE_TYPE.TRANSITION;
+                    updateConnectedNodes();
                     connectedNodes.clear();
-                } else if (change.getValueAdded() != null) {         // added Way
+                    markers.removeEndNode(this);
+                } else if (change.getValueAdded() != null) {         // added or updated Way
                     if (connectedWays == 3) {
                         nodeType = NODE_TYPE.CROSSROAD;
-                        updateAllNodes();
+                        crawlForNodes();
                     } else
-                        updateNode(change.getValueAdded());
+                        findNode(change.getValueAdded());
                 } else {                                           // removed way
                     if (connectedWays == 1) {
                         nodeType = NODE_TYPE.STARTPOINT;
-                        updateAllNodes();
+                        markers.addStartpoint(this);
+                        crawlForNodes();
                     } else
-                        updateNode(change.getValueAdded());
+                        checkNodes(change.getValueRemoved());
                 }
             }
         });
     }
 
-    private void updateNode(Way way) {
-        if (way.getWayEnd() != this) {
-            ArrayList<Way> waysList = new ArrayList<>();
-            connectedNodes.put(findNode(way, waysList), waysList);
+    private void checkNodes(Way way) {
+        ArrayList<Marker> nodesToRemove = new ArrayList<>();
+        connectedNodes.forEach((marker, list) -> {
+            if (list.get(0) == way) {
+                nodesToRemove.add(marker);
+            }
+        });
+        nodesToRemove.forEach(node -> connectedNodes.remove(node));
+    }
+
+    private void crawlForNodes() {
+        cross.forEach((dir, way) -> {
+            if (way != null)
+                findNode(way);
+        });
+
+        connectedNodes.forEach((marker, list) -> {
+            String wayFromDirection = list.get(list.size() - 1).getEndDirection();
+            if (marker.getCross().containsKey(wayFromDirection) && marker.getCross().get(wayFromDirection) != null) {
+                Way outgoingWay = marker.getCross().get(wayFromDirection);
+                ArrayList<Marker> mm = new ArrayList<Marker>();
+
+                marker.getConnectedNodes().forEach((m, l) -> {
+                    if (l.get(0) == outgoingWay)
+                        mm.add(m);
+                });
+                mm.forEach(m -> marker.getConnectedNodes().remove(m));
+                marker.findNode(outgoingWay);
+            }
+        });
+    }
+
+    private void updateConnectedNodes() {
+        HashMap<Marker, Way> nodesToUpdate = performUpdateNodes();
+        nodesToUpdate.forEach((marker, way) -> marker.findNode(way));
+    }
+
+    public void findNode(Way way) {
+        ArrayList<Way> listOfWays = new ArrayList<>();
+        connectedNodes.put(findNode(way, listOfWays), listOfWays);
+    }
+
+    private Marker findNode(Way way, ArrayList<Way> listOfWays) {
+        listOfWays.add(way);
+        Marker marker = way.getEndMarker();
+
+        if (marker.getNodeType() == NODE_TYPE.TRANSITION) {
+
+            ArrayList<Way> possibleWays = new ArrayList<>();
+            ArrayList<Way> cWays = marker.getCrossWays();
+            for (int i = 0; i < cWays.size(); i++) {
+                if (cWays.get(i).getBeginDirection() != way.getEndDirection())
+                    possibleWays.add(cWays.get(i));
+            }
+
+            if (possibleWays.size() > 1) {
+                return marker;
+            }
+            return findNode(possibleWays.get(0), listOfWays);
         }
+        return marker;
     }
 
-    private void updateAllNodes() {
-        cross.forEach((s, way) -> updateNode(way));
+    public HashMap<Marker, Way> performUpdateNodes() {
+        HashMap<Marker, Way> nodesToUpdate = new HashMap<>();
+        connectedNodes.forEach((marker, list) -> {
+            if (marker.getConnectedNodes().containsKey(this)) {
+                Way backWay = marker.getConnectedNode(this).get(0);
+                nodesToUpdate.put(marker, backWay);
+                marker.getConnectedNodes().remove(this);
+            }
+        });
+        return nodesToUpdate;
     }
-
-    private Marker findNode(Way previousWay, ArrayList<Way> ways) {
-        ways.add(previousWay);
-        Marker previousMarker = previousWay.getWayBegin();
-        Marker marker = previousWay.getWayEnd();
-        if (marker.getNodeType() != NODE_TYPE.TRANSITION) {
-            return marker;
-        } else {
-            Way nextWay = marker.getCrossWays().stream().filter(way -> way.getWayEnd() != previousMarker).findFirst().get();
-            return findNode(nextWay, ways);
-        }
-    }
-
 
     /**
      * Return id as int.
@@ -146,12 +200,11 @@ public class Marker {
     }
 
     protected void removeWay(Way way) {
-        List<String> key = cross.entrySet()
-                .stream()
+        List<String> key = cross.entrySet().stream()
                 .filter(p -> p.getValue() == way)
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
-        key.forEach(direction -> cross.remove(direction));
+        key.forEach(direction -> cross.put(direction, null));
     }
 
     protected boolean isStartPoint() {
@@ -170,6 +223,13 @@ public class Marker {
 
     protected HashMap<Marker, ArrayList<Way>> getConnectedNodes() {
         return connectedNodes;
+    }
+
+    protected ArrayList<Way> getConnectedNode(Marker marker) {
+        if (connectedNodes.containsKey(marker))
+            return connectedNodes.get(marker);
+        else
+            throw new NullPointerException();
     }
 
     protected ArrayList<Way> getNodeWaysList(Marker marker) {

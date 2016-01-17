@@ -36,13 +36,21 @@ public class Way {
         calculateDurationTable();
     }
 
-    public Marker getWayBegin(){
+    public Marker getBeginMarker() {
         return wayBegin;
     }
-    public Marker getWayEnd(){
+
+    public Marker getEndMarker() {
         return wayEnd;
     }
 
+    public String getBeginDirection() {
+        return beginDirection;
+    }
+
+    public String getEndDirection() {
+        return endDirection;
+    }
     public String getResponse() {
         return response;
     }
@@ -52,9 +60,8 @@ public class Way {
     }
 
     public void destroy() {
-        ways.deleteWay(id);
+        ways.remove(id);
         wayBegin.removeWay(this);
-        wayEnd.removeWay(this);
     }
 
     public int getDuration(int speed) {

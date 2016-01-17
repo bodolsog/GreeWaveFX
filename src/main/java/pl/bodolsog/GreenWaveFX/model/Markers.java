@@ -1,21 +1,25 @@
 package pl.bodolsog.GreenWaveFX.model;
 
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import netscape.javascript.JSObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Markers {
 
     private int nextId = 0;
-
+    private Ways ways;
     // Map of markers <id, marker>.
     private ObservableMap<Integer,Marker> markers = FXCollections.observableHashMap();
-    private ObservableList<Marker> endNodes = FXCollections.observableArrayList();
+    private ObservableList<Marker> startpoints = FXCollections.observableArrayList();
     private int active;
+
+    public Markers(Ways ways) {
+        this.ways = ways;
+    }
 
     /**
      * Add marker to markers list.
@@ -23,7 +27,7 @@ public class Markers {
      */
     public void addMarker(JSObject jsMarker){
         markers.put(nextId, new Marker(nextId, jsMarker, this));
-        endNodes.add(markers.get(nextId));
+        startpoints.add(markers.get(nextId));
         setActiveMarkerId(nextId);
         nextId++;
     }
@@ -42,7 +46,19 @@ public class Markers {
      * @param id
      */
     public void deleteMarker(int id){
+        deleteMarker(id, markers.get(id));
+    }
+
+    public void deleteMarker(Marker marker) {
+        deleteMarker(marker.getId(), marker);
+    }
+
+    public void deleteMarker(int id, Marker marker) {
+        ways.performRemoveMarker(marker);
+        HashMap<Marker, Way> nodesToUpdate = marker.performUpdateNodes();
+        removeEndNode(marker);
         markers.remove(id);
+        nodesToUpdate.forEach((node, way) -> node.findNode(way));
     }
 
     /**
@@ -61,8 +77,8 @@ public class Markers {
         return markers.size();
     }
 
-    public int endNodesSize() {
-        return endNodes.size();
+    public int startpointsCount() {
+        return startpoints.size();
     }
 
     /**
@@ -89,8 +105,8 @@ public class Markers {
         return markers.get(getActiveMarkerId());
     }
 
-    public void setCrossDirections(int id, ArrayList<String> directions) {
-        getMarker(id).setCrossDirections(directions);
+    public void setCrossDirections(int markerId, ArrayList<String> directions) {
+        getMarker(markerId).setCrossDirections(directions);
     }
 
     public boolean isStartPoint(int id) {
@@ -98,7 +114,21 @@ public class Markers {
     }
 
     public Marker getNode(int i) {
-        return endNodes.get(i);
+        return startpoints.get(i);
+    }
+
+    public Marker getLastMarker() {
+        return markers.get(nextId - 1);
+    }
+
+    public void removeEndNode(Marker marker) {
+        if (startpoints.contains(marker))
+            startpoints.remove(marker);
+    }
+
+    public void addStartpoint(Marker marker) {
+        if (!startpoints.contains(marker))
+            startpoints.add(marker);
     }
 
 }

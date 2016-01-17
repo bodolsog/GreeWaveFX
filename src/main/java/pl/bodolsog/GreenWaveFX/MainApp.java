@@ -42,10 +42,11 @@ public class MainApp extends Application {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("GreenWaveFX");
 
-        // Set up Markers
-        markers = new Markers();
+
         // Set up Ways
         ways = new Ways();
+        // Set up Markers
+        markers = new Markers(ways);
 
         // Init layout
         initRootLayout();
