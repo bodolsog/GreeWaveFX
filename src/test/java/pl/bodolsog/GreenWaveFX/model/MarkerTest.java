@@ -7,6 +7,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import pl.bodolsog.GreenWaveFX.staticVar.DIRECTIONS;
 import pl.bodolsog.GreenWaveFX.staticVar.NODE_TYPE;
 
 import java.util.ArrayList;
@@ -16,10 +17,10 @@ import static org.junit.Assert.*;
 @RunWith(HierarchicalContextRunner.class)
 public class MarkerTest {
     private final ArrayList<String> crossDirections = new ArrayList<String>() {{
-        add("north");
-        add("south");
-        add("east");
-        add("west");
+        add(DIRECTIONS.NORTH);
+        add(DIRECTIONS.SOUTH);
+        add(DIRECTIONS.EAST);
+        add(DIRECTIONS.WEST);
     }};
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -73,10 +74,10 @@ public class MarkerTest {
             @Before
             public void setUp() {
                 ArrayList<String> directions = new ArrayList<String>() {{
-                    add("north");
-                    add("south");
-                    add("northeast");
-                    add("west");
+                    add(DIRECTIONS.NORTH);
+                    add(DIRECTIONS.SOUTH);
+                    add(DIRECTIONS.NORTHEAST);
+                    add(DIRECTIONS.WEST);
                 }};
                 markers.addMarker(new JSObjectAdapter());
                 markers.setCrossDirections(0, directions);
@@ -86,11 +87,11 @@ public class MarkerTest {
             @Test
             public void thenAllDirectionsAreInAndArentAnother() {
                 ArrayList<String> directions = markerA.getCrossDirections();
-                assertTrue("Should contain north", directions.contains("north"));
-                assertTrue("Should contain south", directions.contains("south"));
-                assertTrue("Should contain northeast", directions.contains("northeast"));
-                assertTrue("Should contain west", directions.contains("west"));
-                assertFalse("Shouldn't contain east", directions.contains("east"));
+                assertTrue("Should contain north", directions.contains(DIRECTIONS.NORTH));
+                assertTrue("Should contain south", directions.contains(DIRECTIONS.SOUTH));
+                assertTrue("Should contain northeast", directions.contains(DIRECTIONS.NORTHEAST));
+                assertTrue("Should contain west", directions.contains(DIRECTIONS.WEST));
+                assertFalse("Shouldn't contain east", directions.contains(DIRECTIONS.EAST));
             }
         }
     }
@@ -102,8 +103,8 @@ public class MarkerTest {
             markerB = createMarker();
             markerC = createMarker();
 
-            ways.addWay(markerA, "east", markerB, "west", true, "", 100);
-            ways.addWay(markerA, "north", markerC, "south", true, "", 200);
+            ways.addWay(markerA, DIRECTIONS.EAST, markerB, DIRECTIONS.WEST, true, "", 100);
+            ways.addWay(markerA, DIRECTIONS.NORTH, markerC, DIRECTIONS.SOUTH, true, "", 200);
         }
 
         public class WhenCallSetCrossDirectionsWithAnotherData {
@@ -112,9 +113,9 @@ public class MarkerTest {
                 wayNorth = ways.getWay(2);
 
                 ArrayList<String> directions = new ArrayList<String>() {{
-                    add("north");
-                    add("northeast");
-                    add("west");
+                    add(DIRECTIONS.NORTH);
+                    add(DIRECTIONS.NORTHEAST);
+                    add(DIRECTIONS.WEST);
                 }};
                 markerA.setCrossDirections(directions);
             }
@@ -122,26 +123,26 @@ public class MarkerTest {
             @Test
             public void thenOnlyNewDataShouldBeInMap() {
                 ArrayList<String> directions = markerA.getCrossDirections();
-                assertTrue("Should contain north.", directions.contains("north"));
-                assertTrue("Should contain northeast.", directions.contains("northeast"));
-                assertTrue("Should contain west.", directions.contains("west"));
+                assertTrue("Should contain north.", directions.contains(DIRECTIONS.NORTH));
+                assertTrue("Should contain northeast.", directions.contains(DIRECTIONS.NORTHEAST));
+                assertTrue("Should contain west.", directions.contains(DIRECTIONS.WEST));
 
-                assertFalse("Should contain south.", directions.contains("south"));
-                assertFalse("Should contain east.", directions.contains("east"));
+                assertFalse("Should contain south.", directions.contains(DIRECTIONS.SOUTH));
+                assertFalse("Should contain east.", directions.contains(DIRECTIONS.EAST));
             }
 
             @Test
             public void thenWayOnSameDirectionShouldStay() {
                 assertEquals("Way from north should stay.",
-                        wayNorth, markerA.getCrossDirection("north"));
+                        wayNorth, markerA.getCrossDirection(DIRECTIONS.NORTH));
             }
 
             @Test
             public void thenWayFromRemovedDirectionShouldBeDestroyed() {
                 thrown.expect(NullPointerException.class);
-                assertNull("", markerA.getCrossDirection("east"));
+                assertNull("", markerA.getCrossDirection(DIRECTIONS.EAST));
                 thrown.expect(NullPointerException.class);
-                assertNull("", markerB.getCrossDirection("west"));
+                assertNull("", markerB.getCrossDirection(DIRECTIONS.WEST));
             }
         }
 
@@ -158,7 +159,7 @@ public class MarkerTest {
             @Before
             public void setUp() {
                 // A-B
-                ways.addWay(markerA, "east", markerB, "west", true, "", 100);
+                ways.addWay(markerA, DIRECTIONS.EAST, markerB, DIRECTIONS.WEST, true, "", 100);
             }
 
             @Test
@@ -195,7 +196,7 @@ public class MarkerTest {
             markerB = createMarker();
 
             // A-B
-            ways.addWay(markerA, "east", markerB, "west", true, "", 100);
+            ways.addWay(markerA, DIRECTIONS.EAST, markerB, DIRECTIONS.WEST, true, "", 100);
         }
 
         public class WhenThirdIsConnected {
@@ -204,7 +205,7 @@ public class MarkerTest {
                 markerC = createMarker();
 
                 // A-B-C
-                ways.addWay(markerB, "east", markerC, "west", true, "", 200);
+                ways.addWay(markerB, DIRECTIONS.EAST, markerC, DIRECTIONS.WEST, true, "", 200);
             }
 
             @Test
@@ -255,8 +256,8 @@ public class MarkerTest {
             markerC = createMarker();
 
             // A-B-C
-            ways.addWay(markerA, "east", markerB, "west", true, "", 100);
-            ways.addWay(markerB, "east", markerC, "west", true, "", 200);
+            ways.addWay(markerA, DIRECTIONS.EAST, markerB, DIRECTIONS.WEST, true, "", 100);
+            ways.addWay(markerB, DIRECTIONS.EAST, markerC, DIRECTIONS.WEST, true, "", 200);
         }
 
         public class WhenFourthIsConnectedToMiddleOne {
@@ -266,7 +267,7 @@ public class MarkerTest {
                 // A-B-C
                 //   |
                 //   D
-                ways.addWay(markerB, "south", markerD, "north", true, "", 220);
+                ways.addWay(markerB, DIRECTIONS.SOUTH, markerD, DIRECTIONS.NORTH, true, "", 220);
             }
 
             @Test
@@ -383,9 +384,9 @@ public class MarkerTest {
             // A-B-C
             //   |
             //   D
-            ways.addWay(markerA, "east", markerB, "west", true, "", 100);
-            ways.addWay(markerB, "east", markerC, "west", true, "", 200);
-            ways.addWay(markerB, "south", markerD, "north", true, "", 220);
+            ways.addWay(markerA, DIRECTIONS.EAST, markerB, DIRECTIONS.WEST, true, "", 100);
+            ways.addWay(markerB, DIRECTIONS.EAST, markerC, DIRECTIONS.WEST, true, "", 200);
+            ways.addWay(markerB, DIRECTIONS.SOUTH, markerD, DIRECTIONS.NORTH, true, "", 220);
         }
 
         public class WhenConnectionsFromOneStartpointIsRemoved {

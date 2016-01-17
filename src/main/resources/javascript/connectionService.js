@@ -26,27 +26,27 @@ function directionsInterpreter(startPoint, endPoint, factor) {
 
     if (Math.abs(factor) >= LIMES_UPPER) {
         if (latShift < 0)
-            return "north";
+            return "NORTH";
         else
-            return "south";
+            return "SOUTH";
     }
     else if (Math.abs(factor) <= LIMES_LOWER) {
         if (lngShift < 0)
-            return "east";
+            return "EAST";
         else
-            return "west";
+            return "WEST";
     }
     else {
         if (latShift < 0) {
             if (lngShift < 0)
-                return "northeast";
+                return "NORTHEAST";
             else
-                return "northwest";
+                return "NORTHWEST";
         } else {
             if (lngShift < 0)
-                return "southeast";
+                return "SOUTHEAST";
             else
-                return "southwest";
+                return "SOUTHWEST";
         }
     }
 }

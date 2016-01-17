@@ -9,7 +9,10 @@ import netscape.javascript.JSObject;
 import pl.bodolsog.GreenWaveFX.staticVar.DIRECTIONS;
 import pl.bodolsog.GreenWaveFX.staticVar.NODE_TYPE;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -166,8 +169,8 @@ public class Marker {
         return r;
     }
 
-    protected void setCrossDirections(ArrayList<String> decodedDirections) {
-        Arrays.asList(DIRECTIONS.NAMES).forEach(direction -> {
+    public void setCrossDirections(ArrayList<String> decodedDirections) {
+        DIRECTIONS.NAMES.forEach(direction -> {
             if (decodedDirections.contains(direction) && !cross.containsKey(direction))
                 cross.put(direction, null);
             else if (cross.containsKey(direction) && !decodedDirections.contains(direction)) {
