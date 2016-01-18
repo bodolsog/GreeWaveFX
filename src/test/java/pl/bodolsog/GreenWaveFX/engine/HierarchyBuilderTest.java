@@ -36,18 +36,18 @@ public class HierarchyBuilderTest {
     }
 
     private void waysInlineShortcut(ArrayList<Marker> ms, int start, int end, String direction) {
-        String previous, next;
+        String outgoing, ingoing;
         if (direction == "ns") {
-            previous = DIRECTION.N;
-            next = DIRECTION.S;
+            outgoing = DIRECTION.S;
+            ingoing = DIRECTION.N;
         } else if (direction == "we") {
-            previous = DIRECTION.W;
-            next = DIRECTION.E;
+            outgoing = DIRECTION.E;
+            ingoing = DIRECTION.W;
         } else
             return;
 
         for (int i = start; i < end; i++) {
-            ways.addWay(ms.get(i), previous, ms.get(i + 1), next, true, "", i * 25);
+            ways.addWay(ms.get(i), outgoing, ms.get(i + 1), ingoing, true, "", i * 25);
         }
     }
 
@@ -81,7 +81,7 @@ public class HierarchyBuilderTest {
             }
 
             @Test
-            public void thenFindOneConnection() {
+            public void thenFindFirstConnection() {
                 assertEquals("First connection of hierarchy starts from 0.", markersBound.get(0), hierarchyBuilder.getHierarchyEntry(0).getStartpoint());
                 assertEquals("First connection of hierarchy goes to 3.", markersBound.get(3), hierarchyBuilder.getHierarchyEntry(0).getEndpoint());
             }
@@ -93,5 +93,203 @@ public class HierarchyBuilderTest {
             }
         }
     }
+
+    public class GivenThreeWayCrossState {
+        @Before
+        public void setUp() {
+            markersBound = createBoundOfMarkers(7);
+            // 0-1-2-3
+            //   4
+            //   5-6
+            waysInlineShortcut(markersBound, 0, 3, "we");
+            ways.addWay(
+                    markersBound.get(1), DIRECTION.S,
+                    markersBound.get(4), DIRECTION.N,
+                    true, "", 125);
+            ways.addWay(
+                    markersBound.get(4), DIRECTION.S,
+                    markersBound.get(5), DIRECTION.N,
+                    true, "", 125);
+            ways.addWay(
+                    markersBound.get(5), DIRECTION.E,
+                    markersBound.get(6), DIRECTION.W,
+                    true, "", 125);
+
+            hierarchyBuilder = new HierarchyBuilder(ways.getAllWays(), markers.getAllMarkers(), markers.getStartpoints());
+        }
+
+        public class WhenGotNoPrinciples {
+            @Before
+            public void setUp() {
+                hierarchyBuilder.buildHierarchy();
+            }
+
+            @Test
+            public void thenFindFourWays() {
+                assertEquals("Ways in hierarchy should be exactly 4.", 4, hierarchyBuilder.size());
+            }
+
+            @Test
+            public void thenFindFirstConnection() {
+                assertEquals("First connection of hierarchy starts from 0.", markersBound.get(0), hierarchyBuilder.getHierarchyEntry(0).getStartpoint());
+                assertEquals("First connection of hierarchy goes to 3.", markersBound.get(3), hierarchyBuilder.getHierarchyEntry(0).getEndpoint());
+            }
+
+            @Test
+            public void thenFindSecondConnection() {
+                assertEquals("Second connection of hierarchy starts from 3.", markersBound.get(3), hierarchyBuilder.getHierarchyEntry(1).getStartpoint());
+                assertEquals("Second connection of hierarchy goes to 0.", markersBound.get(0), hierarchyBuilder.getHierarchyEntry(1).getEndpoint());
+            }
+
+            @Test
+            public void thenFindThirdConnection() {
+                assertEquals("Third connection of hierarchy starts from 6.", markersBound.get(6), hierarchyBuilder.getHierarchyEntry(2).getStartpoint());
+                assertEquals("Third connection of hierarchy goes to 1.", markersBound.get(1), hierarchyBuilder.getHierarchyEntry(2).getEndpoint());
+            }
+
+            @Test
+            public void thenFindFourthConnection() {
+                assertEquals("Fourth connection of hierarchy starts from 1.", markersBound.get(1), hierarchyBuilder.getHierarchyEntry(3).getStartpoint());
+                assertEquals("Fourth connection of hierarchy goes to 6.", markersBound.get(6), hierarchyBuilder.getHierarchyEntry(3).getEndpoint());
+            }
+
+        }
+    }
+
+    public class GivenFourWayCrossState {
+        @Before
+        public void setUp() {
+            markersBound = createBoundOfMarkers(7);
+            //   6
+            // 0-1-2-3
+            //   4
+            //   5
+            waysInlineShortcut(markersBound, 0, 3, "we");
+            ways.addWay(
+                    markersBound.get(1), DIRECTION.S,
+                    markersBound.get(4), DIRECTION.N,
+                    true, "", 125);
+            ways.addWay(
+                    markersBound.get(4), DIRECTION.S,
+                    markersBound.get(5), DIRECTION.N,
+                    true, "", 125);
+            ways.addWay(
+                    markersBound.get(1), DIRECTION.N,
+                    markersBound.get(6), DIRECTION.S,
+                    true, "", 125);
+
+            hierarchyBuilder = new HierarchyBuilder(ways.getAllWays(), markers.getAllMarkers(), markers.getStartpoints());
+        }
+
+        public class WhenGotNoPrinciples {
+            @Before
+            public void setUp() {
+                hierarchyBuilder.buildHierarchy();
+            }
+
+            @Test
+            public void thenFindFourWays() {
+                assertEquals("Ways in hierarchy should be exactly 4.", 4, hierarchyBuilder.size());
+            }
+
+            @Test
+            public void thenFindFirstConnection() {
+                assertEquals("First connection of hierarchy starts from 0.", markersBound.get(0), hierarchyBuilder.getHierarchyEntry(0).getStartpoint());
+                assertEquals("First connection of hierarchy goes to 3.", markersBound.get(3), hierarchyBuilder.getHierarchyEntry(0).getEndpoint());
+            }
+
+            @Test
+            public void thenFindSecondConnection() {
+                assertEquals("Second connection of hierarchy starts from 3.", markersBound.get(3), hierarchyBuilder.getHierarchyEntry(1).getStartpoint());
+                assertEquals("Second connection of hierarchy goes to 0.", markersBound.get(0), hierarchyBuilder.getHierarchyEntry(1).getEndpoint());
+            }
+
+            @Test
+            public void thenFindThirdConnection() {
+                assertEquals("Third connection of hierarchy starts from 5.", markersBound.get(5), hierarchyBuilder.getHierarchyEntry(2).getStartpoint());
+                assertEquals("Third connection of hierarchy goes to 6.", markersBound.get(6), hierarchyBuilder.getHierarchyEntry(2).getEndpoint());
+            }
+
+            @Test
+            public void thenFindFourthConnection() {
+                assertEquals("Fourth connection of hierarchy starts from 6.", markersBound.get(6), hierarchyBuilder.getHierarchyEntry(3).getStartpoint());
+                assertEquals("Fourth connection of hierarchy goes to 5.", markersBound.get(5), hierarchyBuilder.getHierarchyEntry(3).getEndpoint());
+            }
+        }
+    }
+
+    public class GivenTwoThreeWayCrossState {
+        @Before
+        public void setUp() {
+            markersBound = createBoundOfMarkers(10);
+            // 0-1-2-3
+            //     8
+            //     9
+            // 4-5-6-7
+            waysInlineShortcut(markersBound, 0, 3, "we");
+            waysInlineShortcut(markersBound, 4, 7, "we");
+            waysInlineShortcut(markersBound, 8, 9, "ns");
+
+            ways.addWay(
+                    markersBound.get(2), DIRECTION.S,
+                    markersBound.get(8), DIRECTION.N,
+                    true, "", 125);
+            ways.addWay(
+                    markersBound.get(9), DIRECTION.S,
+                    markersBound.get(6), DIRECTION.N,
+                    true, "", 125);
+
+            hierarchyBuilder = new HierarchyBuilder(ways.getAllWays(), markers.getAllMarkers(), markers.getStartpoints());
+        }
+
+        public class WhenGotNoPrinciples {
+            @Before
+            public void setUp() {
+                hierarchyBuilder.buildHierarchy();
+            }
+
+            @Test
+            public void thenFindSixWays() {
+                assertEquals("Ways in hierarchy should be exactly 6.", 6, hierarchyBuilder.size());
+            }
+
+            @Test
+            public void thenFindFirstConnection() {
+                assertEquals("First connection of hierarchy starts from 0.", markersBound.get(0), hierarchyBuilder.getHierarchyEntry(0).getStartpoint());
+                assertEquals("First connection of hierarchy goes to 3.", markersBound.get(3), hierarchyBuilder.getHierarchyEntry(0).getEndpoint());
+            }
+
+            @Test
+            public void thenFindSecondConnection() {
+                assertEquals("Second connection of hierarchy starts from 3.", markersBound.get(3), hierarchyBuilder.getHierarchyEntry(1).getStartpoint());
+                assertEquals("Second connection of hierarchy goes to 0.", markersBound.get(0), hierarchyBuilder.getHierarchyEntry(1).getEndpoint());
+            }
+
+            @Test
+            public void thenFindThirdConnection() {
+                assertEquals("Third connection of hierarchy starts from 4.", markersBound.get(4), hierarchyBuilder.getHierarchyEntry(2).getStartpoint());
+                assertEquals("Third connection of hierarchy goes to 7.", markersBound.get(7), hierarchyBuilder.getHierarchyEntry(2).getEndpoint());
+            }
+
+            @Test
+            public void thenFindFourthConnection() {
+                assertEquals("Fourth connection of hierarchy starts from 7.", markersBound.get(7), hierarchyBuilder.getHierarchyEntry(3).getStartpoint());
+                assertEquals("Fourth connection of hierarchy goes to 4.", markersBound.get(4), hierarchyBuilder.getHierarchyEntry(3).getEndpoint());
+            }
+
+            @Test
+            public void thenFindFifthConnection() {
+                assertEquals("Fifth connection of hierarchy starts from 2.", markersBound.get(2), hierarchyBuilder.getHierarchyEntry(4).getStartpoint());
+                assertEquals("Fifth connection of hierarchy goes to 6.", markersBound.get(6), hierarchyBuilder.getHierarchyEntry(4).getEndpoint());
+            }
+
+            @Test
+            public void thenFindsixthConnection() {
+                assertEquals("Sixth connection of hierarchy starts from 6.", markersBound.get(6), hierarchyBuilder.getHierarchyEntry(5).getStartpoint());
+                assertEquals("Sixth connection of hierarchy goes to 2.", markersBound.get(2), hierarchyBuilder.getHierarchyEntry(5).getEndpoint());
+            }
+        }
+    }
+
 
 }
