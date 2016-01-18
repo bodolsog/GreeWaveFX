@@ -6,7 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
 import netscape.javascript.JSObject;
-import pl.bodolsog.GreenWaveFX.staticVar.DIRECTIONS;
+import pl.bodolsog.GreenWaveFX.staticVar.DIRECTION;
 import pl.bodolsog.GreenWaveFX.staticVar.NODE_TYPE;
 
 import java.util.ArrayList;
@@ -34,6 +34,7 @@ public class Marker {
 
     /**
      * Constructor
+     *
      * @param id
      * @param jsMarker GoogleMaps marker object
      */
@@ -41,7 +42,7 @@ public class Marker {
         // Set variables.
         this.id = new SimpleIntegerProperty(id);
         this.jsMarker = jsMarker;
-        this.jsMarker.setMember("id", id+"");
+        this.jsMarker.setMember("id", id + "");
         this.markers = markers;
 
         cross.addListener((MapChangeListener<String, Way>) change -> {
@@ -54,7 +55,7 @@ public class Marker {
                     nodeType = NODE_TYPE.TRANSITION;
                     updateConnectedNodes();
                     connectedNodes.clear();
-                    markers.removeEndNode(this);
+                    markers.removeStartpoint(this);
                 } else if (change.getValueAdded() != null) {         // added or updated Way
                     if (connectedWays == 3) {
                         nodeType = NODE_TYPE.CROSSROAD;
@@ -150,9 +151,10 @@ public class Marker {
 
     /**
      * Return id as int.
+     *
      * @return id
      */
-    public int getId(){
+    public int getId() {
         return id.getValue();
     }
 
@@ -170,7 +172,7 @@ public class Marker {
     }
 
     public void setCrossDirections(ArrayList<String> decodedDirections) {
-        DIRECTIONS.NAMES.forEach(direction -> {
+        DIRECTION.NAMES.forEach(direction -> {
             if (decodedDirections.contains(direction) && !cross.containsKey(direction))
                 cross.put(direction, null);
             else if (cross.containsKey(direction) && !decodedDirections.contains(direction)) {
@@ -224,7 +226,7 @@ public class Marker {
         return nodeType;
     }
 
-    protected HashMap<Marker, ArrayList<Way>> getConnectedNodes() {
+    public HashMap<Marker, ArrayList<Way>> getConnectedNodes() {
         return connectedNodes;
     }
 

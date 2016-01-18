@@ -1,8 +1,6 @@
 package pl.bodolsog.GreenWaveFX.model;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableMap;
-
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,7 +11,7 @@ public class Ways {
 
     private int nextId = 0;
     // Map of markers <id, marker>.
-    private ObservableMap<Integer,Way> ways = FXCollections.observableHashMap();
+    private HashMap<Integer, Way> ways = new HashMap<>();
 
     public void addWay(Marker begin, String beginDir, Marker end, String endDir, boolean twoWay,
                        String response, int distance) {
@@ -71,5 +69,9 @@ public class Ways {
 
     public int size(){
         return ways.size();
+    }
+
+    public HashMap<Integer, Way> getAllWays() {
+        return ways;
     }
 }

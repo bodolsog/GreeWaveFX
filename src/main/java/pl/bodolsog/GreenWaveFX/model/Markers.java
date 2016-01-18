@@ -1,8 +1,5 @@
 package pl.bodolsog.GreenWaveFX.model;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 import netscape.javascript.JSObject;
 
 import java.util.ArrayList;
@@ -13,8 +10,8 @@ public class Markers {
     private int nextId = 0;
     private Ways ways;
     // Map of markers <id, marker>.
-    private ObservableMap<Integer,Marker> markers = FXCollections.observableHashMap();
-    private ObservableList<Marker> startpoints = FXCollections.observableArrayList();
+    private HashMap<Integer, Marker> markers = new HashMap<>();
+    private ArrayList<Marker> startpoints = new ArrayList<>();
     private int active;
 
     public Markers(Ways ways) {
@@ -56,7 +53,7 @@ public class Markers {
     public void deleteMarker(int id, Marker marker) {
         ways.performRemoveMarker(marker);
         HashMap<Marker, Way> nodesToUpdate = marker.performUpdateNodes();
-        removeEndNode(marker);
+        removeStartpoint(marker);
         markers.remove(id);
         nodesToUpdate.forEach((node, way) -> node.findNode(way));
     }
@@ -65,7 +62,7 @@ public class Markers {
      * Return whole map.
      * @return markers
      */
-    public ObservableMap<Integer,Marker> getAllMarkers(){
+    public HashMap<Integer, Marker> getAllMarkers() {
         return markers;
     }
 
@@ -121,7 +118,7 @@ public class Markers {
         return markers.get(nextId - 1);
     }
 
-    public void removeEndNode(Marker marker) {
+    public void removeStartpoint(Marker marker) {
         if (startpoints.contains(marker))
             startpoints.remove(marker);
     }
@@ -131,4 +128,7 @@ public class Markers {
             startpoints.add(marker);
     }
 
+    public ArrayList<Marker> getStartpoints() {
+        return startpoints;
+    }
 }

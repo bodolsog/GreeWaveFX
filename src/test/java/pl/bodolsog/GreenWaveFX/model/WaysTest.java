@@ -4,7 +4,7 @@ import de.bechte.junit.runners.context.HierarchicalContextRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import pl.bodolsog.GreenWaveFX.staticVar.DIRECTIONS;
+import pl.bodolsog.GreenWaveFX.staticVar.DIRECTION;
 
 import java.util.ArrayList;
 
@@ -40,7 +40,7 @@ public class WaysTest {
         public class WhenAddAOneWay {
             @Before
             public void setUp() {
-                ways.addWay(markersList.get(0), DIRECTIONS.EAST, markersList.get(1), DIRECTIONS.WEST, false, "", 100);
+                ways.addWay(markersList.get(0), DIRECTION.E, markersList.get(1), DIRECTION.W, false, "", 100);
             }
 
             @Test
@@ -59,7 +59,7 @@ public class WaysTest {
         public class WhenAddATwoWay {
             @Before
             public void setUp() {
-                ways.addWay(markersList.get(0), DIRECTIONS.EAST, markersList.get(1), DIRECTIONS.WEST, true, "", 100);
+                ways.addWay(markersList.get(0), DIRECTION.E, markersList.get(1), DIRECTION.W, true, "", 100);
             }
 
             @Test
@@ -83,7 +83,7 @@ public class WaysTest {
         public class WhenAddWayWithSameStartAndEnd {
             @Before
             public void setUp() {
-                ways.addWay(markersList.get(0), DIRECTIONS.EAST, markersList.get(0), DIRECTIONS.WEST, true, "", 100);
+                ways.addWay(markersList.get(0), DIRECTION.E, markersList.get(0), DIRECTION.W, true, "", 100);
             }
 
             @Test
@@ -102,18 +102,18 @@ public class WaysTest {
             // 0-1-2
             //   ^
             //   3
-            ways.addWay(markersList.get(0), DIRECTIONS.EAST, markersList.get(1), DIRECTIONS.WEST, true, "", 100);
-            ways.addWay(markersList.get(1), DIRECTIONS.EAST, markersList.get(2), DIRECTIONS.WEST, true, "", 100);
-            ways.addWay(markersList.get(1), DIRECTIONS.SOUTH, markersList.get(3), DIRECTIONS.NORTH, false, "", 100);
-            ways.addWay(markersList.get(0), DIRECTIONS.NORTH, markersList.get(4), DIRECTIONS.SOUTH, true, "", 100);
-            ways.addWay(markersList.get(2), DIRECTIONS.NORTH, markersList.get(5), DIRECTIONS.SOUTH, false, "", 100);
+            ways.addWay(markersList.get(0), DIRECTION.E, markersList.get(1), DIRECTION.W, true, "", 100);
+            ways.addWay(markersList.get(1), DIRECTION.E, markersList.get(2), DIRECTION.W, true, "", 100);
+            ways.addWay(markersList.get(1), DIRECTION.S, markersList.get(3), DIRECTION.N, false, "", 100);
+            ways.addWay(markersList.get(0), DIRECTION.N, markersList.get(4), DIRECTION.S, true, "", 100);
+            ways.addWay(markersList.get(2), DIRECTION.N, markersList.get(5), DIRECTION.S, false, "", 100);
             waysSize = ways.size();
         }
 
         public class WhenAddWayTwice {
             @Before
             public void setUp() {
-                ways.addWay(markersList.get(1), DIRECTIONS.SOUTH, markersList.get(3), DIRECTIONS.NORTH, false, "", 100);
+                ways.addWay(markersList.get(1), DIRECTION.S, markersList.get(3), DIRECTION.N, false, "", 100);
             }
 
             @Test
@@ -125,7 +125,7 @@ public class WaysTest {
         public class WhenAddTwoWayWithExistingFirst {
             @Before
             public void setUp() {
-                ways.addWay(markersList.get(1), DIRECTIONS.SOUTH, markersList.get(3), DIRECTIONS.NORTH, true, "", 100);
+                ways.addWay(markersList.get(1), DIRECTION.S, markersList.get(3), DIRECTION.N, true, "", 100);
             }
 
             @Test
@@ -139,7 +139,7 @@ public class WaysTest {
         public class WhenAddTwoWayWithExistingRevert {
             @Before
             public void setUp() {
-                ways.addWay(markersList.get(3), DIRECTIONS.NORTH, markersList.get(1), DIRECTIONS.SOUTH, true, "", 100);
+                ways.addWay(markersList.get(3), DIRECTION.N, markersList.get(1), DIRECTION.S, true, "", 100);
             }
 
             @Test
