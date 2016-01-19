@@ -69,6 +69,9 @@ public class HierarchyBuilder {
         Map<Marker, Integer> distances = new HashMap<>();
         Map<Marker, Marker> predecessors = new HashMap<>();
 
+        Hierarchy hierarchyEntry = new Hierarchy();
+        hierarchyEntry.addStartpoint(startNode);
+
         startNode.getConnectedNodes()
                 .forEach((nextNode, waysList) -> {
                     checkedNodes.add(nextNode);
@@ -79,25 +82,23 @@ public class HierarchyBuilder {
                     principleNextNode(nextNode, checkedNodes, distances, predecessors);
                 });
 
-        Hierarchy hierarchyEntry = new Hierarchy();
-        hierarchyEntry.addStartpoint(startNode);
+        setPrincipleVisited(endNode, predecessors, startNode, hierarchyEntry);
+
         hierarchyEntry.addEndpoint(endNode);
         hierarchyEntry.setDistance(distances.get(endNode));
         hierarchies.add(hierarchyEntry);
 
-        setPrincipleVisited(endNode, predecessors, startNode);
     }
 
-    private void setPrincipleVisited(Marker node, Map<Marker, Marker> predecessors, Marker stopNode) {
-        String direction = node.getConnectedNodes()
-                .get(predecessors.get(node))
-                .get(0)
-                .getBeginDirection();
+    private void setPrincipleVisited(Marker node, Map<Marker, Marker> predecessors, Marker stopNode, Hierarchy hierarchyEntry) {
+        ArrayList<Way> ways = predecessors.get(node).getConnectedNodes().get(node);
+        ways.forEach(way -> hierarchyEntry.addWayReverse(way));
 
+        String direction = node.getConnectedNodes().get(predecessors.get(node)).get(0).getBeginDirection();
         markVisited(node, direction);
 
         if (predecessors.get(node) != stopNode)
-            setPrincipleVisited(predecessors.get(node), predecessors, stopNode);
+            setPrincipleVisited(predecessors.get(node), predecessors, stopNode, hierarchyEntry);
     }
 
     private void markVisited(Marker currentNode, String outgoingDirection) {
@@ -132,8 +133,6 @@ public class HierarchyBuilder {
             Hierarchy hierarchyEntry = new Hierarchy();
             hierarchyEntry.addStartpoint(marker);
 
-            AtomicInteger distance = new AtomicInteger(0);
-
             String direction = marker
                     .getCross()
                     .entrySet()
@@ -144,10 +143,9 @@ public class HierarchyBuilder {
                     .findFirst()
                     .orElse(null);
 
-            Marker endpoint = nextNode(marker, direction, crosses, distance);
+            Marker endpoint = nextNode(marker, direction, crosses, hierarchyEntry);
 
             if (endpoint != null) {
-                hierarchyEntry.setDistance(distance.get());
                 hierarchyEntry.addEndpoint(endpoint);
                 hierarchies.add(hierarchyEntry);
             }
@@ -156,7 +154,7 @@ public class HierarchyBuilder {
             findWaves(crosses);
     }
 
-    private Marker nextNode(Marker currentNode, String outgoingDirection, ArrayList<Marker> crosses, AtomicInteger distance) {
+    private Marker nextNode(Marker currentNode, String outgoingDirection, ArrayList<Marker> crosses, Hierarchy hierarchyEntry) {
         int ct;
         ct = (int) currentNode
                 .getCross()
@@ -195,13 +193,13 @@ public class HierarchyBuilder {
             currentNode
                     .getConnectedNodes()
                     .get(nextNode)
-                    .forEach(way -> distance.addAndGet(way.getDistance()));
+                    .forEach(way -> hierarchyEntry.addWay(way));
         }
 
         if (nextDirection == null)
             return nextNode;
 
-        return nextNode(nextNode, nextDirection, crosses, distance);
+        return nextNode(nextNode, nextDirection, crosses, hierarchyEntry);
     }
 
     private String findNextDirection(Marker marker, String incomingDirection) {

@@ -13,6 +13,7 @@ import pl.bodolsog.GreenWaveFX.staticVar.DIRECTION;
 import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(HierarchicalContextRunner.class)
 public class HierarchyBuilderTest {
@@ -69,7 +70,7 @@ public class HierarchyBuilderTest {
         public void setUp() {
             markersBound = createBoundOfMarkers(4);
             // 0-1-2-3
-            waysInlineShortcut(markersBound, 0, 3, "we");
+            waysInlineShortcut(markersBound, 0, 3, "we"); //ways 0-5
             hierarchyBuilder = new HierarchyBuilder(ways.getAllWays(), markers.getAllMarkers(), markers.getStartpoints());
 
         }
@@ -80,22 +81,58 @@ public class HierarchyBuilderTest {
                 hierarchyBuilder.buildHierarchy();
             }
 
-            @Test
-            public void thenFindFirstConnection() {
-                assertEquals("First connection of hierarchy starts from 0.", markersBound.get(0), hierarchyBuilder.getHierarchyEntry(0).getStartpoint());
-                assertEquals("First connection of hierarchy goes to 3.", markersBound.get(3), hierarchyBuilder.getHierarchyEntry(0).getEndpoint());
+            public class ThenFirstConnection {
+                Hierarchy connection;
+
+                @Before
+                public void setUp() {
+                    connection = hierarchyBuilder.getHierarchyEntry(0);
+                }
+
+                @Test
+                public void haveRightStartAndEnd() {
+                    assertEquals("Should starts from Marker#0.", markersBound.get(0), connection.getStartpoint());
+                    assertEquals("Should ends in Marker#3.", markersBound.get(3), connection.getEndpoint());
+                }
+
+                @Test
+                public void containsAllWays() {
+                    assertTrue("Should contain way#0.", connection.getWays().contains(ways.getWay(0)));
+                    assertTrue("Should contain way#2.", connection.getWays().contains(ways.getWay(2)));
+                    assertTrue("Should contain way#4.", connection.getWays().contains(ways.getWay(4)));
+                }
+
+                @Test
+                public void haveRightDistance() {
+                    assertEquals("Distance should be 600.", 600, connection.getDistance());
+                }
             }
 
-            @Test
-            public void thenFindSecondConnection() {
-                assertEquals("Second connection of hierarchy starts from 3.", markersBound.get(3), hierarchyBuilder.getHierarchyEntry(1).getStartpoint());
-                assertEquals("Second connection of hierarchy goes to 0.", markersBound.get(0), hierarchyBuilder.getHierarchyEntry(1).getEndpoint());
-            }
+            public class ThenSecondConnection {
+                Hierarchy connection;
 
-            @Test
-            public void thenFirstAndSecondConnectionDistanceFit() {
-                assertEquals("First connection distance is 600.", 600, hierarchyBuilder.getHierarchyEntry(0).getDistance());
-                assertEquals("Second connection distance is 600.", 600, hierarchyBuilder.getHierarchyEntry(1).getDistance());
+                @Before
+                public void setUp() {
+                    connection = hierarchyBuilder.getHierarchyEntry(1);
+                }
+
+                @Test
+                public void haveRightStartAndEnd() {
+                    assertEquals("Should starts from Marker#3.", markersBound.get(3), connection.getStartpoint());
+                    assertEquals("Should ends in Marker#0.", markersBound.get(0), connection.getEndpoint());
+                }
+
+                @Test
+                public void containsAllWays() {
+                    assertTrue("Should contain way#1.", connection.getWays().contains(ways.getWay(1)));
+                    assertTrue("Should contain way#3.", connection.getWays().contains(ways.getWay(3)));
+                    assertTrue("Should contain way#5.", connection.getWays().contains(ways.getWay(5)));
+                }
+
+                @Test
+                public void haveRightDistance() {
+                    assertEquals("Distance should be 600.", 600, connection.getDistance());
+                }
             }
         }
     }
@@ -131,46 +168,117 @@ public class HierarchyBuilderTest {
             }
 
             @Test
-            public void thenFindFourWays() {
+            public void thenFindFourConnections() {
                 assertEquals("Ways in hierarchy should be exactly 4.", 4, hierarchyBuilder.size());
             }
 
-            @Test
-            public void thenFindFirstConnection() {
-                assertEquals("First connection of hierarchy starts from 0.", markersBound.get(0), hierarchyBuilder.getHierarchyEntry(0).getStartpoint());
-                assertEquals("First connection of hierarchy goes to 3.", markersBound.get(3), hierarchyBuilder.getHierarchyEntry(0).getEndpoint());
+            public class ThenFirstConnection {
+                Hierarchy connection;
+
+                @Before
+                public void setUp() {
+                    connection = hierarchyBuilder.getHierarchyEntry(0);
+                }
+
+                @Test
+                public void haveRightStartAndEnd() {
+                    assertEquals("Should starts from Marker#0.", markersBound.get(0), connection.getStartpoint());
+                    assertEquals("Should ends in Marker#3.", markersBound.get(3), connection.getEndpoint());
+                }
+
+                @Test
+                public void containsAllWays() {
+                    assertTrue("Should contain way#0.", connection.getWays().contains(ways.getWay(0)));
+                    assertTrue("Should contain way#2.", connection.getWays().contains(ways.getWay(2)));
+                    assertTrue("Should contain way#4.", connection.getWays().contains(ways.getWay(4)));
+                }
+
+                @Test
+                public void haveRightDistance() {
+                    assertEquals("Distance should be 600.", 600, connection.getDistance());
+                }
             }
 
-            @Test
-            public void thenFindSecondConnection() {
-                assertEquals("Second connection of hierarchy starts from 3.", markersBound.get(3), hierarchyBuilder.getHierarchyEntry(1).getStartpoint());
-                assertEquals("Second connection of hierarchy goes to 0.", markersBound.get(0), hierarchyBuilder.getHierarchyEntry(1).getEndpoint());
+            public class ThenSecondConnection {
+                Hierarchy connection;
+
+                @Before
+                public void setUp() {
+                    connection = hierarchyBuilder.getHierarchyEntry(1);
+                }
+
+                @Test
+                public void haveRightStartAndEnd() {
+                    assertEquals("Should starts from Marker#3.", markersBound.get(3), connection.getStartpoint());
+                    assertEquals("Should ends in Marker#0.", markersBound.get(0), connection.getEndpoint());
+                }
+
+                @Test
+                public void containsAllWays() {
+                    assertTrue("Should contain way#1.", connection.getWays().contains(ways.getWay(1)));
+                    assertTrue("Should contain way#3.", connection.getWays().contains(ways.getWay(3)));
+                    assertTrue("Should contain way#5.", connection.getWays().contains(ways.getWay(5)));
+                }
+
+                @Test
+                public void haveRightDistance() {
+                    assertEquals("Distance should be 600.", 600, connection.getDistance());
+                }
             }
 
-            @Test
-            public void thenFirstAndSecondConnectionDistanceFit() {
-                assertEquals("First connection distance is 600.", 600, hierarchyBuilder.getHierarchyEntry(0).getDistance());
-                assertEquals("Second connection distance is 600.", 600, hierarchyBuilder.getHierarchyEntry(1).getDistance());
+            public class ThenThirdConnection {
+                Hierarchy connection;
+
+                @Before
+                public void setUp() {
+                    connection = hierarchyBuilder.getHierarchyEntry(2);
+                }
+
+                @Test
+                public void haveRightStartAndEnd() {
+                    assertEquals("Should starts from Marker#6.", markersBound.get(6), connection.getStartpoint());
+                    assertEquals("Should ends in Marker#1.", markersBound.get(1), connection.getEndpoint());
+                }
+
+                @Test
+                public void containsAllWays() {
+                    assertTrue("Should contain way#7.", connection.getWays().contains(ways.getWay(7)));
+                    assertTrue("Should contain way#9.", connection.getWays().contains(ways.getWay(9)));
+                    assertTrue("Should contain way#11.", connection.getWays().contains(ways.getWay(11)));
+                }
+
+                @Test
+                public void haveRightDistance() {
+                    assertEquals("Distance should be 375.", 375, connection.getDistance());
+                }
             }
 
-            @Test
-            public void thenFindThirdConnection() {
-                assertEquals("Third connection of hierarchy starts from 6.", markersBound.get(6), hierarchyBuilder.getHierarchyEntry(2).getStartpoint());
-                assertEquals("Third connection of hierarchy goes to 1.", markersBound.get(1), hierarchyBuilder.getHierarchyEntry(2).getEndpoint());
-            }
+            public class ThenFourthConnection {
+                Hierarchy connection;
 
-            @Test
-            public void thenFindFourthConnection() {
-                assertEquals("Fourth connection of hierarchy starts from 1.", markersBound.get(1), hierarchyBuilder.getHierarchyEntry(3).getStartpoint());
-                assertEquals("Fourth connection of hierarchy goes to 6.", markersBound.get(6), hierarchyBuilder.getHierarchyEntry(3).getEndpoint());
-            }
+                @Before
+                public void setUp() {
+                    connection = hierarchyBuilder.getHierarchyEntry(3);
+                }
 
-            @Test
-            public void thenThirdAndFourthConnectionDistanceFit() {
-                assertEquals("Third connection distance is 375.", 375, hierarchyBuilder.getHierarchyEntry(2).getDistance());
-                assertEquals("Fourth connection distance is 375.", 375, hierarchyBuilder.getHierarchyEntry(3).getDistance());
-            }
+                @Test
+                public void haveRightStartAndEnd() {
+                    assertEquals("Should starts from Marker#1.", markersBound.get(1), connection.getStartpoint());
+                    assertEquals("Should ends in Marker#6.", markersBound.get(6), connection.getEndpoint());
+                }
 
+                @Test
+                public void containsAllWays() {
+                    assertTrue("Should contain way#6.", connection.getWays().contains(ways.getWay(6)));
+                    assertTrue("Should contain way#8.", connection.getWays().contains(ways.getWay(8)));
+                    assertTrue("Should contain way#10.", connection.getWays().contains(ways.getWay(10)));
+                }
+
+                @Test
+                public void haveRightDistance() {
+                    assertEquals("Distance should be 375.", 375, connection.getDistance());
+                }
+            }
         }
 
         public class WhenGotPrincipleFromZeroToSix {
@@ -185,28 +293,112 @@ public class HierarchyBuilderTest {
                 assertEquals("Ways in hierarchy should be exactly 4.", 4, hierarchyBuilder.size());
             }
 
-            @Test
-            public void thenFirstConnectionIsFromPrinciple() {
-                assertEquals("First connection of hierarchy starts from 0.", markersBound.get(0), hierarchyBuilder.getHierarchyEntry(0).getStartpoint());
-                assertEquals("First connection of hierarchy goes to 6.", markersBound.get(6), hierarchyBuilder.getHierarchyEntry(0).getEndpoint());
+            public class ThenFirstConnection {
+                Hierarchy connection;
+
+                @Before
+                public void setUp() {
+                    connection = hierarchyBuilder.getHierarchyEntry(0);
+                }
+
+                @Test
+                public void haveRightStartAndEnd() {
+                    assertEquals("Should starts from Marker#0.", markersBound.get(0), connection.getStartpoint());
+                    assertEquals("Should ends in Marker#6.", markersBound.get(6), connection.getEndpoint());
+                }
+
+                @Test
+                public void containsAllWays() {
+                    assertTrue("Should contain way#0.", connection.getWays().contains(ways.getWay(0)));
+                    assertTrue("Should contain way#6.", connection.getWays().contains(ways.getWay(6)));
+                    assertTrue("Should contain way#8.", connection.getWays().contains(ways.getWay(8)));
+                    assertTrue("Should contain way#10.", connection.getWays().contains(ways.getWay(10)));
+                }
+
+                @Test
+                public void haveRightDistance() {
+                    assertEquals("Distance should be 475.", 475, connection.getDistance());
+                }
             }
 
-            @Test
-            public void thenSecondConnectionIsFromPrinciple() {
-                assertEquals("Second connection of hierarchy starts from 6.", markersBound.get(6), hierarchyBuilder.getHierarchyEntry(1).getStartpoint());
-                assertEquals("Second connection of hierarchy goes to 0.", markersBound.get(0), hierarchyBuilder.getHierarchyEntry(1).getEndpoint());
+            public class ThenSecondConnection {
+                Hierarchy connection;
+
+                @Before
+                public void setUp() {
+                    connection = hierarchyBuilder.getHierarchyEntry(1);
+                }
+
+                @Test
+                public void haveRightStartAndEnd() {
+                    assertEquals("Should starts from Marker#6.", markersBound.get(6), connection.getStartpoint());
+                    assertEquals("Should ends in Marker#0.", markersBound.get(0), connection.getEndpoint());
+                }
+
+                @Test
+                public void containsAllWays() {
+                    assertTrue("Should contain way#1.", connection.getWays().contains(ways.getWay(1)));
+                    assertTrue("Should contain way#7.", connection.getWays().contains(ways.getWay(7)));
+                    assertTrue("Should contain way#9.", connection.getWays().contains(ways.getWay(9)));
+                    assertTrue("Should contain way#11.", connection.getWays().contains(ways.getWay(11)));
+                }
+
+                @Test
+                public void haveRightDistance() {
+                    assertEquals("Distance should be 475.", 475, connection.getDistance());
+                }
             }
 
-            @Test
-            public void thenFindThirdConnection() {
-                assertEquals("Third connection of hierarchy starts from 3.", markersBound.get(3), hierarchyBuilder.getHierarchyEntry(2).getStartpoint());
-                assertEquals("Third connection of hierarchy goes to 1.", markersBound.get(1), hierarchyBuilder.getHierarchyEntry(2).getEndpoint());
+            public class ThenThirdConnection {
+                Hierarchy connection;
+
+                @Before
+                public void setUp() {
+                    connection = hierarchyBuilder.getHierarchyEntry(2);
+                }
+
+                @Test
+                public void haveRightStartAndEnd() {
+                    assertEquals("Should starts from Marker#3.", markersBound.get(3), connection.getStartpoint());
+                    assertEquals("Should ends in Marker#1.", markersBound.get(1), connection.getEndpoint());
+                }
+
+                @Test
+                public void containsAllWays() {
+                    assertTrue("Should contain way#3.", connection.getWays().contains(ways.getWay(3)));
+                    assertTrue("Should contain way#5.", connection.getWays().contains(ways.getWay(5)));
+                }
+
+                @Test
+                public void haveRightDistance() {
+                    assertEquals("Distance should be 500.", 500, connection.getDistance());
+                }
             }
 
-            @Test
-            public void thenFindFourthdConnection() {
-                assertEquals("Fourth connection of hierarchy starts from 1.", markersBound.get(1), hierarchyBuilder.getHierarchyEntry(3).getStartpoint());
-                assertEquals("Fourth connection of hierarchy goes to 3.", markersBound.get(3), hierarchyBuilder.getHierarchyEntry(3).getEndpoint());
+            public class ThenFourthConnection {
+                Hierarchy connection;
+
+                @Before
+                public void setUp() {
+                    connection = hierarchyBuilder.getHierarchyEntry(3);
+                }
+
+                @Test
+                public void haveRightStartAndEnd() {
+                    assertEquals("Should starts from Marker#1.", markersBound.get(1), connection.getStartpoint());
+                    assertEquals("Should ends in Marker#3.", markersBound.get(3), connection.getEndpoint());
+                }
+
+                @Test
+                public void containsAllWays() {
+                    assertTrue("Should contain way#2.", connection.getWays().contains(ways.getWay(2)));
+                    assertTrue("Should contain way#4.", connection.getWays().contains(ways.getWay(4)));
+                }
+
+                @Test
+                public void haveRightDistance() {
+                    assertEquals("Distance should be 500.", 500, connection.getDistance());
+                }
             }
         }
     }
@@ -247,41 +439,112 @@ public class HierarchyBuilderTest {
                 assertEquals("Ways in hierarchy should be exactly 4.", 4, hierarchyBuilder.size());
             }
 
-            @Test
-            public void thenFindFirstConnection() {
-                assertEquals("First connection of hierarchy starts from 0.", markersBound.get(0), hierarchyBuilder.getHierarchyEntry(0).getStartpoint());
-                assertEquals("First connection of hierarchy goes to 3.", markersBound.get(3), hierarchyBuilder.getHierarchyEntry(0).getEndpoint());
+            public class ThenFirstConnection {
+                Hierarchy connection;
+
+                @Before
+                public void setUp() {
+                    connection = hierarchyBuilder.getHierarchyEntry(0);
+                }
+
+                @Test
+                public void haveRightStartAndEnd() {
+                    assertEquals("Should starts from Marker#0.", markersBound.get(0), connection.getStartpoint());
+                    assertEquals("Should ends in Marker#6.", markersBound.get(3), connection.getEndpoint());
+                }
+
+                @Test
+                public void containsAllWays() {
+                    assertTrue("Should contain way#0.", connection.getWays().contains(ways.getWay(0)));
+                    assertTrue("Should contain way#2.", connection.getWays().contains(ways.getWay(2)));
+                    assertTrue("Should contain way#4.", connection.getWays().contains(ways.getWay(4)));
+                }
+
+                @Test
+                public void haveRightDistance() {
+                    assertEquals("Distance should be 600.", 600, connection.getDistance());
+                }
             }
 
-            @Test
-            public void thenFindSecondConnection() {
-                assertEquals("Second connection of hierarchy starts from 3.", markersBound.get(3), hierarchyBuilder.getHierarchyEntry(1).getStartpoint());
-                assertEquals("Second connection of hierarchy goes to 0.", markersBound.get(0), hierarchyBuilder.getHierarchyEntry(1).getEndpoint());
+            public class ThenSecondConnection {
+                Hierarchy connection;
+
+                @Before
+                public void setUp() {
+                    connection = hierarchyBuilder.getHierarchyEntry(1);
+                }
+
+                @Test
+                public void haveRightStartAndEnd() {
+                    assertEquals("Should starts from Marker#3.", markersBound.get(3), connection.getStartpoint());
+                    assertEquals("Should ends in Marker#0.", markersBound.get(0), connection.getEndpoint());
+                }
+
+                @Test
+                public void containsAllWays() {
+                    assertTrue("Should contain way#1.", connection.getWays().contains(ways.getWay(1)));
+                    assertTrue("Should contain way#3.", connection.getWays().contains(ways.getWay(3)));
+                    assertTrue("Should contain way#5.", connection.getWays().contains(ways.getWay(5)));
+                }
+
+                @Test
+                public void haveRightDistance() {
+                    assertEquals("Distance should be 600.", 600, connection.getDistance());
+                }
             }
 
+            public class ThenThirdConnection {
+                Hierarchy connection;
 
-            @Test
-            public void thenFirstAndSecondConnectionDistanceFit() {
-                assertEquals("First connection distance is 600.", 600, hierarchyBuilder.getHierarchyEntry(0).getDistance());
-                assertEquals("Second connection distance is 600.", 600, hierarchyBuilder.getHierarchyEntry(1).getDistance());
+                @Before
+                public void setUp() {
+                    connection = hierarchyBuilder.getHierarchyEntry(2);
+                }
+
+                @Test
+                public void haveRightStartAndEnd() {
+                    assertEquals("Should starts from Marker#5.", markersBound.get(5), connection.getStartpoint());
+                    assertEquals("Should ends in Marker#6.", markersBound.get(6), connection.getEndpoint());
+                }
+
+                @Test
+                public void containsAllWays() {
+                    assertTrue("Should contain way#7.", connection.getWays().contains(ways.getWay(7)));
+                    assertTrue("Should contain way#9.", connection.getWays().contains(ways.getWay(9)));
+                    assertTrue("Should contain way#10.", connection.getWays().contains(ways.getWay(10)));
+                }
+
+                @Test
+                public void haveRightDistance() {
+                    assertEquals("Distance should be 375.", 375, connection.getDistance());
+                }
             }
 
-            @Test
-            public void thenFindThirdConnection() {
-                assertEquals("Third connection of hierarchy starts from 5.", markersBound.get(5), hierarchyBuilder.getHierarchyEntry(2).getStartpoint());
-                assertEquals("Third connection of hierarchy goes to 6.", markersBound.get(6), hierarchyBuilder.getHierarchyEntry(2).getEndpoint());
-            }
+            public class ThenFourthConnection {
+                Hierarchy connection;
 
-            @Test
-            public void thenFindFourthConnection() {
-                assertEquals("Fourth connection of hierarchy starts from 6.", markersBound.get(6), hierarchyBuilder.getHierarchyEntry(3).getStartpoint());
-                assertEquals("Fourth connection of hierarchy goes to 5.", markersBound.get(5), hierarchyBuilder.getHierarchyEntry(3).getEndpoint());
-            }
+                @Before
+                public void setUp() {
+                    connection = hierarchyBuilder.getHierarchyEntry(3);
+                }
 
-            @Test
-            public void thenThirdAndFourthConnectionDistanceFit() {
-                assertEquals("Third connection distance is 375.", 375, hierarchyBuilder.getHierarchyEntry(2).getDistance());
-                assertEquals("Fourth connection distance is 375.", 375, hierarchyBuilder.getHierarchyEntry(3).getDistance());
+                @Test
+                public void haveRightStartAndEnd() {
+                    assertEquals("Should starts from Marker#6.", markersBound.get(6), connection.getStartpoint());
+                    assertEquals("Should ends in Marker#5.", markersBound.get(5), connection.getEndpoint());
+                }
+
+                @Test
+                public void containsAllWays() {
+                    assertTrue("Should contain way#6.", connection.getWays().contains(ways.getWay(6)));
+                    assertTrue("Should contain way#8.", connection.getWays().contains(ways.getWay(8)));
+                    assertTrue("Should contain way#11.", connection.getWays().contains(ways.getWay(11)));
+                }
+
+                @Test
+                public void haveRightDistance() {
+                    assertEquals("Distance should be 375.", 375, connection.getDistance());
+                }
             }
         }
     }
