@@ -3,11 +3,11 @@ package pl.bodolsog.GreenWaveFX.engine;
 
 import pl.bodolsog.GreenWaveFX.model.Marker;
 import pl.bodolsog.GreenWaveFX.model.Way;
+import pl.bodolsog.GreenWaveFX.staticVar.NODE_TYPE;
 import pl.bodolsog.GreenWaveFX.staticVar.OPPOSITE;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class HierarchyBuilder {
     private HashMap<Integer, Way> ways;
@@ -15,10 +15,12 @@ public class HierarchyBuilder {
     private ArrayList<Marker> startpoints;
     private ArrayList<Hierarchy> hierarchies;
     private HashMap<Marker, ArrayList<String>> visited;
+    private ArrayList<Marker[]> principles;
 
     public HierarchyBuilder(HashMap<Integer, Way> allWays, HashMap<Integer, Marker> allMarkers, ArrayList<Marker> startpoints) {
         hierarchies = new ArrayList<>();
         visited = new HashMap<>();
+        principles = new ArrayList<>();
 
         this.ways = new HashMap<>(allWays);
         this.markers = new HashMap<>(allMarkers);
@@ -34,89 +36,135 @@ public class HierarchyBuilder {
     }
 
     public void buildHierarchy() {
-        ArrayList<Marker> crosses = new ArrayList<>();
-        startpoints.forEach(startpoint -> {
-            Hierarchy hierarchyEntry = new Hierarchy();
-            hierarchyEntry.addStartpoint(startpoint);
+        if (principles.size() > 0)
+            principles.forEach(markersArr -> findPrinciple(markersArr));
 
-            Marker endpoint = nextNode(startpoint, crosses);
+        findWaves(startpoints);
 
-            hierarchyEntry.addEndpoint(endpoint);
-            hierarchies.add(hierarchyEntry);
-        });
-        hh(crosses);
+        ArrayList<Marker> uncheckedCrosses = findUncheckedCrosses();
+        findWaves(uncheckedCrosses);
     }
 
-    private void hh(ArrayList<Marker> markers) {
+    private ArrayList<Marker> findUncheckedCrosses() {
+        ArrayList<Marker> crosses = new ArrayList<>();
+
+        markers.forEach((integer, marker) -> {
+            if (marker.getNodeType() != NODE_TYPE.TRANSITION) {
+                int uvisitedWaysCount = (int) marker.getCross().entrySet()
+                        .stream()
+                        .filter(e -> !visited.containsKey(marker) || !visited.get(marker).contains(e.getKey()))
+                        .filter(e -> e.getValue() != null)
+                        .count();
+                if (uvisitedWaysCount > 0)
+                    crosses.add(marker);
+            }
+        });
+        return crosses;
+    }
+
+    private void findPrinciple(Marker[] markersArr) {
+        Marker startNode = markersArr[0];
+        Marker endNode = markersArr[1];
+        Set<Marker> checkedNodes = new HashSet<>();
+        Map<Marker, Integer> distances = new HashMap<>();
+        Map<Marker, Marker> predecessors = new HashMap<>();
+
+        startNode.getConnectedNodes()
+                .forEach((nextNode, waysList) -> {
+                    checkedNodes.add(nextNode);
+                    AtomicInteger distance = new AtomicInteger(0);
+                    waysList.forEach(way -> distance.addAndGet(way.getDistance()));
+                    distances.put(nextNode, distance.get());
+                    predecessors.put(nextNode, startNode);
+                    principleNextNode(nextNode, checkedNodes, distances, predecessors);
+                });
+
+        Hierarchy hierarchyEntry = new Hierarchy();
+        hierarchyEntry.addStartpoint(startNode);
+        hierarchyEntry.addEndpoint(endNode);
+        hierarchyEntry.setDistance(distances.get(endNode));
+        hierarchies.add(hierarchyEntry);
+
+        setPrincipleVisited(endNode, predecessors, startNode);
+    }
+
+    private void setPrincipleVisited(Marker node, Map<Marker, Marker> predecessors, Marker stopNode) {
+        String direction = node.getConnectedNodes()
+                .get(predecessors.get(node))
+                .get(0)
+                .getBeginDirection();
+
+        markVisited(node, direction);
+
+        if (predecessors.get(node) != stopNode)
+            setPrincipleVisited(predecessors.get(node), predecessors, stopNode);
+    }
+
+    private void markVisited(Marker currentNode, String outgoingDirection) {
+        if (!visited.containsKey(currentNode))
+            visited.put(currentNode, new ArrayList<>());
+        visited.get(currentNode).add(outgoingDirection);
+    }
+
+    private void principleNextNode(Marker node, Set<Marker> checkedNodes, Map<Marker, Integer> distances, Map<Marker, Marker> predecessors) {
+        node.getConnectedNodes()
+                .entrySet()
+                .stream()
+                .filter(e -> !checkedNodes.contains(e.getKey()))
+                .forEach(e -> {
+                    Marker nextNode = e.getKey();
+                    ArrayList<Way> waysList = e.getValue();
+
+                    checkedNodes.add(nextNode);
+                    AtomicInteger distance = new AtomicInteger(distances.get(node));
+                    waysList.forEach(way -> distance.addAndGet(way.getDistance()));
+                    if (!distances.containsKey(nextNode) || (distances.containsKey(nextNode) && distances.get(node) > distance.get())) {
+                        distances.put(nextNode, distance.get());
+                        predecessors.put(nextNode, node);
+                    }
+                    principleNextNode(nextNode, checkedNodes, distances, predecessors);
+                });
+    }
+
+    private void findWaves(ArrayList<Marker> markers) {
         ArrayList<Marker> crosses = new ArrayList<>();
         markers.forEach(marker -> {
             Hierarchy hierarchyEntry = new Hierarchy();
             hierarchyEntry.addStartpoint(marker);
 
-            String direction;
-            if (visited.containsKey(marker)) {
-                direction = marker
-                        .getCross()
-                        .entrySet()
-                        .stream()
-                        .filter(e -> e.getValue() != null)
-                        .filter(e -> !visited.get(marker).contains(e.getKey()))
-                        .map(Map.Entry::getKey)
-                        .findFirst()
-                        .orElse(null);
-            } else {
-                direction = marker
-                        .getCross()
-                        .entrySet()
-                        .stream()
-                        .filter(e -> e.getValue() != null)
-                        .map(Map.Entry::getKey)
-                        .findFirst()
-                        .orElse(null);
-            }
+            AtomicInteger distance = new AtomicInteger(0);
 
-            Marker endpoint = nextNode(marker, direction, crosses);
+            String direction = marker
+                    .getCross()
+                    .entrySet()
+                    .stream()
+                    .filter(e -> !visited.containsKey(marker) || !visited.get(marker).contains(e.getKey()))
+                    .filter(e -> e.getValue() != null)
+                    .map(Map.Entry::getKey)
+                    .findFirst()
+                    .orElse(null);
 
-            hierarchyEntry.addEndpoint(endpoint);
-            if (endpoint != null && marker != null)
+            Marker endpoint = nextNode(marker, direction, crosses, distance);
+
+            if (endpoint != null) {
+                hierarchyEntry.setDistance(distance.get());
+                hierarchyEntry.addEndpoint(endpoint);
                 hierarchies.add(hierarchyEntry);
+            }
         });
         if (crosses.size() > 0)
-            hh(crosses);
+            findWaves(crosses);
     }
 
-
-    private Marker nextNode(Marker currentNode, ArrayList<Marker> crosses) {
-        String outgoingDirection = currentNode
+    private Marker nextNode(Marker currentNode, String outgoingDirection, ArrayList<Marker> crosses, AtomicInteger distance) {
+        int ct;
+        ct = (int) currentNode
                 .getCross()
                 .entrySet()
                 .stream()
                 .filter(e -> e.getValue() != null)
-                .map(Map.Entry::getKey)
-                .findFirst()
-                .orElse(null);
-
-        return nextNode(currentNode, outgoingDirection, crosses);
-    }
-
-
-    private Marker nextNode(Marker currentNode, String outgoingDirection, ArrayList<Marker> crosses) {
-        int ct;
-        if (visited.containsKey(currentNode))
-            ct = (int) currentNode
-                    .getCross()
-                    .entrySet()
-                    .stream()
-                    .filter(e -> e.getValue() != null)
-                    .filter(e -> !visited.get(currentNode).contains(e.getKey()))
-                    .count();
-        else
-            ct = (int) currentNode
-                    .getCross()
-                    .entrySet()
-                    .stream()
-                    .filter(e -> e.getValue() != null)
-                    .count();
+                .filter(e -> !visited.containsKey(currentNode) || !visited.get(currentNode).contains(e.getKey()))
+                .count();
         if (ct > 2) {
             crosses.add(currentNode);
         }
@@ -141,14 +189,19 @@ public class HierarchyBuilder {
 
         String nextDirection = findNextDirection(nextNode, nextNodeIncomingDirection);
 
-        if (!visited.containsKey(currentNode))
-            visited.put(currentNode, new ArrayList<>());
-        visited.get(currentNode).add(outgoingDirection);
+        markVisited(currentNode, outgoingDirection);
+
+        if (nextNode != null) {
+            currentNode
+                    .getConnectedNodes()
+                    .get(nextNode)
+                    .forEach(way -> distance.addAndGet(way.getDistance()));
+        }
 
         if (nextDirection == null)
             return nextNode;
 
-        return nextNode(nextNode, nextDirection, crosses);
+        return nextNode(nextNode, nextDirection, crosses, distance);
     }
 
     private String findNextDirection(Marker marker, String incomingDirection) {
@@ -157,23 +210,31 @@ public class HierarchyBuilder {
 
         String[] possibleDirections = OPPOSITE.DIRECTIONS.get(incomingDirection);
 
-        if (
-                marker.getCross().containsKey(possibleDirections[0]) &&
-                        marker.getCross().get(possibleDirections[0]) != null)
+        if ((!visited.containsKey(marker) || !visited.get(marker).contains(possibleDirections[0])) &&
+                marker.getCross().containsKey(possibleDirections[0]) && marker.getCross().get(possibleDirections[0]) != null
+                )
             return possibleDirections[0];
         else {
-            if (marker.getCross().containsKey(possibleDirections[1]) && marker.getCross().get(possibleDirections[1]) != null) {
+            if ((!visited.containsKey(marker) || !visited.get(marker).contains(possibleDirections[1])) &&
+                    marker.getCross().containsKey(possibleDirections[1]) && marker.getCross().get(possibleDirections[1]) != null) {
                 // better opposite dir
                 if (marker.getCross().get(OPPOSITE.DIRECTIONS.get(possibleDirections[1])) == null)
                     return possibleDirections[1];
             }
 
-            if (marker.getCross().containsKey(possibleDirections[2]) && marker.getCross().get(possibleDirections[2]) != null) {
+            if ((!visited.containsKey(marker) || !visited.get(marker).contains(possibleDirections[2])) &&
+                    marker.getCross().containsKey(possibleDirections[2]) && marker.getCross().get(possibleDirections[2]) != null) {
                 // better opposite dir
                 if (marker.getCross().get(OPPOSITE.DIRECTIONS.get(possibleDirections[2])) == null)
                     return possibleDirections[2];
             }
         }
         return null;
+    }
+
+    public void setUpPrinciple(Marker markerA, Marker markerB, boolean twoWay) {
+        principles.add(new Marker[]{markerA, markerB});
+        if (twoWay)
+            principles.add(new Marker[]{markerB, markerA});
     }
 }

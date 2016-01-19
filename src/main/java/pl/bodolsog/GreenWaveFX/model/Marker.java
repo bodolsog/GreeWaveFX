@@ -222,7 +222,7 @@ public class Marker {
         return true;
     }
 
-    protected int getNodeType() {
+    public int getNodeType() {
         return nodeType;
     }
 

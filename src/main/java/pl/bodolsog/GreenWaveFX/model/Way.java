@@ -36,6 +36,9 @@ public class Way {
         calculateDurationTable();
     }
 
+    public int getDistance() {
+        return distance;
+    }
     public Marker getBeginMarker() {
         return wayBegin;
     }

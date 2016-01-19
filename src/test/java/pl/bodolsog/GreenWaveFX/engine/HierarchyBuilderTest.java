@@ -47,7 +47,7 @@ public class HierarchyBuilderTest {
             return;
 
         for (int i = start; i < end; i++) {
-            ways.addWay(ms.get(i), outgoing, ms.get(i + 1), ingoing, true, "", i * 25);
+            ways.addWay(ms.get(i), outgoing, ms.get(i + 1), ingoing, true, "", (i + 1) * 100);
         }
     }
 
@@ -90,6 +90,12 @@ public class HierarchyBuilderTest {
             public void thenFindSecondConnection() {
                 assertEquals("Second connection of hierarchy starts from 3.", markersBound.get(3), hierarchyBuilder.getHierarchyEntry(1).getStartpoint());
                 assertEquals("Second connection of hierarchy goes to 0.", markersBound.get(0), hierarchyBuilder.getHierarchyEntry(1).getEndpoint());
+            }
+
+            @Test
+            public void thenFirstAndSecondConnectionDistanceFit() {
+                assertEquals("First connection distance is 600.", 600, hierarchyBuilder.getHierarchyEntry(0).getDistance());
+                assertEquals("Second connection distance is 600.", 600, hierarchyBuilder.getHierarchyEntry(1).getDistance());
             }
         }
     }
@@ -142,6 +148,12 @@ public class HierarchyBuilderTest {
             }
 
             @Test
+            public void thenFirstAndSecondConnectionDistanceFit() {
+                assertEquals("First connection distance is 600.", 600, hierarchyBuilder.getHierarchyEntry(0).getDistance());
+                assertEquals("Second connection distance is 600.", 600, hierarchyBuilder.getHierarchyEntry(1).getDistance());
+            }
+
+            @Test
             public void thenFindThirdConnection() {
                 assertEquals("Third connection of hierarchy starts from 6.", markersBound.get(6), hierarchyBuilder.getHierarchyEntry(2).getStartpoint());
                 assertEquals("Third connection of hierarchy goes to 1.", markersBound.get(1), hierarchyBuilder.getHierarchyEntry(2).getEndpoint());
@@ -153,6 +165,49 @@ public class HierarchyBuilderTest {
                 assertEquals("Fourth connection of hierarchy goes to 6.", markersBound.get(6), hierarchyBuilder.getHierarchyEntry(3).getEndpoint());
             }
 
+            @Test
+            public void thenThirdAndFourthConnectionDistanceFit() {
+                assertEquals("Third connection distance is 375.", 375, hierarchyBuilder.getHierarchyEntry(2).getDistance());
+                assertEquals("Fourth connection distance is 375.", 375, hierarchyBuilder.getHierarchyEntry(3).getDistance());
+            }
+
+        }
+
+        public class WhenGotPrincipleFromZeroToSix {
+            @Before
+            public void setUp() {
+                hierarchyBuilder.setUpPrinciple(markersBound.get(0), markersBound.get(6), true);
+                hierarchyBuilder.buildHierarchy();
+            }
+
+            @Test
+            public void thenFindFourWays() {
+                assertEquals("Ways in hierarchy should be exactly 4.", 4, hierarchyBuilder.size());
+            }
+
+            @Test
+            public void thenFirstConnectionIsFromPrinciple() {
+                assertEquals("First connection of hierarchy starts from 0.", markersBound.get(0), hierarchyBuilder.getHierarchyEntry(0).getStartpoint());
+                assertEquals("First connection of hierarchy goes to 6.", markersBound.get(6), hierarchyBuilder.getHierarchyEntry(0).getEndpoint());
+            }
+
+            @Test
+            public void thenSecondConnectionIsFromPrinciple() {
+                assertEquals("Second connection of hierarchy starts from 6.", markersBound.get(6), hierarchyBuilder.getHierarchyEntry(1).getStartpoint());
+                assertEquals("Second connection of hierarchy goes to 0.", markersBound.get(0), hierarchyBuilder.getHierarchyEntry(1).getEndpoint());
+            }
+
+            @Test
+            public void thenFindThirdConnection() {
+                assertEquals("Third connection of hierarchy starts from 3.", markersBound.get(3), hierarchyBuilder.getHierarchyEntry(2).getStartpoint());
+                assertEquals("Third connection of hierarchy goes to 1.", markersBound.get(1), hierarchyBuilder.getHierarchyEntry(2).getEndpoint());
+            }
+
+            @Test
+            public void thenFindFourthdConnection() {
+                assertEquals("Fourth connection of hierarchy starts from 1.", markersBound.get(1), hierarchyBuilder.getHierarchyEntry(3).getStartpoint());
+                assertEquals("Fourth connection of hierarchy goes to 3.", markersBound.get(3), hierarchyBuilder.getHierarchyEntry(3).getEndpoint());
+            }
         }
     }
 
@@ -204,6 +259,13 @@ public class HierarchyBuilderTest {
                 assertEquals("Second connection of hierarchy goes to 0.", markersBound.get(0), hierarchyBuilder.getHierarchyEntry(1).getEndpoint());
             }
 
+
+            @Test
+            public void thenFirstAndSecondConnectionDistanceFit() {
+                assertEquals("First connection distance is 600.", 600, hierarchyBuilder.getHierarchyEntry(0).getDistance());
+                assertEquals("Second connection distance is 600.", 600, hierarchyBuilder.getHierarchyEntry(1).getDistance());
+            }
+
             @Test
             public void thenFindThirdConnection() {
                 assertEquals("Third connection of hierarchy starts from 5.", markersBound.get(5), hierarchyBuilder.getHierarchyEntry(2).getStartpoint());
@@ -214,6 +276,12 @@ public class HierarchyBuilderTest {
             public void thenFindFourthConnection() {
                 assertEquals("Fourth connection of hierarchy starts from 6.", markersBound.get(6), hierarchyBuilder.getHierarchyEntry(3).getStartpoint());
                 assertEquals("Fourth connection of hierarchy goes to 5.", markersBound.get(5), hierarchyBuilder.getHierarchyEntry(3).getEndpoint());
+            }
+
+            @Test
+            public void thenThirdAndFourthConnectionDistanceFit() {
+                assertEquals("Third connection distance is 375.", 375, hierarchyBuilder.getHierarchyEntry(2).getDistance());
+                assertEquals("Fourth connection distance is 375.", 375, hierarchyBuilder.getHierarchyEntry(3).getDistance());
             }
         }
     }
@@ -266,6 +334,12 @@ public class HierarchyBuilderTest {
             }
 
             @Test
+            public void thenFirstAndSecondConnectionDistanceFit() {
+                assertEquals("First connection distance is 600.", 600, hierarchyBuilder.getHierarchyEntry(0).getDistance());
+                assertEquals("Second connection distance is 600.", 600, hierarchyBuilder.getHierarchyEntry(1).getDistance());
+            }
+
+            @Test
             public void thenFindThirdConnection() {
                 assertEquals("Third connection of hierarchy starts from 4.", markersBound.get(4), hierarchyBuilder.getHierarchyEntry(2).getStartpoint());
                 assertEquals("Third connection of hierarchy goes to 7.", markersBound.get(7), hierarchyBuilder.getHierarchyEntry(2).getEndpoint());
@@ -278,6 +352,12 @@ public class HierarchyBuilderTest {
             }
 
             @Test
+            public void thenThirdAndFourthConnectionDistanceFit() {
+                assertEquals("Third connection distance is 1800.", 1800, hierarchyBuilder.getHierarchyEntry(2).getDistance());
+                assertEquals("Fourth connection distance is 1800.", 1800, hierarchyBuilder.getHierarchyEntry(3).getDistance());
+            }
+
+            @Test
             public void thenFindFifthConnection() {
                 assertEquals("Fifth connection of hierarchy starts from 2.", markersBound.get(2), hierarchyBuilder.getHierarchyEntry(4).getStartpoint());
                 assertEquals("Fifth connection of hierarchy goes to 6.", markersBound.get(6), hierarchyBuilder.getHierarchyEntry(4).getEndpoint());
@@ -287,6 +367,12 @@ public class HierarchyBuilderTest {
             public void thenFindsixthConnection() {
                 assertEquals("Sixth connection of hierarchy starts from 6.", markersBound.get(6), hierarchyBuilder.getHierarchyEntry(5).getStartpoint());
                 assertEquals("Sixth connection of hierarchy goes to 2.", markersBound.get(2), hierarchyBuilder.getHierarchyEntry(5).getEndpoint());
+            }
+
+            @Test
+            public void thenFifthAndSixthConnectionDistanceFit() {
+                assertEquals("Fifth connection distance is 1150.", 1150, hierarchyBuilder.getHierarchyEntry(4).getDistance());
+                assertEquals("Sixth connection distance is 1150.", 1150, hierarchyBuilder.getHierarchyEntry(5).getDistance());
             }
         }
     }

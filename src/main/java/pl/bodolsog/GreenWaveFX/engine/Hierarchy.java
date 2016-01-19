@@ -8,6 +8,7 @@ import pl.bodolsog.GreenWaveFX.model.Marker;
 public class Hierarchy {
     private Marker startpoint;
     private Marker endpoint;
+    private int distance;
 
     public void addStartpoint(Marker marker) {
         startpoint = marker;
@@ -23,5 +24,23 @@ public class Hierarchy {
 
     public Marker getEndpoint() {
         return endpoint;
+    }
+
+    /**
+     * Getter for property 'distance'.
+     *
+     * @return Value for property 'distance'.
+     */
+    public int getDistance() {
+        return distance;
+    }
+
+    /**
+     * Setter for property 'distance'.
+     *
+     * @param distance Value to set for property 'distance'.
+     */
+    public void setDistance(int distance) {
+        this.distance = distance;
     }
 }
