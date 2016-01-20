@@ -16,7 +16,8 @@ public class Way {
     private int distance;
     private Ways ways;
     private String response;
-    private HashMap<Integer, Integer> durations;
+    private HashMap<Integer, Integer> durationsAccelerated;
+    private HashMap<Integer, Integer> durationsConstant;
     private PropertiesManager prop;
 
     public Way(Ways ways, int id, Marker begin, String beginDirection,
@@ -67,36 +68,67 @@ public class Way {
         wayBegin.removeWay(this);
     }
 
-    public int getDuration(int speed) {
-        return durations.get(speed);
+    public HashMap<Integer, Integer> getDurationsAccelerated() {
+        return durationsAccelerated;
+    }
+
+    public HashMap<Integer, Integer> getDurationsConstant() {
+        return durationsConstant;
+    }
+
+
+    public int getDurationAccelerated(int speed) {
+        return durationsAccelerated.get(speed);
+    }
+
+    public int getDurationConstant(int speed) {
+        return durationsConstant.get(speed);
     }
 
     private void calculateDurationTable() {
-        durations = new HashMap<>();
+        durationsAccelerated = new HashMap<>();
         int[] speeds = prop.getSpeedList();
         for (int i = 0; i < speeds.length; i++) {
-            durations.put(speeds[i], calculateDuration(speeds[i]));
+            durationsAccelerated.put(speeds[i], calculateDurationAccelerated(speeds[i]));
+        }
+
+        durationsConstant = new HashMap<>();
+        for (int i = 0; i < speeds.length; i++) {
+            durationsConstant.put(speeds[i], calculateDurationConstant(speeds[i]));
         }
     }
 
-    private int calculateDuration(int speed) {
+    private int calculateDurationAccelerated(int speedInKmH) {
+        double speed;
         double t;
         double d;
         double restDist;
         double restTime;
 
+        // Speed in mps.
+        speed = convertKmHtoMS(speedInKmH);
         t = getAccelerationTime(speed);
         d = getAccelerationDistance(t);
         restDist = distance - d;
-        restTime = restDist / (double) speed;
+        restTime = restDist / speed;
         return (int) Math.round(t + restTime);
     }
 
-    private double getAccelerationTime(int speed) {
-        return speed / prop.getAcceleration();
+    private int calculateDurationConstant(int speedInKmH) {
+        // Speed in mps.
+        double speed = convertKmHtoMS(speedInKmH);
+        return (int) Math.round(distance / speed);
+    }
+
+    private double getAccelerationTime(double speed) {
+        return Math.round((speed / convertKmHtoMS(prop.getAcceleration())) * 10) / 10;
     }
 
     private double getAccelerationDistance(double t) {
-        return prop.getAcceleration() * t * t / 2;
+        return convertKmHtoMS(prop.getAcceleration()) * t * t / 2;
+    }
+
+    private double convertKmHtoMS(int kmH) {
+        return Math.round((kmH * 10 / 36) * 10) / 10;
     }
 }

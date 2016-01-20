@@ -28,6 +28,28 @@ public class HierarchyBuilderTest {
     private Markers markers;
     private ArrayList<Marker> markersBound;
 
+    /**
+     * Helper method for create and configure Marker.
+     *
+     * @return Instance of Marker.
+     */
+    private Marker createMarker() {
+        // Create marker.
+        markers.addMarker(new JSObjectAdapter());
+
+        // Set domestic north-south-west-east directions.
+        Marker marker = markers.getLastMarker();
+        marker.setCrossDirections(crossDirections);
+
+        return marker;
+    }
+
+    /**
+     * Helper method for create markers.
+     *
+     * @param count The number of Markers to be done.
+     * @return List of markers.
+     */
     private ArrayList<Marker> createBoundOfMarkers(int count) {
         ArrayList<Marker> bound = new ArrayList<>();
         for (int i = 0; i < count; i++) {
@@ -36,7 +58,17 @@ public class HierarchyBuilderTest {
         return bound;
     }
 
-    private void waysInlineShortcut(ArrayList<Marker> ms, int start, int end, String direction) {
+    /**
+     * Helper method for create ways connected from Marker number 'start' to Marker number 'end' from markers list. Ways
+     * will be connected in one of two directions (to south or to east).
+     *
+     * @param markersBound List of Markers.
+     * @param start        Index of first connected Marker.
+     * @param end          Index of last connected Marker.
+     * @param direction    One of two: 'ns' for south or 'we' for east direction.
+     */
+    private void waysInlineShortcut(ArrayList<Marker> markersBound, int start, int end, String direction) {
+        // Chose direction.
         String outgoing, ingoing;
         if (direction == "ns") {
             outgoing = DIRECTION.S;
@@ -47,22 +79,17 @@ public class HierarchyBuilderTest {
         } else
             return;
 
+        // Create ways.
         for (int i = start; i < end; i++) {
-            ways.addWay(ms.get(i), outgoing, ms.get(i + 1), ingoing, true, "", (i + 1) * 100);
+            ways.addWay(markersBound.get(i), outgoing, markersBound.get(i + 1), ingoing, true, "", (i + 1) * 100);
         }
     }
-
-    private Marker createMarker() {
-        markers.addMarker(new JSObjectAdapter());
-        Marker marker = markers.getLastMarker();
-        marker.setCrossDirections(crossDirections);
-        return marker;
-    }
-
+    
     @Before
     public void setUp() {
         ways = new Ways();
         markers = new Markers(ways);
+        hierarchyBuilder = new HierarchyBuilder(ways, markers);
     }
 
     public class GivenOneWayState {
@@ -71,18 +98,17 @@ public class HierarchyBuilderTest {
             markersBound = createBoundOfMarkers(4);
             // 0-1-2-3
             waysInlineShortcut(markersBound, 0, 3, "we"); //ways 0-5
-            hierarchyBuilder = new HierarchyBuilder(ways.getAllWays(), markers.getAllMarkers(), markers.getStartpoints());
-
         }
 
         public class WhenGotNoPrinciples {
             @Before
             public void setUp() {
                 hierarchyBuilder.buildHierarchy();
+                hierarchyBuilder.getHierarchies().forEach(Wave::calculatePossibleSpeeds);
             }
 
             public class ThenFirstConnection {
-                Hierarchy connection;
+                Wave connection;
 
                 @Before
                 public void setUp() {
@@ -93,6 +119,14 @@ public class HierarchyBuilderTest {
                 public void haveRightStartAndEnd() {
                     assertEquals("Should starts from Marker#0.", markersBound.get(0), connection.getStartpoint());
                     assertEquals("Should ends in Marker#3.", markersBound.get(3), connection.getEndpoint());
+                }
+
+                @Test
+                public void containsAllCrosses() {
+                    assertTrue("Should contain Marker#0", connection.getCrosses().contains(markersBound.get(0)));
+                    assertTrue("Should contain Marker#1", connection.getCrosses().contains(markersBound.get(1)));
+                    assertTrue("Should contain Marker#2", connection.getCrosses().contains(markersBound.get(2)));
+                    assertTrue("Should contain Marker#3", connection.getCrosses().contains(markersBound.get(3)));
                 }
 
                 @Test
@@ -109,7 +143,7 @@ public class HierarchyBuilderTest {
             }
 
             public class ThenSecondConnection {
-                Hierarchy connection;
+                Wave connection;
 
                 @Before
                 public void setUp() {
@@ -120,6 +154,14 @@ public class HierarchyBuilderTest {
                 public void haveRightStartAndEnd() {
                     assertEquals("Should starts from Marker#3.", markersBound.get(3), connection.getStartpoint());
                     assertEquals("Should ends in Marker#0.", markersBound.get(0), connection.getEndpoint());
+                }
+
+                @Test
+                public void containsAllCrosses() {
+                    assertTrue("Should contain Marker#0", connection.getCrosses().contains(markersBound.get(0)));
+                    assertTrue("Should contain Marker#1", connection.getCrosses().contains(markersBound.get(1)));
+                    assertTrue("Should contain Marker#2", connection.getCrosses().contains(markersBound.get(2)));
+                    assertTrue("Should contain Marker#3", connection.getCrosses().contains(markersBound.get(3)));
                 }
 
                 @Test
@@ -158,7 +200,7 @@ public class HierarchyBuilderTest {
                     markersBound.get(6), DIRECTION.W,
                     true, "", 125);
 
-            hierarchyBuilder = new HierarchyBuilder(ways.getAllWays(), markers.getAllMarkers(), markers.getStartpoints());
+            hierarchyBuilder = new HierarchyBuilder(ways, markers);
         }
 
         public class WhenGotNoPrinciples {
@@ -173,7 +215,7 @@ public class HierarchyBuilderTest {
             }
 
             public class ThenFirstConnection {
-                Hierarchy connection;
+                Wave connection;
 
                 @Before
                 public void setUp() {
@@ -184,6 +226,14 @@ public class HierarchyBuilderTest {
                 public void haveRightStartAndEnd() {
                     assertEquals("Should starts from Marker#0.", markersBound.get(0), connection.getStartpoint());
                     assertEquals("Should ends in Marker#3.", markersBound.get(3), connection.getEndpoint());
+                }
+
+                @Test
+                public void containsAllCrosses() {
+                    assertTrue("Should contain Marker#0", connection.getCrosses().contains(markersBound.get(0)));
+                    assertTrue("Should contain Marker#1", connection.getCrosses().contains(markersBound.get(1)));
+                    assertTrue("Should contain Marker#2", connection.getCrosses().contains(markersBound.get(2)));
+                    assertTrue("Should contain Marker#3", connection.getCrosses().contains(markersBound.get(3)));
                 }
 
                 @Test
@@ -200,7 +250,7 @@ public class HierarchyBuilderTest {
             }
 
             public class ThenSecondConnection {
-                Hierarchy connection;
+                Wave connection;
 
                 @Before
                 public void setUp() {
@@ -211,6 +261,14 @@ public class HierarchyBuilderTest {
                 public void haveRightStartAndEnd() {
                     assertEquals("Should starts from Marker#3.", markersBound.get(3), connection.getStartpoint());
                     assertEquals("Should ends in Marker#0.", markersBound.get(0), connection.getEndpoint());
+                }
+
+                @Test
+                public void containsAllCrosses() {
+                    assertTrue("Should contain Marker#0", connection.getCrosses().contains(markersBound.get(0)));
+                    assertTrue("Should contain Marker#1", connection.getCrosses().contains(markersBound.get(1)));
+                    assertTrue("Should contain Marker#2", connection.getCrosses().contains(markersBound.get(2)));
+                    assertTrue("Should contain Marker#3", connection.getCrosses().contains(markersBound.get(3)));
                 }
 
                 @Test
@@ -227,7 +285,7 @@ public class HierarchyBuilderTest {
             }
 
             public class ThenThirdConnection {
-                Hierarchy connection;
+                Wave connection;
 
                 @Before
                 public void setUp() {
@@ -239,6 +297,15 @@ public class HierarchyBuilderTest {
                     assertEquals("Should starts from Marker#6.", markersBound.get(6), connection.getStartpoint());
                     assertEquals("Should ends in Marker#1.", markersBound.get(1), connection.getEndpoint());
                 }
+
+                @Test
+                public void containsAllCrosses() {
+                    assertTrue("Should contain Marker#1", connection.getCrosses().contains(markersBound.get(1)));
+                    assertTrue("Should contain Marker#4", connection.getCrosses().contains(markersBound.get(4)));
+                    assertTrue("Should contain Marker#5", connection.getCrosses().contains(markersBound.get(5)));
+                    assertTrue("Should contain Marker#6", connection.getCrosses().contains(markersBound.get(6)));
+                }
+
 
                 @Test
                 public void containsAllWays() {
@@ -254,7 +321,7 @@ public class HierarchyBuilderTest {
             }
 
             public class ThenFourthConnection {
-                Hierarchy connection;
+                Wave connection;
 
                 @Before
                 public void setUp() {
@@ -265,6 +332,14 @@ public class HierarchyBuilderTest {
                 public void haveRightStartAndEnd() {
                     assertEquals("Should starts from Marker#1.", markersBound.get(1), connection.getStartpoint());
                     assertEquals("Should ends in Marker#6.", markersBound.get(6), connection.getEndpoint());
+                }
+
+                @Test
+                public void containsAllCrosses() {
+                    assertTrue("Should contain Marker#1", connection.getCrosses().contains(markersBound.get(1)));
+                    assertTrue("Should contain Marker#4", connection.getCrosses().contains(markersBound.get(4)));
+                    assertTrue("Should contain Marker#5", connection.getCrosses().contains(markersBound.get(5)));
+                    assertTrue("Should contain Marker#6", connection.getCrosses().contains(markersBound.get(6)));
                 }
 
                 @Test
@@ -286,6 +361,7 @@ public class HierarchyBuilderTest {
             public void setUp() {
                 hierarchyBuilder.setUpPrinciple(markersBound.get(0), markersBound.get(6), true);
                 hierarchyBuilder.buildHierarchy();
+                hierarchyBuilder.getHierarchies().forEach(Wave::calculatePossibleSpeeds);
             }
 
             @Test
@@ -294,7 +370,7 @@ public class HierarchyBuilderTest {
             }
 
             public class ThenFirstConnection {
-                Hierarchy connection;
+                Wave connection;
 
                 @Before
                 public void setUp() {
@@ -305,6 +381,15 @@ public class HierarchyBuilderTest {
                 public void haveRightStartAndEnd() {
                     assertEquals("Should starts from Marker#0.", markersBound.get(0), connection.getStartpoint());
                     assertEquals("Should ends in Marker#6.", markersBound.get(6), connection.getEndpoint());
+                }
+
+                @Test
+                public void containsAllCrosses() {
+                    assertTrue("Should contain Marker#0", connection.getCrosses().contains(markersBound.get(0)));
+                    assertTrue("Should contain Marker#1", connection.getCrosses().contains(markersBound.get(1)));
+                    assertTrue("Should contain Marker#4", connection.getCrosses().contains(markersBound.get(4)));
+                    assertTrue("Should contain Marker#5", connection.getCrosses().contains(markersBound.get(5)));
+                    assertTrue("Should contain Marker#6", connection.getCrosses().contains(markersBound.get(6)));
                 }
 
                 @Test
@@ -322,7 +407,7 @@ public class HierarchyBuilderTest {
             }
 
             public class ThenSecondConnection {
-                Hierarchy connection;
+                Wave connection;
 
                 @Before
                 public void setUp() {
@@ -333,6 +418,15 @@ public class HierarchyBuilderTest {
                 public void haveRightStartAndEnd() {
                     assertEquals("Should starts from Marker#6.", markersBound.get(6), connection.getStartpoint());
                     assertEquals("Should ends in Marker#0.", markersBound.get(0), connection.getEndpoint());
+                }
+
+                @Test
+                public void containsAllCrosses() {
+                    assertTrue("Should contain Marker#0", connection.getCrosses().contains(markersBound.get(0)));
+                    assertTrue("Should contain Marker#1", connection.getCrosses().contains(markersBound.get(1)));
+                    assertTrue("Should contain Marker#4", connection.getCrosses().contains(markersBound.get(4)));
+                    assertTrue("Should contain Marker#5", connection.getCrosses().contains(markersBound.get(5)));
+                    assertTrue("Should contain Marker#6", connection.getCrosses().contains(markersBound.get(6)));
                 }
 
                 @Test
@@ -350,7 +444,7 @@ public class HierarchyBuilderTest {
             }
 
             public class ThenThirdConnection {
-                Hierarchy connection;
+                Wave connection;
 
                 @Before
                 public void setUp() {
@@ -361,6 +455,13 @@ public class HierarchyBuilderTest {
                 public void haveRightStartAndEnd() {
                     assertEquals("Should starts from Marker#3.", markersBound.get(3), connection.getStartpoint());
                     assertEquals("Should ends in Marker#1.", markersBound.get(1), connection.getEndpoint());
+                }
+
+                @Test
+                public void containsAllCrosses() {
+                    assertTrue("Should contain Marker#1", connection.getCrosses().contains(markersBound.get(1)));
+                    assertTrue("Should contain Marker#2", connection.getCrosses().contains(markersBound.get(2)));
+                    assertTrue("Should contain Marker#3", connection.getCrosses().contains(markersBound.get(3)));
                 }
 
                 @Test
@@ -376,7 +477,7 @@ public class HierarchyBuilderTest {
             }
 
             public class ThenFourthConnection {
-                Hierarchy connection;
+                Wave connection;
 
                 @Before
                 public void setUp() {
@@ -387,6 +488,13 @@ public class HierarchyBuilderTest {
                 public void haveRightStartAndEnd() {
                     assertEquals("Should starts from Marker#1.", markersBound.get(1), connection.getStartpoint());
                     assertEquals("Should ends in Marker#3.", markersBound.get(3), connection.getEndpoint());
+                }
+
+                @Test
+                public void containsAllCrosses() {
+                    assertTrue("Should contain Marker#1", connection.getCrosses().contains(markersBound.get(1)));
+                    assertTrue("Should contain Marker#2", connection.getCrosses().contains(markersBound.get(2)));
+                    assertTrue("Should contain Marker#3", connection.getCrosses().contains(markersBound.get(3)));
                 }
 
                 @Test
@@ -425,7 +533,7 @@ public class HierarchyBuilderTest {
                     markersBound.get(6), DIRECTION.S,
                     true, "", 125);
 
-            hierarchyBuilder = new HierarchyBuilder(ways.getAllWays(), markers.getAllMarkers(), markers.getStartpoints());
+            hierarchyBuilder = new HierarchyBuilder(ways, markers);
         }
 
         public class WhenGotNoPrinciples {
@@ -440,7 +548,7 @@ public class HierarchyBuilderTest {
             }
 
             public class ThenFirstConnection {
-                Hierarchy connection;
+                Wave connection;
 
                 @Before
                 public void setUp() {
@@ -452,6 +560,15 @@ public class HierarchyBuilderTest {
                     assertEquals("Should starts from Marker#0.", markersBound.get(0), connection.getStartpoint());
                     assertEquals("Should ends in Marker#6.", markersBound.get(3), connection.getEndpoint());
                 }
+
+                @Test
+                public void containsAllCrosses() {
+                    assertTrue("Should contain Marker#0", connection.getCrosses().contains(markersBound.get(0)));
+                    assertTrue("Should contain Marker#1", connection.getCrosses().contains(markersBound.get(1)));
+                    assertTrue("Should contain Marker#2", connection.getCrosses().contains(markersBound.get(2)));
+                    assertTrue("Should contain Marker#3", connection.getCrosses().contains(markersBound.get(3)));
+                }
+
 
                 @Test
                 public void containsAllWays() {
@@ -467,7 +584,7 @@ public class HierarchyBuilderTest {
             }
 
             public class ThenSecondConnection {
-                Hierarchy connection;
+                Wave connection;
 
                 @Before
                 public void setUp() {
@@ -478,6 +595,14 @@ public class HierarchyBuilderTest {
                 public void haveRightStartAndEnd() {
                     assertEquals("Should starts from Marker#3.", markersBound.get(3), connection.getStartpoint());
                     assertEquals("Should ends in Marker#0.", markersBound.get(0), connection.getEndpoint());
+                }
+
+                @Test
+                public void containsAllCrosses() {
+                    assertTrue("Should contain Marker#0", connection.getCrosses().contains(markersBound.get(0)));
+                    assertTrue("Should contain Marker#1", connection.getCrosses().contains(markersBound.get(1)));
+                    assertTrue("Should contain Marker#2", connection.getCrosses().contains(markersBound.get(2)));
+                    assertTrue("Should contain Marker#3", connection.getCrosses().contains(markersBound.get(3)));
                 }
 
                 @Test
@@ -494,7 +619,7 @@ public class HierarchyBuilderTest {
             }
 
             public class ThenThirdConnection {
-                Hierarchy connection;
+                Wave connection;
 
                 @Before
                 public void setUp() {
@@ -505,6 +630,14 @@ public class HierarchyBuilderTest {
                 public void haveRightStartAndEnd() {
                     assertEquals("Should starts from Marker#5.", markersBound.get(5), connection.getStartpoint());
                     assertEquals("Should ends in Marker#6.", markersBound.get(6), connection.getEndpoint());
+                }
+
+                @Test
+                public void containsAllCrosses() {
+                    assertTrue("Should contain Marker#1", connection.getCrosses().contains(markersBound.get(1)));
+                    assertTrue("Should contain Marker#4", connection.getCrosses().contains(markersBound.get(4)));
+                    assertTrue("Should contain Marker#5", connection.getCrosses().contains(markersBound.get(5)));
+                    assertTrue("Should contain Marker#6", connection.getCrosses().contains(markersBound.get(6)));
                 }
 
                 @Test
@@ -521,7 +654,7 @@ public class HierarchyBuilderTest {
             }
 
             public class ThenFourthConnection {
-                Hierarchy connection;
+                Wave connection;
 
                 @Before
                 public void setUp() {
@@ -532,6 +665,14 @@ public class HierarchyBuilderTest {
                 public void haveRightStartAndEnd() {
                     assertEquals("Should starts from Marker#6.", markersBound.get(6), connection.getStartpoint());
                     assertEquals("Should ends in Marker#5.", markersBound.get(5), connection.getEndpoint());
+                }
+
+                @Test
+                public void containsAllCrosses() {
+                    assertTrue("Should contain Marker#1", connection.getCrosses().contains(markersBound.get(1)));
+                    assertTrue("Should contain Marker#4", connection.getCrosses().contains(markersBound.get(4)));
+                    assertTrue("Should contain Marker#5", connection.getCrosses().contains(markersBound.get(5)));
+                    assertTrue("Should contain Marker#6", connection.getCrosses().contains(markersBound.get(6)));
                 }
 
                 @Test
@@ -570,7 +711,7 @@ public class HierarchyBuilderTest {
                     markersBound.get(6), DIRECTION.N,
                     true, "", 125);
 
-            hierarchyBuilder = new HierarchyBuilder(ways.getAllWays(), markers.getAllMarkers(), markers.getStartpoints());
+            hierarchyBuilder = new HierarchyBuilder(ways, markers);
         }
 
         public class WhenGotNoPrinciples {
@@ -639,6 +780,4 @@ public class HierarchyBuilderTest {
             }
         }
     }
-
-
 }
