@@ -1,105 +1,167 @@
 package pl.bodolsog.GreenWaveFX.model;
 
-import netscape.javascript.JSException;
-import netscape.javascript.JSObject;
+import de.bechte.junit.runners.context.HierarchicalContextRunner;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import pl.bodolsog.GreenWaveFX.staticVar.DIRECTION;
+
+import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by bodolsog on 01.01.16.
- */
+@RunWith(HierarchicalContextRunner.class)
 public class WaysTest {
-
+    int waysSize;
     private Ways ways;
-    private JSObject jsObject;
-    private Marker markerOne;
-    private Marker markerTwo;
-    private Marker markerThree;
-    private Marker markerFour;
+    private ArrayList<Marker> markersList;
+
+    private ArrayList<Marker> createMarkersList(int count) {
+        Markers m = new Markers(ways);
+        ArrayList<Marker> markersList = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            markersList.add(new Marker(i, new JSObjectAdapter(), m));
+        }
+        return markersList;
+    }
 
     @Before
     public void setUp(){
         ways = new Ways();
-        // JSObject for test
-        jsObject = new JSObject(){
-            @Override public Object call(String s, Object... objects) throws JSException { return null; }
-            @Override public Object eval(String s) throws JSException { return null; }
-            @Override public Object getMember(String s) throws JSException { return null; }
-            @Override public void setMember(String s, Object o) throws JSException {}
-            @Override public void removeMember(String s) throws JSException {}
-            @Override public Object getSlot(int i) throws JSException { return null; }
-            @Override public void setSlot(int i, Object o) throws JSException {}
-        };
-
-        markerOne = new Marker(0, jsObject);
-        markerTwo = new Marker(1, jsObject);
-        markerThree = new Marker(2, jsObject);
-        markerFour = new Marker(3, jsObject);
     }
 
-    /** CRUD: Add */
-    @Test
-    public void whenAddNewOneWayThenWayIsAdded(){
-        ways.addWay(markerOne, markerTwo, false);
-        assertSame("A markerOne should be a begin in first Way", markerOne, ways.getWay(0).getWayBegin());
-        assertSame("A markerTwo should be a end in first Way", markerTwo, ways.getWay(0).getWayEnd());
-        assertNull("Second way don't exists", ways.getWay(1));
+    public class GivenFreshWaysClass {
+
+        @Before
+        public void setUp() {
+            markersList = createMarkersList(2);
+        }
+
+        public class WhenAddAOneWay {
+            @Before
+            public void setUp() {
+                ways.addWay(markersList.get(0), DIRECTION.E, markersList.get(1), DIRECTION.W, false, "", 100);
+            }
+
+            @Test
+            public void thenOneWayIsCreated() {
+                assertEquals("Should be created only one way.", 1, ways.size());
+            }
+
+            @Test
+            public void thenWayLeadsFromTheFirstMarkerToSecond() {
+                assertEquals("Way should started from first Marker.", markersList.get(0), ways.getWay(0).getBeginMarker());
+                assertEquals("Way should ended on second Marker.", markersList.get(1), ways.getWay(0).getEndMarker());
+            }
+
+        }
+
+        public class WhenAddATwoWay {
+            @Before
+            public void setUp() {
+                ways.addWay(markersList.get(0), DIRECTION.E, markersList.get(1), DIRECTION.W, true, "", 100);
+            }
+
+            @Test
+            public void thenTwoWaysAreCreated() {
+                assertEquals("Should be created two ways.", 2, ways.size());
+            }
+
+            @Test
+            public void thenFirstWayLeadsFromTheFirstMarkerToSecond() {
+                assertEquals("Way should started from first Marker.", markersList.get(0), ways.getWay(0).getBeginMarker());
+                assertEquals("Way should ended on second Marker.", markersList.get(1), ways.getWay(0).getEndMarker());
+            }
+
+            @Test
+            public void thenSecondWayLeadsFromTheSecondMarkerToFirst() {
+                assertEquals("Way should started from second Marker.", markersList.get(1), ways.getWay(1).getBeginMarker());
+                assertEquals("Way should ended on first Marker.", markersList.get(0), ways.getWay(1).getEndMarker());
+            }
+        }
+
+        public class WhenAddWayWithSameStartAndEnd {
+            @Before
+            public void setUp() {
+                ways.addWay(markersList.get(0), DIRECTION.E, markersList.get(0), DIRECTION.W, true, "", 100);
+            }
+
+            @Test
+            public void thenNothingIsAdded() {
+                assertEquals("Way shouldn't be added.", 0, ways.size());
+            }
+        }
     }
 
-    @Test
-    public void whenAddNewTwoWayThenBothWaysAreAdded(){
-        ways.addWay(markerOne, markerTwo, true);
-        assertSame("A markerOne should be a begin in first Way", markerOne, ways.getWay(0).getWayBegin());
-        assertSame("A markerTwo should be a end in first Way", markerTwo, ways.getWay(0).getWayEnd());
-        assertSame("A markerTwo should be a begin in second Way", markerTwo, ways.getWay(1).getWayBegin());
-        assertSame("A markerOne should be a end in second Way", markerOne, ways.getWay(1).getWayEnd());
-        assertNull("Third way don't exists", ways.getWay(2));
-    }
+    public class GivenSomeWaysAdded {
+        @Before
+        public void setUp() {
+            markersList = createMarkersList(7);
+            // 4   5
+            // |   ^
+            // 0-1-2
+            //   ^
+            //   3
+            ways.addWay(markersList.get(0), DIRECTION.E, markersList.get(1), DIRECTION.W, true, "", 100);
+            ways.addWay(markersList.get(1), DIRECTION.E, markersList.get(2), DIRECTION.W, true, "", 100);
+            ways.addWay(markersList.get(1), DIRECTION.S, markersList.get(3), DIRECTION.N, false, "", 100);
+            ways.addWay(markersList.get(0), DIRECTION.N, markersList.get(4), DIRECTION.S, true, "", 100);
+            ways.addWay(markersList.get(2), DIRECTION.N, markersList.get(5), DIRECTION.S, false, "", 100);
+            waysSize = ways.size();
+        }
 
-    @Test
-    public void whenAddedOneWayIsDuplicatedThenItIsNotAdded(){
-        ways.addWay(markerOne, markerTwo, false);
-        ways.addWay(markerOne, markerTwo, false);
-        assertNull("Duplicated way should be not added", ways.getWay(1));
-    }
+        public class WhenAddWayTwice {
+            @Before
+            public void setUp() {
+                ways.addWay(markersList.get(1), DIRECTION.S, markersList.get(3), DIRECTION.N, false, "", 100);
+            }
 
-    @Test
-    public void whenAddedTwoWayAndAFirstWayIsDuplicatedThenOnlySecondIsAdded(){
-        ways.addWay(markerOne, markerTwo, false);
-        ways.addWay(markerOne, markerTwo, true);
-        assertSame("A markerOne should be a begin in first Way", markerOne, ways.getWay(0).getWayBegin());
-        assertSame("A markerTwo should be a end in first Way", markerTwo, ways.getWay(0).getWayEnd());
-        assertSame("A markerTwo should be a begin in second Way", markerTwo, ways.getWay(1).getWayBegin());
-        assertSame("A markerOne should be a end in second Way", markerOne, ways.getWay(1).getWayEnd());
-        assertNull("Third way should be not added", ways.getWay(2));
-    }
+            @Test
+            public void thenWayIsntAdded() {
+                assertEquals("Way shouldn't be added.", waysSize, ways.size());
+            }
+        }
 
-    @Test
-    public void whenAddedTwoWayAndASecondWayIsDuplicatedThenOnlyFirstIsAdded(){
-        ways.addWay(markerOne, markerTwo, false);
-        ways.addWay(markerTwo, markerOne, true);
-        assertSame("A markerOne should be a begin in first Way", markerOne, ways.getWay(0).getWayBegin());
-        assertSame("A markerTwo should be a end in first Way", markerTwo, ways.getWay(0).getWayEnd());
-        assertSame("A markerTwo should be a begin in second Way", markerTwo, ways.getWay(1).getWayBegin());
-        assertSame("A markerOne should be a end in second Way", markerOne, ways.getWay(1).getWayEnd());
-        assertNull("Third way should be not added", ways.getWay(2));
-    }
+        public class WhenAddTwoWayWithExistingFirst {
+            @Before
+            public void setUp() {
+                ways.addWay(markersList.get(1), DIRECTION.S, markersList.get(3), DIRECTION.N, true, "", 100);
+            }
 
-    @Test
-    public void whenTryToAddWayWithSameBeginAndEndThenIsNothingAdded(){
-        ways.addWay(markerOne, markerOne, true);
-        assertEquals("Size should be 0", 0, ways.size());
-    }
+            @Test
+            public void thenOnlySecondWayIsAdded() {
+                assertEquals("Only one way should be added.", waysSize + 1, ways.size());
+                Way way = ways.getWay(waysSize);
+                assertTrue("The second way should be added.", way.getBeginMarker() == markersList.get(3));
+            }
+        }
 
-    /** CRUD: Delete */
-    @Test
-    public void whenWayIsDeletedThenIsGoneAway(){
-        ways.addWay(markerOne, markerTwo, true);
-        ways.deleteWay(0);
-        assertNull("Way index 0 should be null", ways.getWay(0));
-        assertSame("A markerTwo should be a begin in Way index 1", markerTwo, ways.getWay(1).getWayBegin());
-        assertSame("A markerOne should be a end in Way index 1", markerOne, ways.getWay(1).getWayEnd());
+        public class WhenAddTwoWayWithExistingRevert {
+            @Before
+            public void setUp() {
+                ways.addWay(markersList.get(3), DIRECTION.N, markersList.get(1), DIRECTION.S, true, "", 100);
+            }
+
+            @Test
+            public void thenOnlyFirstWayIsAdded() {
+                assertEquals("Only one way should be added.", waysSize + 1, ways.size());
+                Way way = ways.getWay(waysSize);
+                assertTrue("The first way should be added.", way.getBeginMarker() == markersList.get(3));
+            }
+        }
+
+        public class WhenDeleteMarker {
+            @Before
+            public void setUp() {
+                ways.remove(2);
+            }
+
+            @Test
+            public void thenHisIndexGotNull() {
+                assertNull("Deleted index should be nuull.", ways.getWay(2));
+            }
+        }
+
+
     }
 }

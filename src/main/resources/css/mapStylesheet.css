@@ -1,0 +1,52 @@
+html {
+    height: 100%
+}
+
+body {
+    height: 100%;
+    margin: 0px;
+    padding: 0px
+}
+
+#map_canvas {
+    height: 100%;
+    background-color: #666970;
+}
+
+.context-menu {
+    display: none;
+    position: absolute;
+    z-index: 10;
+    padding: 0;
+    width: 180px;
+    background-color: #f8f8f8;
+    border: solid 1px #b4b4b4;
+    box-shadow: 1px 1px 2px #cfcfcf;
+    font-size: 12px;
+}
+
+.context-menu--active {
+    display: block;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.context-menu__item {
+    padding: 5px;
+    text-decoration: none;
+}
+
+.context-menu__items {
+    margin: 0;
+}
+
+.context-menu__link {
+    text-decoration: none;
+}
+
+.menuItemHover {
+    background: darkred;
+}

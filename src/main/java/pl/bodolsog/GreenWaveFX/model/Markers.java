@@ -1,26 +1,31 @@
 package pl.bodolsog.GreenWaveFX.model;
 
-
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableMap;
 import netscape.javascript.JSObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Markers {
 
     private int nextId = 0;
-
+    private Ways ways;
     // Map of markers <id, marker>.
-    private ObservableMap<Integer,Marker> markers = FXCollections.observableHashMap();
-
+    private HashMap<Integer, Marker> markers = new HashMap<>();
+    private ArrayList<Marker> startpoints = new ArrayList<>();
     private int active;
+
+    public Markers(Ways ways) {
+        this.ways = ways;
+    }
 
     /**
      * Add marker to markers list.
      * @param jsMarker GoogleMaps marker object
      */
     public void addMarker(JSObject jsMarker){
-        markers.put(nextId, new Marker(nextId, jsMarker));
-        setMarkerActiveId(nextId);
+        markers.put(nextId, new Marker(nextId, jsMarker, this));
+        startpoints.add(markers.get(nextId));
+        setActiveMarkerId(nextId);
         nextId++;
     }
 
@@ -38,31 +43,39 @@ public class Markers {
      * @param id
      */
     public void deleteMarker(int id){
+        deleteMarker(id, markers.get(id));
+    }
+
+    public void deleteMarker(Marker marker) {
+        deleteMarker(marker.getId(), marker);
+    }
+
+    public void deleteMarker(int id, Marker marker) {
+        ways.performRemoveMarker(marker);
+        HashMap<Marker, Way> nodesToUpdate = marker.performUpdateNodes();
+        removeStartpoint(marker);
         markers.remove(id);
+        nodesToUpdate.forEach((node, way) -> node.findNode(way));
     }
 
     /**
      * Return whole map.
      * @return markers
      */
-    public ObservableMap<Integer,Marker> getAllMarkers(){
+    public HashMap<Integer, Marker> getAllMarkers() {
         return markers;
     }
 
     /**
-     * Return size of Markers.
-     * @return size
+     * Return markersSize of Markers.
+     * @return markersSize
      */
-    public int size(){
+    public int markersSize() {
         return markers.size();
     }
 
-    /**
-     * Set as active Marker's id.
-     * @param id
-     */
-    public void setMarkerActiveId(int id){
-        active = id;
+    public int startpointsCount() {
+        return startpoints.size();
     }
 
     /**
@@ -74,6 +87,14 @@ public class Markers {
     }
 
     /**
+     * Set as active Marker's id.
+     * @param id
+     */
+    public void setActiveMarkerId(int id){
+        active = id;
+    }
+
+    /**
      * Return Marker that is now active.
      * @return Marker
      */
@@ -81,4 +102,33 @@ public class Markers {
         return markers.get(getActiveMarkerId());
     }
 
+    public void setCrossDirections(int markerId, ArrayList<String> directions) {
+        getMarker(markerId).setCrossDirections(directions);
+    }
+
+    public boolean isStartPoint(int id) {
+        return markers.get(id).isStartPoint();
+    }
+
+    public Marker getNode(int i) {
+        return startpoints.get(i);
+    }
+
+    public Marker getLastMarker() {
+        return markers.get(nextId - 1);
+    }
+
+    public void removeStartpoint(Marker marker) {
+        if (startpoints.contains(marker))
+            startpoints.remove(marker);
+    }
+
+    public void addStartpoint(Marker marker) {
+        if (!startpoints.contains(marker))
+            startpoints.add(marker);
+    }
+
+    public ArrayList<Marker> getStartpoints() {
+        return startpoints;
+    }
 }

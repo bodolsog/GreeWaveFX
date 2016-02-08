@@ -10,5 +10,10 @@ repositories {
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile 'com.googlecode.json-simple:json-simple:1.1'
+
+    testCompile 'junit:junit:4.11'
+    testCompile 'de.bechte.junit:junit-hierarchicalcontextrunner:4.11.1'
+    testCompile 'org.mockito:mockito-core:1.+'
+
 }

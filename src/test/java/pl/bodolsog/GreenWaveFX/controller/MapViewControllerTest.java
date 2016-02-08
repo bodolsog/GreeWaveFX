@@ -1,12 +1,6 @@
 package pl.bodolsog.GreenWaveFX.controller;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import pl.bodolsog.GreenWaveFX.model.Marker;
 import pl.bodolsog.GreenWaveFX.model.Markers;
-
-import static org.junit.Assert.*;
 
 
 public class MapViewControllerTest {
@@ -24,19 +18,19 @@ public class MapViewControllerTest {
 //    @Test
 //    public void whenAddNewMarkerThenItIsInList(){
 //        ctr.addMarker(0, 0.0, 0.0);
-//        assertEquals("Size of markers should be 1", 1, markers.size());
+//        assertEquals("Size of markers should be 1", 1, markers.markersSize());
 //        assertTrue("Can get marker with id 0", markers.getMarker(0).getId() == 0);
 //
 //        ctr.addMarker(1, 0.0, 0.0);
-//        assertEquals("Size of markers should be 2", 2, markers.size());
+//        assertEquals("Size of markers should be 2", 2, markers.markersSize());
 //        assertTrue("Can get marker with id 1", markers.getMarker(1).getId() == 1);
 //
 //        ctr.addMarker(2, 0.0, 0.0);
-//        assertEquals("Size of markers should be 3", 3, markers.size());
+//        assertEquals("Size of markers should be 3", 3, markers.markersSize());
 //        assertTrue("Can get marker with id 2", markers.getMarker(2).getId() == 2);
 //
 //        ctr.addMarker(100, 1.0, 1.0);
-//        assertEquals("Size of markers should be 4", 4, markers.size());
+//        assertEquals("Size of markers should be 4", 4, markers.markersSize());
 //        assertTrue("Can get marker with id 100", markers.getMarker(100).getId() == 100);
 //
 //        assertNull("Not existing object should be null", markers.getMarker(3));

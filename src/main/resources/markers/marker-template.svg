@@ -33,7 +33,7 @@
      inkscape:cx="64.718642"
      inkscape:cy="159.37375"
      inkscape:document-units="px"
-     inkscape:current-layer="layer4"
+     inkscape:current-layer="g4228"
      showgrid="false"
      showguides="true"
      inkscape:guide-bbox="true"
@@ -71,7 +71,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -98,10 +98,32 @@
        style="fill:#ffcc00;fill-rule:evenodd;stroke:#987a00;stroke-width:6.74186277;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
   </g>
   <g
+     style="display:inline;opacity:1"
+     id="g4228"
+     inkscape:groupmode="layer"
+     inkscape:label="green">
+    <path
+       inkscape:export-ydpi="17.143574"
+       inkscape:export-xdpi="17.143574"
+       sodipodi:nodetypes="zczzz"
+       inkscape:connector-curvature="0"
+       id="path4230"
+       d="m 0,904.8622 c -0.534941,38.04589 55,80.14788 55,148.974 0,-68.82612 55.68289,-110.92811 55,-148.974 -0.6828,-38.0464 -27.731917,-57.83273 -55,-57.645 -27.268087,0.1867 -54.465371,19.59859 -55,57.645 z"
+       style="fill:#d40000;fill-rule:evenodd;stroke:#930000;stroke-width:6.74186277;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       style="fill:#55d400;fill-rule:evenodd;stroke:#327c00;stroke-width:6.74186277;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 0,904.8622 c -0.534941,38.04589 55,80.14788 55,148.974 0,-68.82612 55.68289,-110.92811 55,-148.974 -0.6828,-38.0464 -27.731917,-57.83273 -55,-57.645 -27.268087,0.1867 -54.465371,19.59859 -55,57.645 z"
+       id="path4232"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="zczzz"
+       inkscape:export-xdpi="17.143574"
+       inkscape:export-ydpi="17.143574" />
+  </g>
+  <g
      inkscape:groupmode="layer"
      id="layer4"
      inkscape:label="yellow"
-     style="display:inline">
+     style="display:none">
     <path
        inkscape:export-ydpi="17.143574"
        inkscape:export-xdpi="17.143574"
@@ -146,7 +168,7 @@
      id="layer2"
      inkscape:label="dot"
      sodipodi:insensitive="true"
-     style="display:none;opacity:1">
+     style="display:inline;opacity:1">
     <circle
        style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.2321279;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path4146"

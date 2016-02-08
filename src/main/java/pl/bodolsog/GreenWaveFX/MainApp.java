@@ -8,6 +8,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import pl.bodolsog.GreenWaveFX.controller.MapViewController;
 import pl.bodolsog.GreenWaveFX.model.Markers;
+import pl.bodolsog.GreenWaveFX.model.Ways;
 
 import java.io.IOException;
 
@@ -20,6 +21,7 @@ public class MainApp extends Application {
     private MapViewController mapViewController;
 
     private Markers markers;
+    private Ways ways;
 
     // Map of markers <id, marker>.
     //private ObservableMap<String,Marker> ways = FXCollections.observableHashMap();
@@ -40,8 +42,11 @@ public class MainApp extends Application {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("GreenWaveFX");
 
+
+        // Set up Ways
+        ways = new Ways();
         // Set up Markers
-        markers = new Markers();
+        markers = new Markers(ways);
 
         // Init layout
         initRootLayout();
@@ -57,7 +62,7 @@ public class MainApp extends Application {
         try {
             // Load root layout from fxml file.
             final FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainAppView.fxml"));
-            rootLayout = (BorderPane) loader.load();
+            rootLayout = loader.load();
 
             // Show the scene containing the root layout.
             Scene scene = new Scene(rootLayout, 1600, 900);
@@ -76,12 +81,13 @@ public class MainApp extends Application {
         try {
             // Load map from fxml file.
             final FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MapView.fxml"));
-            WebView mapView = (WebView) loader.load();
+            WebView mapView = loader.load();
 
             // Give the controller access to the main app.
             mapViewController = loader.getController();
             //mapViewController.passMainAppReference(this);
             mapViewController.passMarkersReference(markers);
+            mapViewController.passWaysReference(ways);
 
             // Show the scene containing the root layout.
             rootLayout.setCenter(mapView);
