@@ -13,6 +13,7 @@ import pl.bodolsog.GreenWaveFX.model.Marker;
 import pl.bodolsog.GreenWaveFX.model.Markers;
 import pl.bodolsog.GreenWaveFX.model.Way;
 import pl.bodolsog.GreenWaveFX.model.Ways;
+import pl.bodolsog.GreenWaveFX.staticVar.DIRECTION;
 import pl.bodolsog.GreenWaveFX.tools.PropertiesManager;
 
 import java.util.ArrayList;
@@ -114,7 +115,7 @@ public class MapViewController {
     public String getActiveMarkerWay(String direction) {
         int id = markers.getActiveMarkerId();
         Marker marker = markers.getMarker(id);
-        Way way = marker.getWay(direction);
+        Way way = marker.getWay(DIRECTION.CNAMES.get(direction));
         if (way != null)
             return way.getResponse();
         else
@@ -133,7 +134,7 @@ public class MapViewController {
         ArrayList<String> directions = new ArrayList<>();
         Object obj = JSONValue.parse(JSONDirections);
         JSONArray array = (JSONArray) obj;
-        array.forEach(s -> directions.add((String) s));
+        array.forEach(s -> directions.add(DIRECTION.CNAMES.get(s.toString())));
         markers.setCrossDirections(markerId, directions);
     }
 

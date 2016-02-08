@@ -121,7 +121,7 @@ function setMarkerActive(marker) {
         if (response != null) {
             directionsDisplay[direction] = new google.maps.DirectionsRenderer;
             directionsDisplay[direction].setMap(marker.map);
-            directionsDisplay[direction].setDirections(response);
+            directionsDisplay[direction].setDirections(response)
         }
     }
 
@@ -152,8 +152,6 @@ function setMarkerIconActive(marker) {
  * @param marker
  */
 function setMarkerIconUnactive(marker) {
-    controller.log(controller.isStartPoint(marker.id));
-
     if (controller.isStartPoint(marker.id))
         setMarkerIcon(marker, 'green', 'dot');
     else

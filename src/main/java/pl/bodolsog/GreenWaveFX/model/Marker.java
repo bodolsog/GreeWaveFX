@@ -26,7 +26,6 @@ public class Marker {
     private IntegerProperty id;
     private Markers markers;
     private ObservableMap<String, Way> cross = FXCollections.observableHashMap();
-
     private HashMap<Marker, ArrayList<Way>> connectedNodes = new HashMap<>();
 
     private int nodeType = NODE_TYPE.STARTPOINT;
@@ -173,9 +172,9 @@ public class Marker {
 
     public void setCrossDirections(ArrayList<String> decodedDirections) {
         DIRECTION.NAMES.forEach(direction -> {
-            if (decodedDirections.contains(direction) && !cross.containsKey(direction))
+            if (decodedDirections.contains(direction) && !cross.containsKey(direction)) {
                 cross.put(direction, null);
-            else if (cross.containsKey(direction) && !decodedDirections.contains(direction)) {
+            } else if (cross.containsKey(direction) && !decodedDirections.contains(direction)) {
                 if (cross.get(direction) != null)
                     cross.get(direction).destroy();
                 cross.remove(direction);

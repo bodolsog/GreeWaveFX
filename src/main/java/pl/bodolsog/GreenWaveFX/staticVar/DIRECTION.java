@@ -1,6 +1,7 @@
 package pl.bodolsog.GreenWaveFX.staticVar;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by bodolsog on 12.01.16.
@@ -24,5 +25,16 @@ public class DIRECTION {
         add(NW);
         add(SE);
         add(SW);
+    }};
+
+    public static final HashMap<String, String> CNAMES = new HashMap<String, String>() {{
+        put("north", N);
+        put("south", S);
+        put("east", E);
+        put("west", W);
+        put("northeast", NE);
+        put("northwest", NW);
+        put("southeast", SE);
+        put("southwest", SW);
     }};
 }

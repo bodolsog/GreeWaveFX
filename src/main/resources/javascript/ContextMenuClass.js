@@ -88,6 +88,7 @@ var ContextMenu = function (marker, overlay) {
                         connectMarkers(marker, true);
                         break;
                 }
+                menu.classList.remove('context-menu--active');
             });
             li.addEventListener('mouseover', function () {
                 this.style.cursor = "pointer";
