@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/GreenWaveFX.iml" filepath="$PROJECT_DIR$/GreenWaveFX.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1655134816/GreenWaveFX_main.iml" filepath="$PROJECT_DIR$/.idea/modules/-1655134816/GreenWaveFX_main.iml" group="GreenWaveFX" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1655134816/GreenWaveFX_test.iml" filepath="$PROJECT_DIR$/.idea/modules/-1655134816/GreenWaveFX_test.iml" group="GreenWaveFX" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/-1655134816/psw-GreenWaveFX.iml" filepath="$PROJECT_DIR$/.idea/modules/-1655134816/psw-GreenWaveFX.iml" />
     </modules>
   </component>
 </project>
